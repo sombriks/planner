@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: planner.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-29 12:16+0200\n"
+"POT-Creation-Date: 2004-08-18 04:12+0200\n"
 "PO-Revision-Date: 2004-06-29 13:08+0200\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -173,7 +173,6 @@ msgstr ""
 msgid "_Name of the new calendar:"
 msgstr ""
 
-#. GRUT modified this item
 #: data/glade/calendar-dialog.glade.h:36
 msgid "_New..."
 msgstr "_I Ri..."
@@ -767,17 +766,19 @@ msgstr "_Hap..."
 msgid "_Paste"
 msgstr "_Ngjite"
 
+#. GRUT modified this item
 #: data/ui/main-window.ui.h:45
 msgid "_Print..."
-msgstr "_Printo..."
+msgstr "_Printim..."
 
 #: data/ui/main-window.ui.h:46
 msgid "_Project"
 msgstr ""
 
+#. GRUT modified this item
 #: data/ui/main-window.ui.h:47
 msgid "_Quit"
-msgstr "_Dil"
+msgstr "_Dalja"
 
 #: data/ui/main-window.ui.h:48
 msgid "_Redo"
@@ -1427,7 +1428,7 @@ msgstr ""
 msgid "Open a file"
 msgstr "Hap një file"
 
-#: src/planner-resource-cmd.c:74
+#: src/planner-resource-cmd.c:75
 msgid "Insert resource"
 msgstr ""
 
@@ -1581,15 +1582,15 @@ msgstr ""
 msgid "Save to Database"
 msgstr ""
 
-#: src/planner-task-cmd.c:96
+#: src/planner-task-cmd.c:97
 msgid "Link task"
 msgstr ""
 
-#: src/planner-task-cmd.c:172
+#: src/planner-task-cmd.c:173
 msgid "Unlink task"
 msgstr ""
 
-#: src/planner-task-cmd.c:265
+#: src/planner-task-cmd.c:266
 msgid "Insert task"
 msgstr ""
 
