@@ -64,8 +64,12 @@ struct _MrpTaskPriv {
 
 	/* Used for topological order sorting. */
 	guint             visited : 1;
+
+	/* Get rid of... */
 	GNode            *sorted_node;
 
+	MrpTaskGraphNode *graph_node;
+	
 	/* FIXME: This might be a mistake... I can't think of any other types,
 	 * besides milestone and normal. Should we have a boolean instead,
 	 * is_milestone? That or a flags type variable.
@@ -187,6 +191,8 @@ task_init (MrpTask *task)
 	priv->sorted_node = g_node_new (task);
 	priv->assignments = NULL;
 	priv->constraint.type = MRP_CONSTRAINT_ASAP;
+
+	priv->graph_node = g_new0 (MrpTaskGraphNode, 1);
 }
 
 static void
@@ -1740,6 +1746,14 @@ imrp_task_get_sorted_node (MrpTask *task)
 	g_return_val_if_fail (MRP_IS_TASK (task), NULL);
 	
 	return task->priv->sorted_node;
+}
+
+MrpTaskGraphNode *
+imrp_task_get_graph_node (MrpTask *task)
+{
+	g_return_val_if_fail (MRP_IS_TASK (task), NULL);
+	
+	return task->priv->graph_node;
 }
 
 GList *
