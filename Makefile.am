@@ -13,6 +13,7 @@ SUBDIRS = \
 	src				\
 	data				\
 	docs				\
+	examples			\
 	$(python_DIR)			\
 	$(dotnet_DIR)
 
@@ -30,9 +31,13 @@ EXTRA_DIST = \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libplanner-1.pc
 
-DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc --enable-database --disable-dotnet --enable-python
 
-# Workaround broken scrollkeeper that doesn't remove its files on uninstall
-distuninstallcheck_listfiles = find . -type f -print | grep -v '^\./var/scrollkeeper' 	\
-	intltool-extract intltool-merge intltool-update
+# Workaround broken scrollkeeper that doesn't remove its files on
+# uninstall. Same with the shared mime info, the generated files
+# aren't empty when there is no mime data
+distuninstallcheck_listfiles = find . -type f -print | grep -v '^\./var/scrollkeeper' | \
+ grep -v '/share/mime/' | grep -v '/share/omf/planner'
+
+DISTCLEANFILES = intltool-extract intltool-merge intltool-update 
 

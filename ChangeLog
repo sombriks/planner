@@ -1,3 +1,178 @@
+2004-07-27  Richard Hult  <richard@imendio.com>
+
+	* src/planner-task-dialog.c:
+	(task_dialog_resource_units_cell_edited): Merge from 0.12 branch.
+
+2004-07-19  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump.
+
+2004-07-08  Anders Carlsson  <andersca@gnome.org>
+
+	* src/planner-window.c: (window_open_cb), (window_do_save_as):
+	We don't need to check if we're opening a directory.
+
+2004-07-08  Anders Carlsson  <andersca@gnome.org>
+
+	* configure.in:
+	* data/glade/html-output.glade:
+	* src/planner-window.c: (window_open_cb), (window_do_save_as):
+	Use GtkFileChooser.
+	
+2004-07-08  Richard Hult  <richard@imendio.com>
+
+	* Release 0.12.
+
+	* configure.in: Bump version.
+	* examples/sample-1.planner: Fix the sampe name.
+	* src/planner-window.c: (window_update_title): Brand a bit.
+
+2004-07-07  Richard Hult  <richard@imendio.com>
+
+	* planner.spec.in: Put the sql storage in the right
+	package. Redirect mime updating to /dev/null.
+
+	* docs/user-guide/C/planner.xml: Fix up.
+
+	* src/planner-window.c: Brand a bit.
+	
+2004-07-05  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump.
+
+	* src/planner-resource-view.c:
+	(resource_cmd_edit_custom_property): Remove string.
+
+	* src/planner-task-dialog.c: (task_cmd_edit_sched): Change string
+	that was completely wrong. Sorry translators, but this is better
+	to have fuzzy than the wrong meaning.
+
+	* src/planner-task-tree.c: (task_cmd_edit_custom_property): Remove
+	string.
+
+2004-07-02  Richard Hult  <richard@imendio.com>
+
+	* src/planner-ttable-row.c: (ttable_row_realize),
+	(ttable_row_draw_resource_ival): Draw vertical separators between
+	the intervals.
+
+2004-07-02  Richard Hult  <richard@imendio.com>
+
+	* src/planner-gantt-chart.c: Fix coding style in a few places.
+
+	* src/planner-ttable-chart.c (ttable_chart_map):
+	* src/planner-ttable-view.c: (ttable_view_project_loaded_cb): Add
+	workaround to make this a bit better for 0.12.
+
+2004-07-02  Richard Hult  <richard@imendio.com>
+
+	* src/planner-ttable-chart.c (planner_ttable_chart_set_model):
+	Don't add a signal connected to a task to the list of connections
+	to remove.
+
+	* src/planner-ttable-row.c (recalc_bounds): Don't use
+	uninitialized values.
+
+2004-07-01  Richard Hult  <richard@imendio.com>
+
+	* src/planner-ttable-row.c (ttable_row_draw_resource_ival): Draw
+	the border correctly.
+
+	* src/planner-gantt-chart.c: (gantt_chart_row_has_child_toggled),
+	(planner_gantt_chart_set_model): Redraw when parenthood changes.
+
+	* src/planner-ttable-chart.c: Add hack to fix a bug where zoom to
+	fit don't work.
+
+2004-07-01  Richard Hult  <richard@imendio.com>
+
+	* src/planner-gantt-model.c (value_cache_get_wbs): Plug leak.
+
+	* src/planner-gantt-*.c: Clean up a bit.
+
+2004-07-01  Richard Hult  <richard@imendio.com>
+
+	* src/planner-resource-view.c (resource_view_insert_resource_cb):
+	Don't enter editable mode for inserted rows, we need undo
+	transactions first.
+
+2004-06-30  Richard Hult  <richard@imendio.com>
+
+	* Makefile.am:
+	* configure.in:
+	* examples/sample-1.planner:  Dist the examples.
+
+	* data/ui/xml-planner-plugin.ui: Fix string.
+
+	* docs/user-guide/C/planner.xml: Make the man version the same as
+	the app version, looks silly otherwise.
+	
+	* libplanner/mrp-parser.c: (mrp_parser_save):
+	* libplanner/mrp-project.c: (mrp_project_save_as):
+	* src/planner-application.c: (application_init):
+	* src/planner-window.c: (window_do_save_as), (planner_window_open):
+	* src/planner-xml-planner-plugin.c: (xml_planner_plugin_export):
+	Fix up filename extensions and mime types.
+
+	* planner.spec.in: Get this baby working.
+	
+2004-06-30 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* configure.in
+	* data/Makefile.am
+	* data/sql/Makefile.am
+	* data/sql/database-0.11.sql
+	* data/sql/database.sql
+	* data/sql/upgrade-0.6.x-0.11.sql
+	Install sql schema files in the system
+
+2004-06-29  Setul Patel   <setulkumarpatel@yahoo.com>
+
+	* Add G_GNUC_CONST to all _get_type functions.
+	
+2004-06-26 Alvaro del Castillo  <acs@barrapunto.com>
+	
+	* libplanner/mrp-object.c: Fix in mrp_object_get_property API doc.
+	* src/planner-property-dialog.c: Implemented recovering properties
+	values for tasks and resources when you undo a remove custom
+	property operation. Fixes #143609.
+
+2004-06-25  Richard Hult  <richard@imendio.com>
+
+	* src/planner-ttable-row.c: (recalc_bounds),
+	(ttable_row_resource_notify_cb),
+	(ttable_row_assignment_notify_cb): Don't redraw unless the
+	geometry is changed.
+
+2004-06-25  Richard Hult  <richard@imendio.com>
+
+	* src/planner-ttable-*.[ch]: Indent this so it at least remotely
+	looks like the rest of the planner code. Sigh.  Do some of the
+	same optimizations to the drawing code as was done to the gantt
+	chart recently.
+
+2004-06-25  Setul Patel   <setulkumarpatel@yahoo.com>
+
+	* data/ui/gantt-view.ui:
+	* data/ui/task-view.ui:
+	* data/ui/resource-view.ui: Fix bug #144466.
+
+2004-06-25  Richard Hult  <richard@imendio.com>
+
+	* Makefile.am:
+	* data/mime/Makefile.am:
+	* data/mime/planner.keys.in:
+	* dotnet/libplanner/Makefile.am:
+	* dotnet/libplanner/libplanner-api.xml:
+	* dotnet/samples/Example01.cs:
+	* dotnet/samples/Example10.cs:
+	* dotnet/samples/Makefile.am: Fix distcheck.
+
+	* libplanner/mrp-sql.c: (sql_get_last_error), (get_int), (get_id),
+	(get_string), (get_boolean), (get_float):
+	* src/planner-sql-plugin.c: (get_int), (get_string):
+	* src/planner-task-dialog.c: Fix leaks and warnings.
+
 2004-06-23 Alvaro del Castillo  <acs@barrapunto.com>
 	
 	* src/planner-calendar-dialog.c
