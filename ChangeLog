@@ -1,3 +1,8 @@
+2004-08-06  Richard Hult  <richard@imendio.com>
+
+	* src/planner-task-cmd.c: 
+	* src/planner-resource-cmd.c: Include config.h to fix i18n.
+
 2004-07-24  Richard Hult  <richard@imendio.com>
 
 	* src/planner-task-dialog.c
