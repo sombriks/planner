@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: planner.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-18 04:12+0200\n"
+"POT-Creation-Date: 2004-08-19 12:11+0200\n"
 "PO-Revision-Date: 2004-06-29 13:08+0200\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -79,9 +79,10 @@ msgstr ""
 msgid "Add Day Type"
 msgstr "Shto lloj dite"
 
+#. GRUT modified this item
 #: data/glade/calendar-dialog.glade.h:11
 msgid "Apply"
-msgstr ""
+msgstr "Apliko"
 
 #: data/glade/calendar-dialog.glade.h:12
 msgid "C_opy an existing calendar"
@@ -189,9 +190,10 @@ msgstr ""
 msgid "Export to HTML"
 msgstr ""
 
+#. GRUT modified this item
 #: data/glade/html-output.glade.h:5
 msgid "Local file:"
-msgstr ""
+msgstr "File lokal:"
 
 #: data/glade/html-output.glade.h:6
 msgid "Save to HTML File"
@@ -319,10 +321,11 @@ msgstr ""
 msgid "Optional - overrides resource name in gantt view."
 msgstr ""
 
+#. GRUT modified this item
 #: data/glade/resource-input-dialog.glade.h:6
 #: data/glade/task-input-dialog.glade.h:3
 msgid "_Insert"
-msgstr "_Shkruaj"
+msgstr "_Ndërfut"
 
 #: data/glade/sql.glade.h:2
 msgid "Open Database"
@@ -766,7 +769,6 @@ msgstr "_Hap..."
 msgid "_Paste"
 msgstr "_Ngjite"
 
-#. GRUT modified this item
 #: data/ui/main-window.ui.h:45
 msgid "_Print..."
 msgstr "_Printim..."
@@ -775,7 +777,6 @@ msgstr "_Printim..."
 msgid "_Project"
 msgstr ""
 
-#. GRUT modified this item
 #: data/ui/main-window.ui.h:47
 msgid "_Quit"
 msgstr "_Dalja"
@@ -1069,13 +1070,14 @@ msgstr ""
 msgid "Today"
 msgstr "Sot"
 
+#. GRUT modified this item
 #. gtk_signal_connect (GTK_OBJECT (button), "clicked",
 #. GTK_SIGNAL_FUNC (m_cell_date_today_clicked),
 #. date);
 #.
 #: src/planner-cell-renderer-date.c:179
 msgid "Cancel"
-msgstr "Anulloje"
+msgstr "Anullo"
 
 #: src/planner-cell-renderer-date.c:187
 msgid "OK"
@@ -1255,9 +1257,10 @@ msgstr ""
 msgid "Insert group"
 msgstr ""
 
+#. GRUT modified this item
 #: src/planner-group-dialog.c:425
 msgid "Remove group"
-msgstr ""
+msgstr "Hiq grupin"
 
 #: src/planner-group-dialog.c:520
 msgid "Default group"
@@ -1797,9 +1800,10 @@ msgstr ""
 msgid "Start"
 msgstr "Fillo"
 
+#. GRUT modified this item
 #: src/planner-task-view.c:276
 msgid "Finish"
-msgstr ""
+msgstr "Mbarimi"
 
 #: src/planner-task-view.c:278
 msgid "Slack"
@@ -1897,9 +1901,10 @@ msgstr ""
 msgid "_Cancel"
 msgstr "_Anullo"
 
+#. GRUT modified this item
 #: src/planner-window.c:1354
 msgid "Save a file"
-msgstr ""
+msgstr "Ruaj një file"
 
 #: src/planner-window.c:1591
 msgid ""
