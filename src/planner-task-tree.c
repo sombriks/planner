@@ -3,7 +3,7 @@
  * Copyright (C) 2003-2004 Imendio HB
  * Copyright (C) 2002-2003 CodeFactory AB
  * Copyright (C) 2002-2003 Richard Hult <richard@imendio.com>
- * Copyright (C) 2002 Mikael Hallendal <micke@imendio.com>
+ * Copyright (C) 2002      Mikael Hallendal <micke@imendio.com>
  * Copyright (C) 2002-2004 Alvaro del Castillo <acs@barrapunto.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -46,6 +46,7 @@
 #include "planner-task-tree.h"
 #include "planner-gantt-model.h"
 #include "planner-task-popup.h"
+#include "planner-task-cmd.h"
 
 #define WARN_TASK_DIALOGS 10
 #define MAX_TASK_DIALOGS 25
@@ -75,8 +76,8 @@ struct _PlannerTaskTreePriv {
 };
 
 typedef struct {
-	GtkTreeView *tree;
-	MrpProperty *property;
+	PlannerTaskTree *tree;
+	MrpProperty     *property;
 } ColPropertyData;
 
 typedef enum {
@@ -156,10 +157,7 @@ static gint        task_tree_parse_time_string         (PlannerTaskTree      *tr
 							const gchar          *str);
 static MrpProject *task_tree_get_project               (PlannerTaskTree      *tree);
 static MrpTask *   task_tree_get_task_from_path        (PlannerTaskTree      *tree,
-							GtkTreePath          *path);
-static PlannerCmd *task_cmd_remove                     (PlannerTaskTree      *tree,
-							GtkTreePath          *path,
-							MrpTask              *task);
+                                                        GtkTreePath          *path);
 
 
 static GtkTreeViewClass *parent_class = NULL;
@@ -168,115 +166,6 @@ static guint signals[LAST_SIGNAL];
 /*
  * Commands
  */
-
-typedef struct {
-	PlannerCmd       base;
-
-	PlannerTaskTree *tree;
-	MrpProject      *project;
-	
-	gint             work;
-	gint             duration;
-	
-	GtkTreePath     *path;
-
-	MrpTask         *task; 	/* The inserted task */
-} TaskCmdInsert;
-
-static void
-task_cmd_insert_free (PlannerCmd *cmd_base)
-{
-	TaskCmdInsert *cmd;
-
-	cmd = (TaskCmdInsert*) cmd_base;
-
-	gtk_tree_path_free (cmd->path);
-	g_object_unref (cmd->task);
-	cmd->task = NULL;
-	g_free (cmd);
-}
-
-static void
-task_cmd_insert_do (PlannerCmd *cmd_base)
-{
-	TaskCmdInsert *cmd;
-	GtkTreePath   *path;
-	MrpTask       *parent;
-	gint           depth;
-	gint           position;
-
-	cmd = (TaskCmdInsert*) cmd_base;
-
-	path = gtk_tree_path_copy (cmd->path);
-
-	depth = gtk_tree_path_get_depth (path);
-	position = gtk_tree_path_get_indices (path)[depth - 1];
-
- 	if (depth > 1) {
-		gtk_tree_path_up (path);
-		parent = task_tree_get_task_from_path (cmd->tree, path);
-	} else {
-		parent = NULL;
-	}
-	
-	gtk_tree_path_free (path);
-	
-	if (cmd->task == NULL) {
-		cmd->task = g_object_new (MRP_TYPE_TASK,
-					  "work", cmd->work,
-					  "duration", cmd->duration,
-					  NULL);
-	}
-
-	mrp_project_insert_task (cmd->project,
-				 parent,
-				 position,
-				 cmd->task);
-
-}
-
-static void
-task_cmd_insert_undo (PlannerCmd *cmd_base)
-{
-	TaskCmdInsert *cmd;
-	
-	cmd = (TaskCmdInsert*) cmd_base;
-
-	mrp_project_remove_task (cmd->project,
-				 cmd->task);
-}
-
-static PlannerCmd *
-task_cmd_insert (PlannerTaskTree *tree,
-		 GtkTreePath     *path,
-		 gint             work,
-		 gint             duration)
-{
-	PlannerTaskTreePriv *priv = tree->priv;
-	PlannerCmd          *cmd_base;
-	TaskCmdInsert       *cmd;
-
-	cmd = g_new0 (TaskCmdInsert, 1);
-
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Insert task"));
-	cmd_base->do_func = task_cmd_insert_do;
-	cmd_base->undo_func = task_cmd_insert_undo;
-	cmd_base->free_func = task_cmd_insert_free;
-
-	cmd->tree = tree;
-	cmd->project = task_tree_get_project (tree);
-
-	cmd->path = gtk_tree_path_copy (path);
-	cmd->work = work;
-	cmd->duration = duration;
-	
-	planner_cmd_manager_insert_and_do (planner_window_get_cmd_manager (priv->main_window),
-					   cmd_base);
-
-	return cmd_base;
-}
 
 typedef struct {
 	PlannerCmd         base;
@@ -291,7 +180,7 @@ typedef struct {
 	GValue            *old_value;
 } TaskCmdEditProperty;
 
-static void
+static gboolean
 task_cmd_edit_property_do (PlannerCmd *cmd_base)
 {
 	TaskCmdEditProperty *cmd;
@@ -300,10 +189,11 @@ task_cmd_edit_property_do (PlannerCmd *cmd_base)
 	cmd = (TaskCmdEditProperty*) cmd_base;
 
 	task = task_tree_get_task_from_path (cmd->tree, cmd->path);
-	
+
 	g_object_set_property (G_OBJECT (task),
-			       cmd->property,
-			       cmd->value);
+			       cmd->property, cmd->value);
+
+	return TRUE;
 }
 
 static void
@@ -328,13 +218,12 @@ task_cmd_edit_property_free (PlannerCmd *cmd_base)
 	
 	cmd = (TaskCmdEditProperty*) cmd_base;
 
-	g_free (cmd_base->label);
 	g_free (cmd->property);
 	g_value_unset (cmd->value);
 	g_value_unset (cmd->old_value);
-	g_free (cmd);
 
-	
+	g_free (cmd->value);
+	g_free (cmd->old_value);
 }
 
 static PlannerCmd *
@@ -348,15 +237,13 @@ task_cmd_edit_property (PlannerTaskTree *tree,
 	TaskCmdEditProperty *cmd;
 	PlannerGanttModel   *model;
 
-	cmd = g_new0 (TaskCmdEditProperty, 1);
+	cmd_base = planner_cmd_new (TaskCmdEditProperty,
+				    _("Edit task property"),
+				    task_cmd_edit_property_do,
+				    task_cmd_edit_property_undo,
+				    task_cmd_edit_property_free);
 
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Edit task property"));
-
-	cmd_base->do_func = task_cmd_edit_property_do;
-	cmd_base->undo_func = task_cmd_edit_property_undo;
-	cmd_base->free_func = task_cmd_edit_property_free;
+	cmd = (TaskCmdEditProperty *) cmd_base;
 
 	cmd->tree = tree;
 	cmd->project = task_tree_get_project (tree);
@@ -489,6 +376,7 @@ task_cmd_restore_relations (TaskCmdRemove *cmd)
 	GList       *l;
 	MrpRelation *relation;
 	MrpTask     *rel_task;
+	GError      *error;
 		
 
 	for (l = cmd->predecessors; l; l = l->next) {
@@ -499,14 +387,15 @@ task_cmd_restore_relations (TaskCmdRemove *cmd)
 			continue;
 		}
 
-		if (g_getenv ("PLANNER_DEBUG_UNDO_TASK"))
+		if (g_getenv ("PLANNER_DEBUG_UNDO_TASK")) {
 			g_message ("Predecessor recover: %s -> %s",
 				   mrp_task_get_name (mrp_relation_get_predecessor (l->data)),
 				   mrp_task_get_name (mrp_relation_get_successor (l->data)));
+		}
 		
 		mrp_task_add_predecessor (cmd->task, rel_task, 
 					  mrp_relation_get_relation_type (relation),
-					  mrp_relation_get_lag (relation), NULL);
+					  mrp_relation_get_lag (relation), &error);
 	}
 
 	for (l = cmd->successors; l; l = l->next) {
@@ -524,7 +413,15 @@ task_cmd_restore_relations (TaskCmdRemove *cmd)
 		
 		mrp_task_add_predecessor (rel_task, cmd->task,
 					  mrp_relation_get_relation_type (relation),
-					  mrp_relation_get_lag (relation), NULL);
+					  mrp_relation_get_lag (relation), &error);
+		
+		if (g_getenv ("PLANNER_DEBUG_UNDO_TASK")) {
+			if (error) {
+				g_message ("Recover OK");
+			} else {
+				g_message ("Recover KO: %s", error->message);
+			}
+		}
 	}
 }
 
@@ -613,7 +510,7 @@ task_cmd_restore_children (TaskCmdRemove *cmd)
 	}
 }
 
-static void
+static gboolean
 task_cmd_remove_do (PlannerCmd *cmd_base)
 {
 	TaskCmdRemove *cmd;
@@ -631,6 +528,8 @@ task_cmd_remove_do (PlannerCmd *cmd_base)
 	}
 
 	mrp_project_remove_task (cmd->project, cmd->task);
+
+	return TRUE;
 }
 
 static void
@@ -698,10 +597,7 @@ task_cmd_remove_free (PlannerCmd *cmd_base)
 	g_list_foreach (cmd->assignments, (GFunc) g_object_unref, NULL);
 	g_list_free (cmd->assignments);
 		
-	g_free (cmd_base->label);
 	gtk_tree_path_free (cmd->path);
-	
-	g_free (cmd);
 }
 
 static PlannerCmd *
@@ -712,14 +608,14 @@ task_cmd_remove (PlannerTaskTree *tree,
 	PlannerTaskTreePriv *priv = tree->priv;
 	PlannerCmd          *cmd_base;
 	TaskCmdRemove       *cmd;
-
-	cmd = g_new0 (TaskCmdRemove, 1);
-
-	cmd_base = (PlannerCmd*) cmd;
-	cmd_base->label = g_strdup (_("Remove task"));
-	cmd_base->do_func = task_cmd_remove_do;
-	cmd_base->undo_func = task_cmd_remove_undo;
-	cmd_base->free_func = task_cmd_remove_free;
+	
+	cmd_base = planner_cmd_new (TaskCmdRemove,
+				    _("Remove task"),
+				    task_cmd_remove_do,
+				    task_cmd_remove_undo,
+				    task_cmd_remove_free);
+	
+	cmd = (TaskCmdRemove *) cmd_base;
 
 	cmd->tree = tree;
 	cmd->project = task_tree_get_project (tree);
@@ -742,15 +638,18 @@ typedef struct {
 	MrpConstraint *constraint_old;
 } TaskCmdConstraint;
 
-static void
+static gboolean
 task_cmd_constraint_do (PlannerCmd *cmd_base)
 {
 	TaskCmdConstraint *cmd;
 
 	cmd = (TaskCmdConstraint*) cmd_base;
 
-	g_object_set (cmd->task, "constraint", 
-		      cmd->constraint, NULL);
+	g_object_set (cmd->task,
+		      "constraint", cmd->constraint,
+		      NULL);
+
+	return TRUE;
 }
 
 static void
@@ -775,8 +674,6 @@ task_cmd_constraint_free (PlannerCmd *cmd_base)
 	g_object_unref (cmd->task);
 	g_free (cmd->constraint);
 	g_free (cmd->constraint_old);
-
-	g_free (cmd);
 }
 
 
@@ -789,19 +686,77 @@ task_cmd_constraint (PlannerTaskTree *tree,
 	PlannerCmd          *cmd_base;
 	TaskCmdConstraint   *cmd;
 
-	cmd = g_new0 (TaskCmdConstraint, 1);
+	cmd_base = planner_cmd_new (TaskCmdConstraint,
+				    _("Apply constraint to task"),
+				    task_cmd_constraint_do,
+				    task_cmd_constraint_undo,
+				    task_cmd_constraint_free);
 
-	cmd_base = (PlannerCmd*) cmd;
-	cmd_base->label = g_strdup (_("Constraint task"));
-	cmd_base->do_func = task_cmd_constraint_do;
-	cmd_base->undo_func = task_cmd_constraint_undo;
-	cmd_base->free_func = task_cmd_constraint_free;
-	
+	cmd = (TaskCmdConstraint *) cmd_base;
+
 	cmd->task = g_object_ref (task);
-
 	cmd->constraint = g_new0 (MrpConstraint, 1);
 	cmd->constraint->time = constraint.time;
 	cmd->constraint->type = constraint.type;
+
+	g_object_get (task, "constraint", 
+		      &cmd->constraint_old, NULL);
+
+	planner_cmd_manager_insert_and_do (planner_window_get_cmd_manager (priv->main_window),
+					   cmd_base);
+
+	return cmd_base;
+}
+
+static gboolean
+task_cmd_constraint_reset_do (PlannerCmd *cmd_base)
+{
+	TaskCmdConstraint *cmd;
+
+	cmd = (TaskCmdConstraint*) cmd_base;
+	mrp_task_reset_constraint (cmd->task);
+	return TRUE;
+}
+
+static void
+task_cmd_constraint_reset_undo (PlannerCmd *cmd_base)
+{
+	TaskCmdConstraint *cmd;
+
+	cmd = (TaskCmdConstraint*) cmd_base;
+
+	g_object_set (cmd->task, "constraint", 
+		      cmd->constraint_old, NULL);
+	
+}
+
+static void
+task_cmd_constraint_reset_free (PlannerCmd *cmd_base)
+{
+	TaskCmdConstraint *cmd;
+
+	cmd = (TaskCmdConstraint*) cmd_base;
+	g_object_unref (cmd->task);
+	g_free (cmd->constraint_old);
+}
+
+static PlannerCmd *
+task_cmd_reset_constraint (PlannerTaskTree *tree,
+			   MrpTask         *task)
+{
+	PlannerTaskTreePriv *priv = tree->priv;
+	PlannerCmd          *cmd_base;
+	TaskCmdConstraint   *cmd;
+
+	cmd_base = planner_cmd_new (TaskCmdConstraint,
+				    _("Reset task constraint"),
+				    task_cmd_constraint_reset_do,
+				    task_cmd_constraint_reset_undo,
+				    task_cmd_constraint_reset_free);
+
+	cmd = (TaskCmdConstraint *) cmd_base;
+
+	cmd->task = g_object_ref (task);
 
 	g_object_get (task, "constraint", 
 		      &cmd->constraint_old, NULL);
@@ -822,16 +777,17 @@ typedef struct {
 	MrpTask    *sibling;
 	gboolean    before;
 	gboolean    before_old;
-	gboolean    success;
-} TaskCmdTaskMove;
+	GError     *error;
+} TaskCmdMove;
 
-static void
-task_cmd_task_move_do (PlannerCmd *cmd_base)
+static gboolean
+task_cmd_move_do (PlannerCmd *cmd_base)
 {
-	TaskCmdTaskMove *cmd;
-	GError          *error;
+	TaskCmdMove *cmd;
+	GError      *error = NULL;
+	gboolean     retval;
 
-	cmd = (TaskCmdTaskMove*) cmd_base;
+	cmd = (TaskCmdMove*) cmd_base;
 
 	if (g_getenv ("PLANNER_DEBUG_UNDO_TASK")) {
 		if (cmd->before) {
@@ -847,26 +803,28 @@ task_cmd_task_move_do (PlannerCmd *cmd_base)
 		}
 	}
 
-	cmd->success = mrp_project_move_task (cmd->project,
-					 cmd->task,
-					 cmd->sibling,
-					 cmd->parent,
-					 cmd->before,
-					 &error);
+	retval = mrp_project_move_task (cmd->project,
+					cmd->task,
+					cmd->sibling,
+					cmd->parent,
+					cmd->before,
+					&error);
+
+	if (!retval) {
+		cmd->error = error;
+	}
+
+	return retval;
 }
 
 static void
-task_cmd_task_move_undo (PlannerCmd *cmd_base)
+task_cmd_move_undo (PlannerCmd *cmd_base)
 {
-	TaskCmdTaskMove *cmd;
-	GError          *error;
+	TaskCmdMove *cmd;
+	GError      *error;
+	gboolean     result;
 
-	cmd = (TaskCmdTaskMove*) cmd_base;
-
-	if (!cmd->success) {
-		return;
-	}
-	
+	cmd = (TaskCmdMove*) cmd_base;
 
 	if (g_getenv ("PLANNER_DEBUG_UNDO_TASK")) {
 		if (cmd->before_old) {
@@ -882,22 +840,21 @@ task_cmd_task_move_undo (PlannerCmd *cmd_base)
 		}
 	}
 
-	cmd->success = mrp_project_move_task (cmd->project,
-					 cmd->task,
-					 cmd->sibling,
-					 cmd->parent_old,
-					 cmd->before_old,
-					 &error);
-
-	g_assert (cmd->success);
+	result = mrp_project_move_task (cmd->project,
+					cmd->task,
+					cmd->sibling,
+					cmd->parent_old,
+					cmd->before_old,
+					&error);
+	g_assert (result);
 }
 
 static void
-task_cmd_task_move_free (PlannerCmd *cmd_base)
+task_cmd_move_free (PlannerCmd *cmd_base)
 {
-	TaskCmdTaskMove *cmd;
+	TaskCmdMove *cmd;
 
-	cmd = (TaskCmdTaskMove*) cmd_base;
+	cmd = (TaskCmdMove*) cmd_base;
 
 	g_object_unref (cmd->project);
 	g_object_unref (cmd->task);
@@ -908,48 +865,30 @@ task_cmd_task_move_free (PlannerCmd *cmd_base)
 	if (cmd->sibling != NULL) {
 		g_object_unref (cmd->sibling);
 	}
-	g_free (cmd);
 }
 
 
 static PlannerCmd *
-task_cmd_task_move (PlannerTaskTree *tree,
-		    MrpTask         *task,
-		    MrpTask         *sibling,
-		    MrpTask         *parent,
-		    gboolean         before)
+task_cmd_move (PlannerTaskTree *tree,
+	       MrpTask         *task,
+	       MrpTask         *sibling,
+	       MrpTask         *parent,
+	       gboolean         before,
+	       GError         **error)
 {
 	PlannerTaskTreePriv *priv = tree->priv;
 	PlannerCmd          *cmd_base;
-	TaskCmdTaskMove     *cmd;
-	GError              *error;
-	gboolean             success;
+	TaskCmdMove         *cmd;
 	MrpTask             *parent_old;
 
 
-	parent_old = mrp_task_get_parent (task);
-	success = mrp_project_move_task (tree->priv->project,
-					 task,
-					 sibling,
-					 parent,
-					 before,
-					 &error);
+	cmd_base = planner_cmd_new (TaskCmdMove,
+				    _("Move task"),
+				    task_cmd_move_do,
+				    task_cmd_move_undo,
+				    task_cmd_move_free);
 
-	if (!success) {
-		if (g_getenv ("PLANNER_DEBUG_UNDO_TASK")) {
-			g_message ("Task move can't be done %s!",
-				   mrp_task_get_name (task));
-		}
-		return NULL;
-	}
-
-	cmd = g_new0 (TaskCmdTaskMove, 1);
-
-	cmd_base = (PlannerCmd*) cmd;
-	cmd_base->label = g_strdup (_("Move task"));
-	cmd_base->do_func = task_cmd_task_move_do;
-	cmd_base->undo_func = task_cmd_task_move_undo;
-	cmd_base->free_func = task_cmd_task_move_free;
+	cmd = (TaskCmdMove *) cmd_base;
 	
 	cmd->project = g_object_ref (tree->priv->project);
 	cmd->task = g_object_ref (task);
@@ -957,13 +896,19 @@ task_cmd_task_move (PlannerTaskTree *tree,
 	if (parent != NULL) {
 		cmd->parent = g_object_ref (parent);
 	}
-	cmd->parent_old = g_object_ref (parent_old);
+	
+	parent_old = mrp_task_get_parent (task);
+
+	if (parent_old != NULL) {
+		cmd->parent_old = g_object_ref (parent_old);
+	}
 
 	if (sibling != NULL) {
 		cmd->sibling = g_object_ref (sibling);
 	}
 
 	cmd->before = before;
+
 	/* do Up task -> undo Down task*/
 	if (sibling != NULL && before) { 
 		cmd->before_old = FALSE;
@@ -972,10 +917,110 @@ task_cmd_task_move (PlannerTaskTree *tree,
 	else if (sibling != NULL && !before) {
 		cmd->before_old = TRUE;	
 	}
-			
+
 	planner_cmd_manager_insert_and_do (planner_window_get_cmd_manager 
 					   (priv->main_window),
 					   cmd_base);
+
+	if (cmd->error) {
+		g_propagate_error (error, cmd->error);
+		return NULL;
+	} 
+
+	return cmd_base;
+}
+
+typedef struct {
+	PlannerCmd   base;
+
+	MrpTask      *task;
+	MrpProperty  *property;  
+	GValue       *value;
+	GValue       *old_value;
+} TaskCmdEditCustomProperty;
+
+static gboolean
+task_cmd_edit_custom_property_do (PlannerCmd *cmd_base)
+{
+	TaskCmdEditCustomProperty *cmd;
+	cmd = (TaskCmdEditCustomProperty*) cmd_base;
+
+	mrp_object_set_property (MRP_OBJECT (cmd->task),
+				 cmd->property,
+				 cmd->value);
+
+	return TRUE;
+}
+
+static void
+task_cmd_edit_custom_property_undo (PlannerCmd *cmd_base)
+{
+	TaskCmdEditCustomProperty *cmd;
+
+	cmd = (TaskCmdEditCustomProperty*) cmd_base;
+
+	/* FIXME: delay in the UI when setting the property */
+	mrp_object_set_property (MRP_OBJECT (cmd->task),
+				 cmd->property,
+				 cmd->old_value);
+
+}
+
+static void
+task_cmd_edit_custom_property_free (PlannerCmd *cmd_base)
+{
+	TaskCmdEditCustomProperty *cmd;
+
+	cmd = (TaskCmdEditCustomProperty*) cmd_base;
+
+	g_value_unset (cmd->value);
+	g_value_unset (cmd->old_value);
+	g_free (cmd->value);
+	g_free (cmd->old_value);
+
+	g_object_unref (cmd->task);
+}
+
+static PlannerCmd *
+task_cmd_edit_custom_property (PlannerTaskTree  *tree,
+			       MrpTask          *task,
+			       MrpProperty      *property,
+			       const GValue     *value)
+{
+	PlannerCmd                *cmd_base;
+	PlannerTaskTreePriv       *priv = tree->priv;
+	TaskCmdEditCustomProperty *cmd;
+
+	cmd_base = planner_cmd_new (TaskCmdEditCustomProperty,
+				    _("Edit task custom property"),
+				    task_cmd_edit_custom_property_do,
+				    task_cmd_edit_custom_property_undo,
+				    task_cmd_edit_custom_property_free);
+	
+
+	cmd = (TaskCmdEditCustomProperty *) cmd_base;
+
+	cmd->property = property;
+	cmd->task = g_object_ref (task);
+
+	cmd->value = g_new0 (GValue, 1);
+	g_value_init (cmd->value, G_VALUE_TYPE (value));
+	g_value_copy (value, cmd->value);
+
+	cmd->old_value = g_new0 (GValue, 1);
+	g_value_init (cmd->old_value, G_VALUE_TYPE (value));
+
+	mrp_object_get_property (MRP_OBJECT (cmd->task),
+				 cmd->property,
+				 cmd->old_value);
+
+	/* FIXME: if old and new value are the same, do nothing 
+	   How we can compare values?
+	*/
+
+	planner_cmd_manager_insert_and_do (planner_window_get_cmd_manager (priv->main_window),
+					   cmd_base);
+
 	return cmd_base;
 }
 
@@ -1341,9 +1386,7 @@ task_tree_name_data_func (GtkTreeViewColumn *tree_column,
 			    -1);
 
 	if (tree->priv->highlight_critical) {
-		g_object_get (task,
-			      "critical", &critical,
-			      NULL);
+		critical = mrp_task_get_critical (task);
 	} else {
 		critical = FALSE;
 	}
@@ -1514,7 +1557,7 @@ task_tree_work_data_func (GtkTreeViewColumn *tree_column,
 			    COL_EDITABLE, &editable,
 			    -1);
 
-	g_object_get (task, "type", &type, NULL);
+	type = mrp_task_get_task_type (task);
 
 	g_object_set (cell, 
 		      "weight", weight,
@@ -1678,10 +1721,7 @@ task_tree_start_show_popup (PlannerCellRendererDate *cell,
 	cell->type = constraint->type;
 	
 	if (cell->type == MRP_CONSTRAINT_ASAP) {
-		g_object_get (task,
-			      "start", &start,
-			      NULL);
-		
+		start = mrp_task_get_start (task);
 		cell->time = start;
 	} else {
 		cell->time = constraint->time;
@@ -1879,30 +1919,15 @@ task_tree_property_data_func (GtkTreeViewColumn *tree_column,
 	g_free (svalue);
 }
 
-static void  
-task_tree_property_value_edited (GtkCellRendererText *cell, 
-				 gchar               *path_str,
-				 gchar               *new_text, 
-				 ColPropertyData     *data)
+static GValue
+task_view_custom_property_set_value (MrpProperty         *property,
+				     gchar               *new_text,
+				     GtkCellRendererText *cell) 
 {
-	GtkTreePath             *path;
-	GtkTreeIter              iter;
-	GtkTreeModel            *model;
-	MrpProperty             *property;
+	PlannerCellRendererDate *date;
+	GValue                   value = { 0 };
 	MrpPropertyType          type;
-	MrpTask                 *task;
-	PlannerCellRendererDate *date;	
 	gfloat                   fvalue;
-
-	/* FIXME: undo */
-	
-	model = gtk_tree_view_get_model (data->tree);
-	property = data->property;
-
-	path = gtk_tree_path_new_from_string (path_str);
-	gtk_tree_model_get_iter (model, &iter, path);
-
-	task = planner_gantt_model_get_task (PLANNER_GANTT_MODEL (model), &iter);
 
 	/* FIXME: implement mrp_object_set_property like
 	 * g_object_set_property that takes a GValue. 
@@ -1911,53 +1936,80 @@ task_tree_property_value_edited (GtkCellRendererText *cell,
 
 	switch (type) {
 	case MRP_PROPERTY_TYPE_STRING:
-		mrp_object_set (MRP_OBJECT (task),
-				mrp_property_get_name (property), 
-				new_text,
-				NULL);
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, new_text);
+
 		break;
 	case MRP_PROPERTY_TYPE_INT:
-		mrp_object_set (MRP_OBJECT (task),
-				mrp_property_get_name (property), 
-				atoi (new_text),
-				NULL);
+		g_value_init (&value, G_TYPE_INT);
+		g_value_set_int (&value, atoi (new_text));
+
 		break;
 	case MRP_PROPERTY_TYPE_FLOAT:
 		fvalue = g_ascii_strtod (new_text, NULL);
-		mrp_object_set (MRP_OBJECT (task),
-				mrp_property_get_name (property), 
-				fvalue,
-				NULL);
+		g_value_init (&value, G_TYPE_FLOAT);
+		g_value_set_float (&value, fvalue);
+
 		break;
 
 	case MRP_PROPERTY_TYPE_DURATION:
 		/* FIXME: support reading units etc... */
-		mrp_object_set (MRP_OBJECT (task),
-				mrp_property_get_name (property), 
-				atoi (new_text) *8*60*60,
-				NULL);
+		g_value_init (&value, G_TYPE_INT);
+		g_value_set_int (&value, atoi (new_text) *8*60*60);
+
 		break;
 		
 
 	case MRP_PROPERTY_TYPE_DATE:
 		date = PLANNER_CELL_RENDERER_DATE (cell);
-		mrp_object_set (MRP_OBJECT (task),
+		/* FIXME: Currently custom properties can't be dates. Why? */
+		/* mrp_object_set (MRP_OBJECT (task),
 				mrp_property_get_name (property), 
 				&(date->time),
-				NULL);
+				NULL);*/
 		break;
 	case MRP_PROPERTY_TYPE_COST:
 		fvalue = g_ascii_strtod (new_text, NULL);
-		mrp_object_set (MRP_OBJECT (task),
-				mrp_property_get_name (property), 
-				fvalue,
-				NULL);
+		g_value_init (&value, G_TYPE_FLOAT);
+		g_value_set_float (&value, fvalue);
+
 		break;	
 				
 	default:
 		g_assert_not_reached ();
 		break;
 	}
+
+	return value;
+}
+
+static void  
+task_tree_property_value_edited (GtkCellRendererText *cell, 
+				 gchar               *path_str,
+				 gchar               *new_text, 
+				 ColPropertyData     *data)
+{
+	PlannerCmd              *cmd;
+	GtkTreePath             *path;
+	GtkTreeIter              iter;
+	GtkTreeModel            *model;
+	MrpProperty             *property;
+	MrpTask                 *task;
+	GValue                   value = { 0 };
+	
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (data->tree));
+	property = data->property;	
+
+	path = gtk_tree_path_new_from_string (path_str);
+	gtk_tree_model_get_iter (model, &iter, path);
+
+	task = planner_gantt_model_get_task (PLANNER_GANTT_MODEL (model), &iter);
+
+	value = task_view_custom_property_set_value (property, new_text, cell);
+
+	cmd = task_cmd_edit_custom_property (data->tree, task, property, &value);
+
+	g_value_unset (&value);
 
 	gtk_tree_path_free (path);
 }
@@ -2019,7 +2071,7 @@ task_tree_property_added (MrpProject      *project,
 	g_hash_table_insert (priv->property_to_column, property, col);
 	
 	data->property = property;
-	data->tree = tree;
+	data->tree = task_tree;
 
 	gtk_tree_view_column_pack_start (col, cell, TRUE);
 
@@ -2037,8 +2089,8 @@ task_tree_property_added (MrpProject      *project,
 }
 
 static void
-task_tree_property_removed (MrpProject  *project,
-			    MrpProperty *property,
+task_tree_property_removed (MrpProject       *project,
+			    MrpProperty      *property,
 			    PlannerTaskTree  *task_tree)
 {
 	PlannerTaskTreePriv *priv;
@@ -2054,8 +2106,25 @@ task_tree_property_removed (MrpProject  *project,
 	}
 }
 
+static void
+task_tree_property_changed (MrpProject      *project,
+			    MrpProperty     *property,
+			    PlannerTaskTree *task_tree)
+{
+	PlannerTaskTreePriv *priv;
+	GtkTreeViewColumn   *col;
+
+	priv = task_tree->priv;
+	
+	col = g_hash_table_lookup (priv->property_to_column, property);
+	if (col) {
+		gtk_tree_view_column_set_title (col, 
+				mrp_property_get_label (property));
+	}
+}
+
 void
-planner_task_tree_set_model (PlannerTaskTree *tree,
+planner_task_tree_set_model (PlannerTaskTree   *tree,
 			     PlannerGanttModel *model)
 {
 	gtk_tree_view_set_model (GTK_TREE_VIEW (tree),
@@ -2080,8 +2149,8 @@ planner_task_tree_set_model (PlannerTaskTree *tree,
 }
 
 static void
-task_tree_setup_tree_view (GtkTreeView  *tree,
-			   MrpProject   *project,
+task_tree_setup_tree_view (GtkTreeView       *tree,
+			   MrpProject        *project,
 			   PlannerGanttModel *model)
 {
 	PlannerTaskTree  *task_tree;
@@ -2124,6 +2193,11 @@ task_tree_setup_tree_view (GtkTreeView  *tree,
 		g_signal_connect (project,
 				  "property_removed",
 				  G_CALLBACK (task_tree_property_removed),
+				  tree);
+
+		g_signal_connect (project,
+				  "property_changed",
+				  G_CALLBACK (task_tree_property_changed),
 				  tree);
 	}
 }
@@ -2387,8 +2461,9 @@ planner_task_tree_insert_subtask (PlannerTaskTree *tree)
 	MrpTask           *parent;
 	GList             *list;
 	gint               work;
+	gint               depth;
 	gint               position;
-	TaskCmdInsert     *cmd;
+	PlannerCmd        *cmd;
 	GtkTreeIter        iter;
 
 	list = planner_task_tree_get_selected_tasks (tree);
@@ -2414,7 +2489,20 @@ planner_task_tree_insert_subtask (PlannerTaskTree *tree)
 		mrp_project_get_calendar (tree->priv->project),
 		mrp_day_get_work ());
 
-	cmd = (TaskCmdInsert*) task_cmd_insert (tree, path, work, work);
+	depth = gtk_tree_path_get_depth (path);
+	position = gtk_tree_path_get_indices (path)[depth - 1];
+
+	if (depth > 1) {
+		gtk_tree_path_up (path);
+		parent = task_tree_get_task_from_path (tree, path);
+	} else {
+		parent = NULL;
+	}
+
+	cmd = planner_task_cmd_insert (tree->priv->main_window, 
+				       parent, position, work, work, NULL);
+
+	/* cmd = planner_task_cmd_insert (tree, path, work, work); */
 
 	if (!GTK_WIDGET_HAS_FOCUS (tree)) {
 		gtk_widget_grab_focus (GTK_WIDGET (tree));
@@ -2445,7 +2533,8 @@ planner_task_tree_insert_task (PlannerTaskTree *tree)
 	GList               *list;
 	gint                 work;
 	gint                 position;
-	TaskCmdInsert       *cmd;
+	gint                 depth;
+	PlannerCmd          *cmd;
 
 	priv = tree->priv;
 	
@@ -2483,7 +2572,20 @@ planner_task_tree_insert_task (PlannerTaskTree *tree)
 		mrp_project_get_calendar (priv->project),
 		mrp_day_get_work ());
 	
-	cmd = (TaskCmdInsert*) task_cmd_insert (tree, path, work, work);
+	/* cmd = planner_task_cmd_insert (tree, path, work, work); */
+	
+	depth = gtk_tree_path_get_depth (path);
+	position = gtk_tree_path_get_indices (path)[depth - 1];
+
+	if (depth > 1) {
+		gtk_tree_path_up (path);
+		parent = task_tree_get_task_from_path (tree, path);
+	} else {
+		parent = NULL;
+	}
+
+	cmd = planner_task_cmd_insert (tree->priv->main_window, 
+				       parent, position, work, work, NULL);
 	
 	if (!GTK_WIDGET_HAS_FOCUS (tree)) {
 		gtk_widget_grab_focus (GTK_WIDGET (tree));
@@ -2622,7 +2724,7 @@ planner_task_tree_insert_tasks (PlannerTaskTree   *tree)
 		return;
 	}
 
-	widget = planner_task_input_dialog_new (priv->project);
+	widget = planner_task_input_dialog_new (priv->main_window);
 	gtk_window_set_transient_for (GTK_WINDOW (widget),
 				      GTK_WINDOW (priv->main_window));
 	gtk_widget_show (widget);
@@ -2654,8 +2756,6 @@ planner_task_tree_unlink_task (PlannerTaskTree *tree)
 	GList       *relations, *r;
 	MrpRelation *relation;
 
-	/* FIXME: undo */
-	
 	list = planner_task_tree_get_selected_tasks (tree);
 	if (list == NULL) {
 		return;
@@ -2668,8 +2768,10 @@ planner_task_tree_unlink_task (PlannerTaskTree *tree)
 		for (r = relations; r; r = r->next) {
 			relation = r->data;
 			
-			mrp_task_remove_predecessor (
-				task, mrp_relation_get_predecessor (relation));
+			/* mrp_task_remove_predecessor (
+			   task, mrp_relation_get_predecessor (relation)); */
+
+			planner_task_cmd_unlink (tree->priv->main_window, relation); 
 		}
 
 		g_list_free (relations);
@@ -2677,9 +2779,11 @@ planner_task_tree_unlink_task (PlannerTaskTree *tree)
 		relations = g_list_copy (mrp_task_get_successor_relations (task));
 		for (r = relations; r; r = r->next) {
 			relation = r->data;
-			
-			mrp_task_remove_predecessor (
-				mrp_relation_get_successor (relation), task);
+
+			/* mrp_task_remove_predecessor (
+			   mrp_relation_get_successor (relation), task); */
+
+			planner_task_cmd_unlink (tree->priv->main_window, relation);
 		}
 
 		g_list_free (relations);
@@ -2697,8 +2801,6 @@ planner_task_tree_link_tasks (PlannerTaskTree *tree,
 	GList     *list, *l;
 	GtkWidget *dialog;
 
-	/* FIXME: undo */
-
 	list = planner_task_tree_get_selected_tasks (tree);
 	if (list == NULL) {
 		return;
@@ -2708,15 +2810,20 @@ planner_task_tree_link_tasks (PlannerTaskTree *tree,
 	
 	target_task = list->data;
 	for (l = list->next; l; l = l->next) {
-		GError *error = NULL;
+		PlannerCmd          *cmd;
+		GError              *error = NULL;
 
 		task = l->data;
 
-		if (!mrp_task_add_predecessor (target_task,
-					       task,
-					       relationship,
-					       0,
-					       &error)) {
+		cmd = planner_task_cmd_link (tree->priv->main_window, task, target_task, 
+					     relationship, 0, &error);
+
+		/* cmd = mrp_task_add_predecessor (target_task,
+						task,
+						relationship,
+						0,
+						&error)); */
+		if (!cmd) {
 			dialog = gtk_message_dialog_new (NULL,
 							 GTK_DIALOG_DESTROY_WITH_PARENT,
 							 GTK_MESSAGE_ERROR,
@@ -2743,7 +2850,6 @@ planner_task_tree_indent_task (PlannerTaskTree *tree)
 	MrpProject        *project;
 	GList             *list, *l;
 	GList             *indent_tasks = NULL;
-	GError            *error = NULL;
 	GtkTreePath       *path;
 	GtkWidget         *dialog;
 	GtkTreeSelection  *selection;
@@ -2780,12 +2886,13 @@ planner_task_tree_indent_task (PlannerTaskTree *tree)
 	indent_tasks = g_list_reverse (indent_tasks);
 
 	for (l = indent_tasks; l; l = l->next) {
-		TaskCmdTaskMove *cmd;
+		TaskCmdMove *cmd;
+		GError      *error = NULL;
 		
 		task = l->data;
 
-		cmd = (TaskCmdTaskMove *) 
-			task_cmd_task_move (tree, task, NULL, new_parent, FALSE); 
+		cmd = (TaskCmdMove *) 
+			task_cmd_move (tree, task, NULL, new_parent, FALSE, &error); 
 
 		/* cmd = mrp_project_move_task (project,
 						 task,
@@ -2794,7 +2901,7 @@ planner_task_tree_indent_task (PlannerTaskTree *tree)
 						 FALSE,
 					     &error); */
 
-		if (cmd == NULL) {
+		if (!cmd) {
 			dialog = gtk_message_dialog_new (GTK_WINDOW (tree->priv->main_window),
 							 GTK_DIALOG_DESTROY_WITH_PARENT,
 							 GTK_MESSAGE_ERROR,
@@ -2804,8 +2911,7 @@ planner_task_tree_indent_task (PlannerTaskTree *tree)
 			
 			gtk_dialog_run (GTK_DIALOG (dialog));
 			gtk_widget_destroy (dialog);
-			
-			g_clear_error (&error);
+			g_error_free (error);
 		}
 	}
 
@@ -2873,7 +2979,7 @@ planner_task_tree_unindent_task (PlannerTaskTree *tree)
 	for (l = unindent_tasks; l; l = l->next) {
 		task = l->data;
 
-		task_cmd_task_move (tree, task, NULL, new_parent, FALSE);
+		task_cmd_move (tree, task, NULL, new_parent, FALSE, NULL);
 
 		/* mrp_project_move_task (project,
 				       task,
@@ -2967,7 +3073,7 @@ planner_task_tree_move_task_up (PlannerTaskTree *tree)
  		if (!skip && position != 0 && proceed) {
 			/* Move task from position to position - 1. */
  			sibling = mrp_task_get_nth_child (parent, position - 1);
-			task_cmd_task_move (tree, task, sibling, parent, TRUE);
+			task_cmd_move (tree, task, sibling, parent, TRUE, NULL);
  			/* mrp_project_move_task (project, task, sibling, 
 			   parent, TRUE, NULL);*/
  		}
@@ -3078,7 +3184,7 @@ planner_task_tree_move_task_down (PlannerTaskTree *tree)
 			sibling = mrp_task_get_nth_child (parent, position + 1);
 
 			/* Moving task from 'position' to 'position + 1' */
-			task_cmd_task_move (tree, task, sibling, parent, FALSE);
+			task_cmd_move (tree, task, sibling, parent, FALSE, NULL);
 			/* mrp_project_move_task (project, task, sibling, 
 			   parent, FALSE, NULL); */
 		}
@@ -3110,14 +3216,13 @@ planner_task_tree_reset_constraint (PlannerTaskTree *tree)
 	MrpTask *task;
 	GList   *list, *l;
 
-	/* FIXME: undo */
-
 	list = planner_task_tree_get_selected_tasks (tree);
 
 	for (l = list; l; l = l->next) {
 		task = l->data;
-
-		mrp_task_reset_constraint (task);
+		/* mrp_task_reset_constraint (task); */
+		task_cmd_reset_constraint (tree, task);
+		
 	}
 	
 	g_list_free (list);
@@ -3130,15 +3235,13 @@ planner_task_tree_reset_all_constraints (PlannerTaskTree *tree)
 	MrpTask    *task;
 	GList      *list, *l;
 
-	/* FIXME: undo */
-
 	project = tree->priv->project;
 		
 	list = mrp_project_get_all_tasks (project);
 	for (l = list; l; l = l->next) {
 		task = l->data;
-
-		mrp_task_reset_constraint (task);
+		/* mrp_task_reset_constraint (task); */
+		task_cmd_reset_constraint (tree, task);
 	}
 	
 	g_list_free (list);
@@ -3415,7 +3518,7 @@ gboolean
 planner_task_tree_get_highlight_critical (PlannerTaskTree *tree)
 {
 	g_return_val_if_fail (PLANNER_IS_TASK_TREE (tree), FALSE);
-
+	
 	return tree->priv->highlight_critical;
 }
 
@@ -3437,4 +3540,12 @@ planner_task_tree_get_anchor (PlannerTaskTree *tree)
 	g_return_val_if_fail (PLANNER_IS_TASK_TREE (tree), FALSE);
 
 	return tree->priv->anchor;
+}
+
+PlannerWindow* 
+planner_task_tree_get_window (PlannerTaskTree       *tree)
+{
+	g_return_val_if_fail (PLANNER_IS_TASK_TREE (tree), NULL);
+
+	return tree->priv->main_window;
 }

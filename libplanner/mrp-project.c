@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Copyright (C) 2003      Imendio HB
+ * Copyright (C) 2003-2004 Imendio HB
  * Copyright (C) 2001-2003 CodeFactory AB
  * Copyright (C) 2001-2003 Richard Hult <richard@imendio.com>
  * Copyright (C) 2001-2002 Mikael Hallendal <micke@imendio.com>
@@ -1492,7 +1492,7 @@ imrp_project_add_calendar_day (MrpProject *project, MrpDay *day)
 	g_hash_table_insert (priv->day_types,
 			     GINT_TO_POINTER (mrp_day_get_id (day)), 
 			     mrp_day_ref (day));
-	
+
 	g_signal_emit (project,
 		       signals[DAY_ADDED],
 		       0,
@@ -1501,6 +1501,30 @@ imrp_project_add_calendar_day (MrpProject *project, MrpDay *day)
 	imrp_project_set_needs_saving (project, TRUE);
 
 	return TRUE;
+}
+
+/**
+ * mrp_project_get_calendar_day_by_id:
+ * @project: an #MrpProject
+ * 
+ * Semi-private function. You most likely won't need this outside of
+ * Planner. Returns the day type associated with @id.
+ * 
+ * Return value: A day type.
+ **/
+MrpDay *
+mrp_project_get_calendar_day_by_id (MrpProject *project, gint id)
+{
+	MrpProjectPriv *priv;
+	MrpDay         *day;
+	
+	g_return_val_if_fail (MRP_IS_PROJECT (project), NULL);
+
+	priv = project->priv;
+	
+	day = g_hash_table_lookup (priv->day_types, GINT_TO_POINTER (id));
+
+	return day;
 }
 
 static void
@@ -1864,7 +1888,7 @@ mrp_project_reschedule (MrpProject *project)
 {
 	g_return_if_fail (MRP_IS_PROJECT (project));
 
-	mrp_task_manager_recalc (project->priv->task_manager, FALSE);
+	mrp_task_manager_recalc (project->priv->task_manager, TRUE);
 }
 
 /**

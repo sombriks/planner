@@ -1,9 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Copyright (C) 2002 CodeFactory AB
- * Copyright (C) 2002 Richard Hult <richard@imendio.com>
- * Copyright (C) 2002 Mikael Hallendal <micke@imendio.com>
- * Copyright (C) 2002 Alvaro del Castillo <acs@barrapunto.com>
+ * Copyright (C) 2004 Alvaro del Castillo <acs@barrapunto.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -21,20 +18,12 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __PLANNER_RESOURCE_INPUT_DIALOG_H__
-#define __PLANNER_RESOURCE_INPUT_DIALOG_H__
+#ifndef __PLANNER_RESOURCE_CMD_H__
+#define __PLANNER_RESOURCE_CMD_H__
 
-#include <gtk/gtkwidget.h>
 #include "planner-window.h"
 
-GtkWidget * planner_resource_input_dialog_new (PlannerWindow *main_window);
+PlannerCmd * planner_resource_cmd_insert (PlannerWindow   *main_window,
+					  MrpResource     *resource);
 
-#endif /* __PLANNER_RESOURCE_INPUT_DIALOG_H__ */
-
-
-
-
-
-
-
-
+#endif /* __PLANNER_RESOURCE_CMD_H__ */

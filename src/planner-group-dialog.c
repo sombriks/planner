@@ -253,7 +253,7 @@ group_dialog_setup_tree_view (GtkWidget *dialog)
 	g_object_unref (sorted_model);
 }
 
-static void
+static gboolean
 group_cmd_insert_do (PlannerCmd *cmd_base)
 {
 	GroupCmdInsert *cmd;
@@ -263,6 +263,8 @@ group_cmd_insert_do (PlannerCmd *cmd_base)
 	g_assert (MRP_IS_GROUP (cmd->group));
 		
 	mrp_project_add_group (cmd->project, cmd->group);
+
+	return TRUE;
 }
 
 static void
@@ -295,14 +297,13 @@ group_cmd_insert (PlannerView *view)
 	PlannerCmd      *cmd_base;
 	GroupCmdInsert  *cmd;
 
-	cmd = g_new0 (GroupCmdInsert, 1);
+	cmd_base = planner_cmd_new (GroupCmdInsert,
+				    _("Insert group"),
+				    group_cmd_insert_do,
+				    group_cmd_insert_undo,
+				    group_cmd_insert_free);
 
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Insert group"));
-	cmd_base->do_func = group_cmd_insert_do;
-	cmd_base->undo_func = group_cmd_insert_undo;
-	cmd_base->free_func = group_cmd_insert_free;
+	cmd = (GroupCmdInsert *) cmd_base;
 
 	cmd->project = planner_window_get_project (view->main_window);
 
@@ -348,7 +349,7 @@ group_dialog_insert_group_cb (GtkWidget *button, GtkWidget *dialog)
 	}	
 }
 
-static void
+static gboolean
 group_cmd_remove_do (PlannerCmd *cmd_base)
 {
 	GroupCmdRemove *cmd;
@@ -373,6 +374,8 @@ group_cmd_remove_do (PlannerCmd *cmd_base)
 		cmd->is_default = TRUE;
 	
 	mrp_project_remove_group (cmd->project, cmd->group);
+
+	return TRUE;
 }
 
 static void
@@ -418,14 +421,13 @@ group_cmd_remove (PlannerView *view, MrpGroup *group)
 	PlannerCmd      *cmd_base;
 	GroupCmdRemove  *cmd;
 
-	cmd = g_new0 (GroupCmdRemove, 1);
+	cmd_base = planner_cmd_new (GroupCmdRemove,
+				    _("Remove group"),
+				    group_cmd_remove_do,
+				    group_cmd_remove_undo,
+				    group_cmd_remove_free);
 
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Remove group"));
-	cmd_base->do_func = group_cmd_remove_do;
-	cmd_base->undo_func = group_cmd_remove_undo;
-	cmd_base->free_func = group_cmd_remove_free;
+	cmd = (GroupCmdRemove *) cmd_base;
 
 	cmd->project = planner_window_get_project (view->main_window);
 	cmd->group = group;
@@ -472,7 +474,7 @@ group_dialog_close_editor_cb (GtkWidget *button, GtkWidget *dialog)
 	gtk_widget_destroy (dialog);
 }
 
-static void
+static gboolean
 group_cmd_default_do (PlannerCmd *cmd_base)
 {
 	GroupCmdDefault *cmd;
@@ -480,6 +482,8 @@ group_cmd_default_do (PlannerCmd *cmd_base)
 	cmd = (GroupCmdDefault*) cmd_base;
 
 	mrp_object_set (cmd->project, "default-group", cmd->group, NULL);
+
+	return TRUE;
 }
 
 static void
@@ -512,14 +516,13 @@ group_cmd_default (PlannerView *view,
 	PlannerCmd       *cmd_base;
 	GroupCmdDefault  *cmd;
 
-	cmd = g_new0 (GroupCmdDefault, 1);
+	cmd_base = planner_cmd_new (GroupCmdDefault,
+				    _("Default group"),
+				    group_cmd_default_do,
+				    group_cmd_default_undo,
+				    group_cmd_default_free);
 
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Default group"));
-	cmd_base->do_func = group_cmd_default_do;
-	cmd_base->undo_func = group_cmd_default_undo;
-	cmd_base->free_func = group_cmd_default_free;
+	cmd = (GroupCmdDefault *) cmd_base;
 
 	cmd->project = planner_window_get_project (view->main_window);
 
@@ -584,7 +587,7 @@ group_dialog_cell_toggled (GtkCellRendererText *cell,
 }
 
 
-static void
+static gboolean
 group_cmd_edit_property_do (PlannerCmd *cmd_base)
 {
 	GroupCmdEditProperty *cmd;
@@ -594,6 +597,8 @@ group_cmd_edit_property_do (PlannerCmd *cmd_base)
 	g_object_set_property (G_OBJECT (cmd->group),
 			       cmd->property,
 			       cmd->value);
+
+	return TRUE;
 }
 
 static void
@@ -629,14 +634,13 @@ group_cmd_edit_property (PlannerView  *view,
 	PlannerCmd            *cmd_base;
 	GroupCmdEditProperty  *cmd;
 
-	cmd = g_new0 (GroupCmdEditProperty, 1);
+	cmd_base = planner_cmd_new (GroupCmdEditProperty,
+				    _("Edit group property"),
+				    group_cmd_edit_property_do,
+				    group_cmd_edit_property_undo,
+				    group_cmd_edit_property_free);
 
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Edit group property"));
-	cmd_base->do_func = group_cmd_edit_property_do;
-	cmd_base->undo_func = group_cmd_edit_property_undo;
-	cmd_base->free_func = group_cmd_edit_property_free;
+	cmd = (GroupCmdEditProperty *) cmd_base;
 
 	cmd->property = property;
 	cmd->group = group;

@@ -548,18 +548,19 @@ get_n_chars (gint n, gchar c)
 static void
 dump_children (GNode *node, gint depth)
 {
-	GNode   *child;
-	gchar   *padding = get_n_chars (2 * depth, ' ');
-	MrpTask *task;
-	gchar   *name;
+	GNode       *child;
+	gchar       *padding;
+	MrpTask     *task;
+	const gchar *name;
+
+	padding = get_n_chars (2 * depth, ' ');
 	
 	for (child = g_node_first_child (node); child; child = g_node_next_sibling (child)) {
 		task = (MrpTask *) child->data;
 
 		if (MRP_IS_TASK (task)) {
-			g_object_get (task, "name", &name, NULL);
+			name = mrp_task_get_name (task);
 			g_print ("%sName: %s   ", padding, name);
-			g_free (name);
 
 			if (imrp_task_peek_predecessors (task)) {
 				GList *l;
@@ -568,9 +569,8 @@ dump_children (GNode *node, gint depth)
 					MrpTask *predecessor = mrp_relation_get_predecessor (l->data);
 
 					if (MRP_IS_TASK (predecessor)) {
-						g_object_get (predecessor, "name", &name, NULL);
+						name = mrp_task_get_name (predecessor);
 						g_print ("%s, ", name);
-						g_free (name);
 					} else {
 						g_print ("<unknown>, ");
 					}
@@ -585,9 +585,8 @@ dump_children (GNode *node, gint depth)
 					MrpTask *successor = mrp_relation_get_successor (l->data);
 
 					if (MRP_IS_TASK (successor)) {
-						g_object_get (successor, "name", &name, NULL);
+						name = mrp_task_get_name (successor);
 						g_print ("%s, ", name);
-						g_free (name);
 					} else {
 						g_print ("<unknown>, ");
 					}
@@ -631,8 +630,8 @@ mrp_task_manager_dump_task_tree (MrpTaskManager *manager)
 void
 mrp_task_manager_dump_task_list (MrpTaskManager *manager)
 {
-	GList *list, *l;
-	gchar *name;
+	GList       *list, *l;
+	const gchar *name;
 
 	g_return_if_fail (MRP_IS_TASK_MANAGER (manager));
 	g_return_if_fail (manager->priv->root);
@@ -645,9 +644,8 @@ mrp_task_manager_dump_task_list (MrpTaskManager *manager)
 		}
 
 		if (MRP_IS_TASK (l->data)) {
-			g_object_get (l->data, "name", &name, NULL);
+			name = mrp_task_get_name (l->data);
 			g_print ("%s", name);
-			g_free (name);
 		} else {
 			g_print ("<unknown>");
 		}
@@ -1063,30 +1061,52 @@ task_manager_calc_relation (MrpTask	*task,
 			    MrpTask	*predecessor)
 {
 	MrpRelationType type;
+	mrptime         time;
+	/*mrptime         start, finish;*/
+	
+	/* FIXME: This does not work correctly for FF and SF. The problem is
+	 * that the start and finish times of task is not known at this stage,
+	 * so we can't really use them.
+	 */
 
 	type = mrp_relation_get_relation_type (relation);
 	
 	switch (type) {
+#if 0
 	case MRP_RELATION_FF:
-		return mrp_task_get_finish (predecessor) + mrp_relation_get_lag (relation) -
-			(mrp_task_get_finish (task) - mrp_task_get_start (task));
-		
-	case MRP_RELATION_SS:
-		return mrp_task_get_start (predecessor) +
-			mrp_relation_get_lag (relation);
+		/* finish-to-finish */
+		start =  mrp_task_get_start (task);
+		finish =  mrp_task_get_finish (task);
+
+		time = mrp_task_get_finish (predecessor) +
+			mrp_relation_get_lag (relation) - (finish - start);
+
+		break;
 		
 	case MRP_RELATION_SF:
-		return mrp_task_get_start (predecessor) + mrp_relation_get_lag (relation) -
-			(mrp_task_get_finish (task) - mrp_task_get_start (task));
-		
+		/* start-to-finish */
+		start = mrp_task_get_start (task);
+		finish = mrp_task_get_finish (task);
+		time = mrp_task_get_start (predecessor) +
+			mrp_relation_get_lag (relation) - (finish - start);
+		break;
+#endif	
+	case MRP_RELATION_SS:
+		/* start-to-start */
+		time = mrp_task_get_start (predecessor) +
+			mrp_relation_get_lag (relation);
+		break;
+			
 	case MRP_RELATION_FS:
 	case MRP_RELATION_NONE:
-		return mrp_task_get_finish (predecessor) + mrp_relation_get_lag (relation);
-
 	default:
-		g_assert_not_reached ();
-		return 0;
+		/* finish-to-start */
+		time = mrp_task_get_finish (predecessor) +
+			mrp_relation_get_lag (relation);
+		break;
 	}
+
+	return time;
 }
 
 /* Calculate the start time of the task by finding the latest finish of it's
@@ -1237,7 +1257,7 @@ task_manager_get_task_units_intervals (MrpTaskManager *manager,
 	guint               len;
 	gint                i;
 
-	if (imrp_task_get_type (task) == MRP_TASK_TYPE_MILESTONE) {
+	if (mrp_task_get_task_type (task) == MRP_TASK_TYPE_MILESTONE) {
 		return NULL;
 	}
 	
@@ -1372,8 +1392,9 @@ task_manager_calculate_task_finish (MrpTaskManager *manager,
 		return 0;
 	}
 
-	type = imrp_task_get_type (task);
+	type = mrp_task_get_task_type (task);
 
+	/* FIXME: Commented out for now. */
 	if (0 && type == MRP_TASK_TYPE_MILESTONE) {
 		if (duration) {
 			*duration = 0;
@@ -1383,7 +1404,7 @@ task_manager_calculate_task_finish (MrpTaskManager *manager,
 	
 	work = mrp_task_get_work (task);
 
-	sched = imrp_task_get_sched (task);
+	sched = mrp_task_get_sched (task);
 	if (sched == MRP_TASK_SCHED_FIXED_WORK) {
 		*duration = 0;
 	} else {
@@ -1564,7 +1585,7 @@ task_manager_do_forward_pass_helper (MrpTaskManager *manager,
 		imrp_task_set_start (task, t1);
 		imrp_task_set_finish (task, t2);
 		
-		sched = imrp_task_get_sched (task);
+		sched = mrp_task_get_sched (task);
 		if (sched == MRP_TASK_SCHED_FIXED_WORK) {
 			imrp_task_set_duration (task, duration);
 		} else {
@@ -1656,6 +1677,8 @@ task_manager_do_backward_pass (MrpTaskManager *manager)
 	mrptime             project_finish;
 	mrptime             t1, t2;
 	gint                duration;
+	gboolean            critical;
+	gboolean            was_critical;
 	
 	priv = manager->priv;
 
@@ -1700,7 +1723,11 @@ task_manager_do_backward_pass (MrpTaskManager *manager)
 			
 		t2 = mrp_task_get_start (task);
 
-		g_object_set (task, "critical", t1 == t2, NULL);
+		was_critical = mrp_task_get_critical (task);
+		critical = (t1 == t2);
+		if (was_critical != critical) {
+			g_object_set (task, "critical", critical, NULL);
+		}
 	}
 
 	g_list_free (tasks);
@@ -1766,10 +1793,6 @@ mrp_task_manager_recalc (MrpTaskManager *manager,
 		return;
 	}
 
-	if (priv->in_recalc) {
-		return;
-	}
-
 	priv->needs_recalc |= force;
 	
 	if (!priv->needs_recalc && !priv->needs_rebuild) {
@@ -1783,11 +1806,11 @@ mrp_task_manager_recalc (MrpTaskManager *manager,
 		return;
 	}
 
-	g_object_get (priv->root, "project", &project, NULL);
+	project = mrp_object_get_project (MRP_OBJECT (priv->root));
 	if (!project) {
 		return;
 	}
-
+	
 	priv->in_recalc = TRUE;
 
 	if (priv->needs_rebuild) {

@@ -65,9 +65,6 @@ struct _MrpTaskPriv {
 	/* Used for topological order sorting. */
 	guint             visited : 1;
 
-	/* Get rid of... */
-	GNode            *sorted_node;
-
 	MrpTaskGraphNode *graph_node;
 	
 	/* FIXME: This might be a mistake... I can't think of any other types,
@@ -188,11 +185,10 @@ task_init (MrpTask *task)
 
 	priv->name = g_strdup ("");
 	priv->node = g_node_new (task);
-	priv->sorted_node = g_node_new (task);
 	priv->assignments = NULL;
 	priv->constraint.type = MRP_CONSTRAINT_ASAP;
-
 	priv->graph_node = g_new0 (MrpTaskGraphNode, 1);
+	priv->note = g_strdup ("");
 }
 
 static void
@@ -419,7 +415,6 @@ task_finalize (GObject *object)
 	g_assert (priv->successors == NULL);
 	
 	g_node_destroy (priv->node);
-	g_node_destroy (priv->sorted_node);
 
 	g_free (priv);
 	task->priv = NULL;
@@ -757,7 +752,8 @@ task_remove_subtree_cb (GNode *node, gpointer data)
 	task_remove_assignments (task);
 
 	g_node_unlink (priv->node);
-	g_node_unlink (priv->sorted_node);
+
+	mrp_object_removed (MRP_OBJECT (task));
 
 	g_object_unref (task);
 	
@@ -938,9 +934,6 @@ imrp_task_insert_child (MrpTask *parent,
 		       position,
 		       child->priv->node);
 
-	g_node_prepend (parent->priv->sorted_node,
-			child->priv->sorted_node);
-
 	g_signal_emit (parent, signals[CHILD_ADDED], 0);
 }
 
@@ -1049,8 +1042,8 @@ mrp_task_add_predecessor (MrpTask          *task,
 		
 		return NULL;
 	}
-
-	g_object_get (task, "project", &project, NULL);
+	
+	project = mrp_object_get_project (MRP_OBJECT (task));
 	manager = imrp_project_get_task_manager (project);
 	if (!mrp_task_manager_check_predecessor (manager, task, predecessor, error)) {
 		return NULL;
@@ -1740,14 +1733,6 @@ imrp_task_get_node (MrpTask *task)
 	return task->priv->node;
 }
 
-GNode *
-imrp_task_get_sorted_node (MrpTask *task)
-{
-	g_return_val_if_fail (MRP_IS_TASK (task), NULL);
-	
-	return task->priv->sorted_node;
-}
-
 MrpTaskGraphNode *
 imrp_task_get_graph_node (MrpTask *task)
 {
@@ -1773,7 +1758,7 @@ imrp_task_peek_successors (MrpTask *task)
 }
 
 MrpTaskType
-imrp_task_get_type (MrpTask *task)
+mrp_task_get_task_type (MrpTask *task)
 {
 	g_return_val_if_fail (MRP_IS_TASK (task), MRP_TASK_TYPE_NORMAL);
 
@@ -1781,9 +1766,25 @@ imrp_task_get_type (MrpTask *task)
 }
 
 MrpTaskSched
-imrp_task_get_sched (MrpTask *task)
+mrp_task_get_sched (MrpTask *task)
 {
 	g_return_val_if_fail (MRP_IS_TASK (task), MRP_TASK_SCHED_FIXED_WORK);
 
 	return task->priv->sched;
+}
+
+gshort
+mrp_task_get_percent_complete (MrpTask *task)
+{
+	g_return_val_if_fail (MRP_IS_TASK (task), 0);
+
+	return task->priv->percent_complete;
+}
+
+gboolean
+mrp_task_get_critical (MrpTask *task)
+{
+	g_return_val_if_fail (MRP_IS_TASK (task), FALSE);
+
+	return task->priv->critical;
 }

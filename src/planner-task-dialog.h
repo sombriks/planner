@@ -34,10 +34,9 @@ typedef enum {
 } PlannerTaskDialogPage;
 
 
-GtkWidget * planner_task_dialog_new (PlannerWindow         *window,
-				     MrpTask               *task,
-				     PlannerTaskDialogPage  page);
-
+GtkWidget * planner_task_dialog_new  (PlannerWindow         *window,
+				      MrpTask               *task,
+				      PlannerTaskDialogPage  page);
 
 #endif /* __PLANNER_TASK_DIALOG_H__ */
 

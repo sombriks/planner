@@ -1,8 +1,7 @@
 INCLUDES = \
 	-I$(top_srcdir)						\
 	-I$(top_srcdir)/src					\
-	$(PLANNER_CFLAGS)					\
-	$(WARN_CFLAGS)						\
+	$(PLANNER_CFLAGS) $(WARN_CFLAGS)			\
 	-DG_LOG_DOMAIN=\"Planner\"				\
 	-DPREFIX=\""$(prefix)"\"				\
 	-DSYSCONFDIR=\""$(sysconfdir)"\"			\
@@ -15,7 +14,7 @@ INCLUDES = \
 	-DMRP_PLUGINDIR=\""$(libdir)/planner/plugins"\"		\
 	$(GNOMEUI_UNSTABLE)
 
-if HAVE_PYTHON_MOD
+if HAVE_PYTHON_PLUGIN
 INCLUDES += $(PYTHON_INCLUDES)
 endif
 
@@ -77,6 +76,8 @@ planner_SOURCES = \
 	planner-property-dialog.h	\
 	planner-property-model.c	\
 	planner-property-model.h	\
+	planner-resource-cmd.c		\
+	planner-resource-cmd.h		\
 	planner-resource-dialog.c	\
 	planner-resource-dialog.h	\
 	planner-resource-input-dialog.c	\
@@ -85,10 +86,17 @@ planner_SOURCES = \
 	planner-sidebar.h		\
 	planner-table-print-sheet.c	\
 	planner-table-print-sheet.h	\
+	planner-task-cmd.c		\
+	planner-task-cmd.h		\
 	planner-task-dialog.c		\
 	planner-task-dialog.h		\
 	planner-task-input-dialog.c	\
 	planner-task-input-dialog.h	\
+	planner-ttable-chart.h		\
+	planner-ttable-model.h		\
+	planner-ttable-print.h		\
+	planner-ttable-row.h		\
+	planner-ttable-tree.h		\
 	planner-view.c			\
 	planner-view.h			\
 	planner-view-loader.c		\
@@ -197,7 +205,7 @@ libsql_plugin_la_CFLAGS = $(GDA_CFLAGS)
 libsql_plugin_la_LDFLAGS = -avoid-version -module
 endif
 
-if HAVE_PYTHON_MOD
+if HAVE_PYTHON_PLUGIN
 python_plugin = libpython-plugin.la
 libpython_plugin_la_SOURCES = planner-python-plugin.c
 libpython_plugin_la_LDFLAGS = -avoid-version -module
@@ -207,11 +215,15 @@ endif
 
 plugin_LTLIBRARIES = \
 	libhtml-plugin.la		\
+	libxmlplanner-plugin.la		\
 	$(sql_plugin)			\
 	$(python_plugin)
 
 libhtml_plugin_la_SOURCES = planner-html-plugin.c
 libhtml_plugin_la_LDFLAGS = -avoid-version -module
+
+libxmlplanner_plugin_la_SOURCES = planner-xml-planner-plugin.c
+libxmlplanner_plugin_la_LDFLAGS = -avoid-version -module
 
 planner-marshal.h: Makefile.am planner-marshal.list
 	(cd $(srcdir) && \

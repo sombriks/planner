@@ -1,9 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Copyright (C) 2002 CodeFactory AB
- * Copyright (C) 2002 Richard Hult <richard@imendio.com>
- * Copyright (C) 2002 Mikael Hallendal <micke@imendio.com>
- * Copyright (C) 2002 Alvaro del Castillo <acs@barrapunto.com>
+ * Copyright (C) 2004 Alvaro del Castillo <acs@barrapunto.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -21,20 +18,27 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __PLANNER_RESOURCE_INPUT_DIALOG_H__
-#define __PLANNER_RESOURCE_INPUT_DIALOG_H__
+#ifndef __PLANNER_TASK_CMD_H__
+#define __PLANNER_TASK_CMD_H__
 
-#include <gtk/gtkwidget.h>
 #include "planner-window.h"
+#include "planner-task-tree.h"
 
-GtkWidget * planner_resource_input_dialog_new (PlannerWindow *main_window);
+PlannerCmd * planner_task_cmd_link   (PlannerWindow   *main_window,
+				      MrpTask         *before,
+				      MrpTask         *after,
+				      MrpRelationType  relationship,
+				      glong            lag,
+				      GError         **error);
 
-#endif /* __PLANNER_RESOURCE_INPUT_DIALOG_H__ */
+PlannerCmd * planner_task_cmd_unlink (PlannerWindow   *main_window,
+				      MrpRelation     *relation);
 
+PlannerCmd * planner_task_cmd_insert (PlannerWindow  *main_window,
+				      MrpTask        *parent,
+				      gint            position,
+				      gint            work,
+				      gint            duration,
+				      MrpTask        *new_task);
 
-
-
-
-
-
-
+#endif /* __PLANNER_TASK_CMD_H__ */

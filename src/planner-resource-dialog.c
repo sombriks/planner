@@ -129,6 +129,12 @@ static void     resource_dialog_resource_cost_changed_cb       (MrpResource   *r
 								MrpProperty   *property,
 								GValue        *value,
 								GtkWidget     *dialog);
+static gboolean resource_dialog_resource_cost_focus_in_cb      (GtkWidget     *w,
+								GdkEventFocus *event,
+								DialogData    *data);
+static gboolean resource_dialog_resource_cost_focus_out_cb     (GtkWidget     *w,
+								GdkEventFocus *event,
+								DialogData    *data);
 static void     resource_dialog_resource_calendar_changed_cb   (MrpResource   *resource,
 								GParamSpec    *pspec,
 								GtkWidget     *dialog);
@@ -184,10 +190,19 @@ typedef struct {
 	PlannerCmd   base;
 
 	MrpResource *resource;
-	gchar       *property;  
+	gchar       *property;
 	gchar       *note;
 	gchar       *old_note;
 } ResourceCmdEditNote;
+
+typedef struct {
+	PlannerCmd   base;
+
+	MrpResource *resource;
+	gchar       *property;
+	gfloat       cost;
+	gfloat       old_cost;
+} ResourceCmdEditCost;
 
 typedef struct {
 	PlannerCmd   base;
@@ -427,6 +442,9 @@ static void
 resource_dialog_close_clicked_cb (GtkWidget  *w,
 				  DialogData *data)
 {
+	g_signal_handlers_disconnect_by_func (data->resource,
+					      resource_dialog_resource_removed_cb,
+					      data);
 	gtk_widget_destroy (data->dialog);
 }
 
@@ -434,10 +452,13 @@ static void
 resource_dialog_resource_removed_cb (GtkWidget  *w,
 				     DialogData *data)
 {
+	g_signal_handlers_disconnect_by_func (data->resource,
+					      resource_dialog_resource_removed_cb,
+					      data);
 	gtk_widget_destroy (data->dialog);
 }
 
-static void
+static gboolean
 resource_cmd_calendar_do (PlannerCmd *cmd_base)
 {
 	ResourceCmdCalendar *cmd;
@@ -445,6 +466,8 @@ resource_cmd_calendar_do (PlannerCmd *cmd_base)
 	cmd = (ResourceCmdCalendar*) cmd_base;	
 
 	mrp_resource_set_calendar (cmd->resource, cmd->calendar);
+
+	return TRUE;
 }
 
 static void
@@ -467,14 +490,12 @@ resource_cmd_calendar_free (PlannerCmd *cmd_base)
 
 	g_object_unref (cmd->resource);
 
-	if (cmd->old_calendar) {
+	if (cmd->calendar) {
 		g_object_unref (cmd->calendar);
 	}
 	if (cmd->old_calendar) {
 		g_object_unref (cmd->old_calendar);
 	}
-
-	g_free (cmd);
 }
 
 static PlannerCmd *
@@ -485,14 +506,13 @@ resource_cmd_edit_calendar (DialogData  *data,
 	ResourceCmdCalendar *cmd;
 	MrpCalendar         *current_calendar;
 
-	cmd = g_new0 (ResourceCmdCalendar, 1);
+	cmd_base = planner_cmd_new (ResourceCmdCalendar,
+				    _("Edit resource calendar"),
+				    resource_cmd_calendar_do,
+				    resource_cmd_calendar_undo,
+				    resource_cmd_calendar_free);
 
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Edit resource calendar from dialog"));
-	cmd_base->do_func = resource_cmd_calendar_do;
-	cmd_base->undo_func = resource_cmd_calendar_undo;
-	cmd_base->free_func = resource_cmd_calendar_free;
+	cmd = (ResourceCmdCalendar *) cmd_base;
 
 	cmd->resource = g_object_ref (data->resource);
 
@@ -516,19 +536,16 @@ resource_cmd_edit_calendar (DialogData  *data,
 	return cmd_base;
 }
 
-static void
+static gboolean
 resource_cmd_note_do (PlannerCmd *cmd_base)
 {
 	ResourceCmdEditNote *cmd;
 
 	cmd = (ResourceCmdEditNote*) cmd_base;
 
-	if (g_getenv ("PLANNER_DEBUG_UNDO_RESOURCE")) {
-		g_message ("Doing the note change ... focus out: %s, focus in: %s", 
-			   cmd->note, cmd->old_note);
-	}
-
 	g_object_set (cmd->resource, "note", cmd->note, NULL);
+
+	return TRUE;
 }
 
 static void
@@ -537,11 +554,6 @@ resource_cmd_note_undo (PlannerCmd *cmd_base)
 	ResourceCmdEditNote *cmd;
 
 	cmd = (ResourceCmdEditNote*) cmd_base;
-
-	if (g_getenv ("PLANNER_DEBUG_UNDO_RESOURCE")) {
-		g_message ("Undoing the note change to \"%s\" from the new \"%s\"", 
-			   cmd->old_note, cmd->note);
-	}
 
 	g_object_set (cmd->resource, "note", cmd->old_note, NULL);
 }
@@ -558,13 +570,10 @@ resource_cmd_note_free (PlannerCmd *cmd_base)
 	g_free (cmd->property);
 
 	g_object_unref (cmd->resource);
-
-	g_free (cmd);
 }
 
 static PlannerCmd *
 resource_cmd_edit_note (DialogData  *data,
-			const gchar *property,
 			const gchar *focus_in_note)
 {
 	PlannerCmd          *cmd_base;
@@ -578,16 +587,15 @@ resource_cmd_edit_note (DialogData  *data,
 		return NULL;
 	}
 
-	cmd = g_new0 (ResourceCmdEditNote, 1);
+	cmd_base = planner_cmd_new (ResourceCmdEditNote,
+				    _("Edit resource note"),
+				    resource_cmd_note_do,
+				    resource_cmd_note_undo,
+				    resource_cmd_note_free);
 
-	cmd_base = (PlannerCmd*) cmd;
+	cmd = (ResourceCmdEditNote *) cmd_base;
 
-	cmd_base->label = g_strdup (_("Edit resource note from dialog"));
-	cmd_base->do_func = resource_cmd_note_do;
-	cmd_base->undo_func = resource_cmd_note_undo;
-	cmd_base->free_func = resource_cmd_note_free;
-
-	cmd->property = g_strdup (property);
+	cmd->property = g_strdup ("note");
 	cmd->resource = g_object_ref (data->resource);
 
 	cmd->old_note = g_strdup (focus_in_note);
@@ -599,7 +607,80 @@ resource_cmd_edit_note (DialogData  *data,
 	return cmd_base;
 }
 
+static gboolean
+resource_cmd_cost_do (PlannerCmd *cmd_base)
+{
+	ResourceCmdEditCost *cmd;
+
+	cmd = (ResourceCmdEditCost*) cmd_base;
+
+	mrp_object_set (cmd->resource, "cost", cmd->cost, NULL);
+
+	return TRUE;
+}
+
 static void
+resource_cmd_cost_undo (PlannerCmd *cmd_base)
+{
+	ResourceCmdEditCost *cmd;
+
+	cmd = (ResourceCmdEditCost*) cmd_base;
+
+	mrp_object_set (cmd->resource, "cost", cmd->old_cost, NULL);
+}
+
+static void
+resource_cmd_cost_free (PlannerCmd *cmd_base)
+{
+	ResourceCmdEditCost *cmd;
+
+	cmd = (ResourceCmdEditCost*) cmd_base;
+
+	g_object_unref (cmd->resource);
+}
+
+static PlannerCmd *
+resource_cmd_edit_cost (DialogData  *data,
+			const gchar *focus_in_cost)
+{
+	PlannerCmd          *cmd_base;
+	ResourceCmdEditCost *cmd;
+	gfloat               cost, old_cost;
+	gchar               *end_ptr;
+
+	mrp_object_get (data->resource, "cost", &cost, NULL);
+
+	old_cost = g_strtod (focus_in_cost, &end_ptr);
+
+	if (end_ptr == focus_in_cost) {
+		return NULL;
+	}
+
+	if (cost == old_cost) {
+		return NULL;
+	}
+
+	cmd_base = planner_cmd_new (ResourceCmdEditCost,
+				    _("Edit resource note"),
+				    resource_cmd_cost_do,
+				    resource_cmd_cost_undo,
+				    resource_cmd_cost_free);
+	
+	cmd = (ResourceCmdEditCost *) cmd_base;
+
+	cmd->property = g_strdup ("cost");
+	cmd->resource = g_object_ref (data->resource);
+
+	cmd->old_cost = old_cost;
+	cmd->cost = cost;
+
+	planner_cmd_manager_insert_and_do (planner_window_get_cmd_manager (data->main_window),
+					   cmd_base);
+
+	return cmd_base;
+}
+
+static gboolean
 resource_cmd_edit_property_do (PlannerCmd *cmd_base)
 {
 	ResourceCmdEditProperty *cmd;
@@ -609,6 +690,8 @@ resource_cmd_edit_property_do (PlannerCmd *cmd_base)
 	g_object_set_property (G_OBJECT (cmd->resource),
 			       cmd->property,
 			       cmd->value);
+
+	return TRUE;
 }
 
 static void
@@ -635,8 +718,6 @@ resource_cmd_edit_property_free (PlannerCmd *cmd_base)
 
 	g_free (cmd->property);
 	g_object_unref (cmd->resource);
-
-	g_free (cmd);
 }
 
 static PlannerCmd *
@@ -648,14 +729,13 @@ resource_cmd_edit_property (PlannerWindow *main_window,
 	PlannerCmd              *cmd_base;
 	ResourceCmdEditProperty *cmd;
 
-	cmd = g_new0 (ResourceCmdEditProperty, 1);
+	cmd_base = planner_cmd_new (ResourceCmdEditProperty,
+				    _("Edit resource property"),
+				    resource_cmd_edit_property_do,
+				    resource_cmd_edit_property_undo,
+				    resource_cmd_edit_property_free);
 
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Edit resource property from dialog"));
-	cmd_base->do_func = resource_cmd_edit_property_do;
-	cmd_base->undo_func = resource_cmd_edit_property_undo;
-	cmd_base->free_func = resource_cmd_edit_property_free;
+	cmd = (ResourceCmdEditProperty *) cmd_base;
 
 	cmd->property = g_strdup (property);
 	cmd->resource = g_object_ref (resource);
@@ -690,14 +770,13 @@ resource_cmd_edit_property_focus (PlannerWindow *main_window,
 	PlannerCmd              *cmd_base;
 	ResourceCmdEditProperty *cmd;
 
-	cmd = g_new0 (ResourceCmdEditProperty, 1);
+	cmd_base = planner_cmd_new (ResourceCmdEditProperty,
+				    _("Edit resource property"),
+				    resource_cmd_edit_property_do,
+				    resource_cmd_edit_property_undo,
+				    resource_cmd_edit_property_free);
 
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Edit resource property from dialog"));
-	cmd_base->do_func = resource_cmd_edit_property_do;
-	cmd_base->undo_func = resource_cmd_edit_property_undo;
-	cmd_base->free_func = resource_cmd_edit_property_free;
+	cmd = (ResourceCmdEditProperty *) cmd_base;
 
 	cmd->property = g_strdup (property);
 	cmd->resource = g_object_ref (resource);
@@ -1012,7 +1091,6 @@ resource_dialog_group_changed_cb (GtkWidget  *w,
 					 data->dialog);
 
 	cmd = resource_cmd_edit_property (data->main_window, data->resource, "group", &value);
-	/* g_object_set (data->resource, "group", group, NULL); */
 
 	g_signal_handlers_unblock_by_func (data->resource,
 					   resource_dialog_resource_group_changed_cb, 
@@ -1037,8 +1115,6 @@ resource_dialog_email_changed_cb (GtkWidget  *w,
 					 resource_dialog_resource_email_changed_cb, 
 					 data->dialog);
 
-	/* FIXME: activate undo support when clear how to group several keystrokes */
-	/* cmd = resource_cmd_edit_property (data->main_window, data->resource, "email", &value); */
 	g_object_set (data->resource, "email", email, NULL);
 
 	g_signal_handlers_unblock_by_func (data->resource,
@@ -1113,9 +1189,38 @@ resource_dialog_resource_email_changed_cb (MrpResource *resource,
 	g_free (email);
 }
 
+static gboolean
+resource_dialog_resource_cost_focus_out_cb (GtkWidget     *w,
+					    GdkEventFocus *event,
+					    DialogData    *data)
+{
+	gchar        *focus_in_cost;
+	PlannerCmd   *cmd;
 
-/* FIXME: we need generic methods to handle custom properties
-   as we do in resource view */
+	focus_in_cost = g_object_get_data (G_OBJECT (data->resource),"focus_in_cost");
+	
+	cmd = resource_cmd_edit_cost (data, focus_in_cost);
+
+	g_free (focus_in_cost);
+	
+	return FALSE;
+}
+
+static gboolean
+resource_dialog_resource_cost_focus_in_cb (GtkWidget     *w,
+					   GdkEventFocus *event,
+					   DialogData    *data)
+{
+	gchar  *cost;
+	   
+	cost = g_strdup (gtk_entry_get_text (GTK_ENTRY (w)));
+	
+	g_object_set_data (G_OBJECT (data->resource), 
+			   "focus_in_cost", (gpointer) cost);
+
+	return FALSE;
+}
+
 static void  
 resource_dialog_cost_changed_cb (GtkWidget  *w,
 				 DialogData *data) 
@@ -1123,7 +1228,6 @@ resource_dialog_cost_changed_cb (GtkWidget  *w,
 	const gchar *cost;
 	gfloat       fvalue;
 	GValue       value = { 0 };
-	/* PlannerCmd  *cmd; */
 	gchar       *nptr = NULL;
 
 	cost = gtk_entry_get_text (GTK_ENTRY (w));
@@ -1140,8 +1244,6 @@ resource_dialog_cost_changed_cb (GtkWidget  *w,
 					 resource_dialog_resource_cost_changed_cb, 
 					 data->dialog);
 
-	/* FIXME: we need custom properties undo support and group several keystrokes */
-	/* cmd = resource_cmd_edit_property (data->main_window, data->resource, "cost", &value); */
 	mrp_object_set (data->resource, "cost", fvalue, NULL);
 
 	g_signal_handlers_unblock_by_func (data->resource,
@@ -1179,7 +1281,7 @@ resource_dialog_resource_cost_changed_cb (MrpResource *resource,
 					   dialog);
 }
 
-/* FIXME: undo support */
+/* FIXME: undo support ... it seems undo is working */
 static void  
 resource_dialog_resource_calendar_changed_cb (MrpResource *resource,  
 					      GParamSpec  *pspec, 
@@ -1234,7 +1336,7 @@ resource_dialog_note_focus_out_cb (GtkWidget     *w,
 
 	focus_in_note = g_object_get_data (G_OBJECT (data->resource),"focus_in_note");
 	
-	cmd = resource_cmd_edit_note (data, "note", focus_in_note);
+	cmd = resource_cmd_edit_note (data, focus_in_note);
 
 	if (g_getenv ("PLANNER_DEBUG_UNDO_RESOURCE")) {
 		gchar *note;
@@ -1381,7 +1483,7 @@ resource_dialog_note_stamp_clicked_cb (GtkWidget  *w,
 
 	g_object_set (data->resource, "note", note, NULL);
 
-	cmd = resource_cmd_edit_note (data, "note", note_old);
+	cmd = resource_cmd_edit_note (data, note_old);
 
 	g_free (note_old);
 }
@@ -1607,6 +1709,10 @@ static void
 resource_dialog_parent_destroy_cb (GtkWidget *parent,
 				   GtkWidget *dialog)
 {
+	if (g_getenv ("PLANNER_DEBUG_UNDO_RESOURCE")) {
+		g_message ("Destroying the resource dialog widget ...");
+	}
+
 	gtk_widget_destroy (dialog);
 }
 
@@ -1850,6 +1956,17 @@ planner_resource_dialog_new (PlannerWindow *window,
 			  "changed",
 			  G_CALLBACK (resource_dialog_cost_changed_cb),
 			  data);
+
+	g_signal_connect (data->cost_entry,
+			  "focus_out_event",
+			  G_CALLBACK (resource_dialog_resource_cost_focus_out_cb),
+			  data);
+
+	g_signal_connect (data->cost_entry,
+			  "focus_in_event",
+			  G_CALLBACK (resource_dialog_resource_cost_focus_in_cb),
+			  data);
+	
 
 	g_free (name);
 	g_free (short_name);

@@ -40,18 +40,28 @@
 
 #include "pygobject.h"
 
+typedef struct _PlannerPythonEnv PlannerPythonEnv;
+
 struct _PlannerPluginPriv {
-	PlannerWindow *main_window;
-	GtkWidget     *dialog;
+	PlannerWindow	*main_window;
+	GHashTable	*scripts;
 };
 
-static void python_plugin_execute             (BonoboUIComponent *component,
-					       gpointer           user_data,
-					       const gchar       *cname);
+struct _PlannerPythonEnv {
+	char		*name;
+	PyObject	*globals;
+};
 
-void        plugin_init                       (PlannerPlugin     *plugin,
-					       PlannerWindow     *main_window);
-void        plugin_exit                       (PlannerPlugin     *plugin);
+static PlannerPythonEnv *planner_python_env_new (const char *name);
+static void planner_python_env_free             (PlannerPythonEnv *env);
+
+static void python_plugin_execute               (BonoboUIComponent *component,
+					         gpointer           user_data,
+					         const gchar       *cname);
+
+void        plugin_init                         (PlannerPlugin     *plugin,
+					         PlannerWindow     *main_window);
+void        plugin_exit                         (PlannerPlugin     *plugin);
 
 
 static BonoboUIVerb verbs[] = {
@@ -59,8 +69,31 @@ static BonoboUIVerb verbs[] = {
 	BONOBO_UI_VERB_END
 };
 
+static PlannerPythonEnv *
+planner_python_env_new (const char *name)
+{
+	PlannerPythonEnv *env;
+	PyObject         *pDict, *pMain;
 
+	env = g_new0 (PlannerPythonEnv,1);
+	env->name = g_strdup(name);
 
+	pDict = PyImport_GetModuleDict ();
+	pMain = PyDict_GetItemString (pDict, "__main__");
+	pDict = PyModule_GetDict (pMain);
+	env->globals = PyDict_Copy (pDict);
+
+	return env;
+}
+
+static void
+planner_python_env_free (PlannerPythonEnv *env)
+{
+	g_free (env->name);
+	PyDict_Clear (env->globals);
+	Py_DECREF (env->globals);
+	g_free (env);
+}
 
 static gboolean
 window_file_is_dir (const gchar *file)
@@ -84,7 +117,7 @@ get_last_dir (PlannerWindow *window)
 	
 	priv = window->priv;
 	
-	gconf_client = planner_application_get_gconf_client (priv->application);
+	gconf_client = planner_application_get_gconf_client ();
 	
 	last_dir = gconf_client_get_string (gconf_client,
 					    GCONF_PATH "/general/last_dir",
@@ -113,11 +146,17 @@ python_plugin_execute (BonoboUIComponent *component,
 {
 	PlannerWindow     *window;
 	PlannerPluginPriv *priv;
+	PlannerPythonEnv  *env;
+	MrpProject        *project;
 
-	GtkWidget        *file_sel;
-	gint              response;
-	const gchar      *filename = NULL;
-	gchar            *last_dir;
+	const gchar       *filename = NULL;
+	GtkWidget         *file_sel;
+	gint               response;
+	gchar             *last_dir;
+
+	FILE              *fp;
+	PyObject          *pModule;
+	PyObject          *py_widget;
 
 	priv = PLANNER_PLUGIN (user_data)->priv;
 	window = priv->main_window;
@@ -130,14 +169,13 @@ python_plugin_execute (BonoboUIComponent *component,
 	g_free (last_dir);
 
 	gtk_window_set_modal (GTK_WINDOW (file_sel), TRUE);
-
+	
 	gtk_widget_show (file_sel);
 
 	response = gtk_dialog_run (GTK_DIALOG (file_sel));
 
 	if (response == GTK_RESPONSE_OK) {
-		filename = gtk_file_selection_get_filename (
-			GTK_FILE_SELECTION (file_sel));
+		filename = gtk_file_selection_get_filename (GTK_FILE_SELECTION (file_sel));
 		if (window_file_is_dir (filename)) {
 			filename = NULL;
 		}
@@ -145,49 +183,44 @@ python_plugin_execute (BonoboUIComponent *component,
 	
 	gtk_widget_destroy (file_sel);
 
-	if (filename != NULL) {
-		FILE *fp;
-		PyObject *pModule, *pName;
-		/* PyObject *pDict, *pMain; */
-
-		fp = fopen(filename,"r");
-		Py_Initialize();
-
-		/* Import pygtk */
-		PyRun_SimpleString("import pygtk\n");
-		PyRun_SimpleString("pygtk.require('2.0')\n");
-		PyRun_SimpleString("import gtk\n");
-
-		/* Import planner */
-		pName = PyString_FromString("planner");
-		pModule = PyImport_Import(pName);
-		Py_DECREF(pName);
-		/*
-		pDict = PyImport_GetModuleDict();
-		pMain = PyDict_GetItemString(pDict,"__main__");
-		pDict = PyModule_GetDict(pMain);
-		PyDict_SetItemString(pDict,"planner",pModule);
-		*/
-
-		if (pModule != NULL) {
-			PyObject   *py_widget;
-			PyObject   *pDict, *pMain;
-			MrpProject *project;
-
-			pDict = PyImport_GetModuleDict();
-			pMain = PyDict_GetItemString(pDict,"__main__");
-			pDict = PyModule_GetDict(pMain);
-
-			project = planner_window_get_project(window);
-			py_widget = pygobject_new((GObject *)project);
-			PyDict_SetItemString(pDict, "project", py_widget);
-			Py_DECREF(py_widget);
-
-			PyRun_SimpleFile(fp,filename);
-		}
-		Py_Finalize();
-		fclose(fp);
+	if (filename == NULL) {
+		return;
 	}
+
+	env = planner_python_env_new (filename);
+
+	/* Import pygtk */
+	pModule = PyRun_String ("import pygtk\n"
+				"pygtk.require('2.0')\n"
+				"import gtk\n",
+				Py_file_input, env->globals, env->globals);
+	if (pModule == NULL) {
+		PyErr_Print ();
+		planner_python_env_free (env);
+		return;
+	}
+
+	/* Import planner */
+	pModule = PyImport_ImportModuleEx ("planner", env->globals, env->globals, Py_None);
+
+	if (pModule == NULL) {
+		PyErr_Print ();
+		planner_python_env_free (env);
+		return;
+	}
+
+	project = planner_window_get_project (window);
+	py_widget = pygobject_new ((GObject *) project);
+	PyDict_SetItemString (env->globals, "project", py_widget);
+	Py_DECREF (py_widget);
+
+	fp = fopen (filename,"r");
+	if (PyRun_File (fp, (char *) filename, Py_file_input, env->globals, env->globals) == NULL) {
+		PyErr_Print ();
+	}
+	fclose (fp);
+	/* planner_python_env_free (env); */
+	/* g_hash_table_insert (priv->scripts,(gpointer)filename,env); */
 }
 
 G_MODULE_EXPORT void 
@@ -200,6 +233,7 @@ plugin_init (PlannerPlugin *plugin, PlannerWindow *main_window)
 	priv = g_new0 (PlannerPluginPriv, 1);
 	plugin->priv = priv;
 	priv->main_window = main_window;
+	priv->scripts = g_hash_table_new (g_str_hash, g_str_equal);
 	
 	ui_container = planner_window_get_ui_container (main_window);
 	ui_component = bonobo_ui_component_new_default ();
@@ -218,10 +252,16 @@ plugin_init (PlannerPlugin *plugin, PlannerWindow *main_window)
 			       NULL);
 	
 	bonobo_ui_component_thaw (ui_component, NULL);
+
+	Py_Initialize ();
 }
 
 G_MODULE_EXPORT void 
 plugin_exit (PlannerPlugin *plugin) 
 {
-	/*g_message ("Test exit");*/
+	g_message ("%s(%i) FIXME: free the Python plugin priv structure !!!",__FILE__,__LINE__);
+	if (plugin != NULL) {
+		planner_python_env_free (NULL);
+	}
+	Py_Finalize ();
 }

@@ -1,3 +1,482 @@
+2004-06-23 Alvaro del Castillo  <acs@barrapunto.com>
+	
+	* src/planner-calendar-dialog.c
+	* src/planner-day-type-dialog.c
+	* src/planner-group-dialog.c
+	* src/planner-phase-dialog.c
+	* src/planner-project-properties.c
+	* src/planner-resource-cmd.c
+	* src/planner-resource-dialog.c
+	* src/planner-resource-view.c
+	* src/planner-task-cmd.c
+	* src/planner-task-dialog.c
+	* src/planner-task-tree.c:
+	Change strings from undo command to fix bug #144742 and
+	use the new undo API call planner_cmd_new which fix the
+	more hard change in bug #144734.
+
+2004-06-23  Richard Hult  <richard@imendio.com>
+
+	* src/planner-ttable-model.c (ttable_model_resource_removed_cb):
+	Disconnect signals when resources are removed. Fixes bug #141120.
+
+2004-06-22  Richard Hult  <richard@imendio.com>
+
+	* src/planner-window.c: Fix bug #140335, save UI state, based on
+	patch from Chris Ladd.
+
+2004-06-22  Richard Hult  <richard@imendio.com>
+
+	* configure.in:
+	* data/images/Makefile.am:
+	* data/images/gnome-application-x-mrproject.png:
+	* data/images/gnome-application-x-planner.png:
+	* data/mime/Makefile.am:
+	* data/mime/planner.applications:
+	* data/mime/planner.keys.in:
+	* data/mime/planner.mime:
+	* data/mime/planner.xml.in: Make the mime type stuff work.
+
+	* libplanner/mrp-xsl.c: (html_write), (xml_planner_pre012_write):
+	Fix strings.
+
+2004-06-22  Alvaro del Castillo  <acs@barrapunto.com>
+
+	* src/planner-gantt-chart.c:
+	Remove the relations using gantt_chart_relation_removed
+	not just removing the relation from the hash table.
+
+2004-06-22  Richard Hult  <richard@imendio.com>
+
+	* src/planner-task-dialog.c (task_dialog_update_sensitivity):
+	Don't make work insensitive for fixed duration.
+
+2004-06-21  Richard Hult  <richard@imendio.com>
+
+	* data/stylesheets/Makefile.am:
+	* data/stylesheets/planner2plannerv011.xsl:
+	* data/ui/Makefile.am:
+	* data/ui/html-plugin.ui:
+	* data/ui/main-window.ui:
+	* data/ui/xml-planner-plugin.ui:
+	* libplanner/mrp-xsl.c: (xml_planner_pre012_write), (init):
+	* src/planner-html-plugin.c:
+	* src/planner-xml-planner-plugin.c: (get_last_dir),
+	(xml_planner_plugin_export), (plugin_init), (plugin_exit): Based
+	on patch from Lincoln, fixes bug #141257: export as older planner
+	version.
+
+	* src/planner-window.c: Remove stray precondition tests.
+
+2004-06-21 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* libplanner/mrp-calendar.[ch] (mrp_calendar_add): new function
+	needed for the undo system.
+	* src/planner-calendar-dialog.c: undo support for add and remove
+	calendars.
+	* src/planner-working-time-dialog.c: undo support for changing the
+	working time in calendars.
+
+2004-06-21  Richard Hult  <richard@imendio.com>
+
+	* src/planner-property-dialog.c:
+	* src/planner-property-dialog.h:
+	* src/planner-property-model.h: Fix indentation and remove the
+	possibility to select which columns to use (unsed and didn't
+	work). Also apply patch from Lincoln to fix bug #141967.
+
+	* src/planner-task-tree.c: Remove debug output.
+
+2004-06-21 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* src/planner-sql-plugin.c: change in
+	planner_application_get_gconf_client that breaks CVS compile,
+	detected by lincoln. Change to use the new API.
+
+2004-06-19  Richard Hult  <richard@imendio.com>
+
+	* libplanner/mrp-resource.c (resource_set_property,
+	resource_set_property): Reschedule when the resource calendar is
+	modified and the resource has assignments. Also reschedule when
+	the calendar is changed. Fixes bug #138159.
+
+	* libplanner/mrp-project.c (mrp_project_reschedule): Force recalc,
+	otherwise this won't do anything.
+
+	* src/planner-resource-view.c: (resource_view_resource_notify_cb),
+	(resource_view_resource_prop_changed_cb),
+	(resource_view_resource_added_cb),
+	(resource_view_resource_removed_cb):
+	* src/planner-gantt-model.c: (gantt_model_connect_to_task_signals),
+	(traverse_remove_subtree), (gantt_model_task_removed_cb),
+	(gantt_model_task_notify_cb), (gantt_model_task_prop_changed_cb):
+	* src/planner-task-tree.c: (task_tree_property_changed): Fix bug
+	#142121, custom properties don't update correctly on undo/redo.
+
+2004-06-19  Richard Hult  <richard@imendio.com>
+
+	* src/planner-ttable-tree.c (planner_ttable_tree_set_model)
+	(ttable_tree_row_inserted): Fix bug #141117, tree and chart
+	expansion gets out of sync.
+
+2004-06-18  Richard Hult  <richard@imendio.com>
+
+	* data/glade/task-dialog.glade:
+	* src/planner-task-dialog.c: (planner_task_dialog_new): Remove the
+	disabled option menus until we actually implement those parts.
+	(task_dialog_connect_to_task): Use - instead of _ in notify signal
+	names, fixes bug where the spinbutton wasn't updated.
+	(task_dialog_task_complete_changed_cb): Use accessor.
+
+2004-06-18 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* libplanner/mrp-task.c: (task_remove_subtree_cb):
+	* src/planner-gantt-chart.c: (gantt_chart_insert_task),
+	(gantt_chart_relation_added), (gantt_chart_task_removed),
+	(gantt_chart_tree_node_remove): Fix bug #141346.
+
+2004-06-18  Richard Hult  <richard@imendio.com>
+
+	* src/planner-gantt-row.c (gantt_row_notify_cb): Update when
+	percent complete changes.
+
+	* src/planner-gantt-print.c (planner_gantt_print_do)
+	(gantt_print_task): Fix bug #134552, print out percent complete.
+
+2004-06-18 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* src/planner-task-cmd.c: Fixed bad string
+
+	* src/planner-calendar-dialog.c: Added undo for calendar day type
+
+2004-06-17  Richard Hult  <richard@imendio.com>
+
+	* src/planner-gantt-print.c: (planner_gantt_print_do): Handle
+	cases where page start equals task finish, can happen with
+	milestone tasks for example. Also add a workaround to fix a crash
+	(bug #135473) when the scheduler has screwed up, for 0.12.
+
+2004-06-17  Richard Hult  <richard@imendio.com>
+
+	* src/planner-application.c:
+	* src/planner-gantt-chart.c:
+	* src/planner-gantt-view.c:
+	* src/planner-print-dialog.c:
+	* src/planner-task-tree.c:
+	* src/planner-task-view.c:
+	* src/planner-window.c: Simplify gconf code and add keys for
+	critical path highlighting.
+
+2004-06-17  Richard Hult  <richard@imendio.com>
+
+	* src/planner-gantt-row.c (gantt_row_notify_cb): Only redraw if
+	critical changed, don't update arrow positions.
+
+	* src/planner-gantt-model.c: Improve the caching scheme (AKA make
+	it work).
+
+2004-06-17  Richard Hult  <richard@imendio.com>
+
+	* libplanner/mrp-task-manager.c (task_manager_do_backward_pass):
+	Don't set critical if it hasn't changed.
+
+2004-06-17  Richard Hult,,,  <richard@imendio.com>
+
+	* src/planner-gantt-model.c: (gantt_model_task_inserted_cb),
+	(traverse_remove_subtree), (gantt_model_remove_subtree),
+	(gantt_model_task_removed_cb), (gantt_model_reattach_subtasks),
+	(gantt_model_task_moved_cb), (gantt_model_task_notify_cb),
+	(traverse_insert_task_into_hash), (planner_gantt_model_new),
+	(gantt_model_get_iter), (gantt_model_get_value), (dump_children),
+	(value_cache_get_wbs), (value_cache_free), (value_cache_get),
+	(value_cache_clear), (value_cache_set_wbs):
+	* src/planner-task-tree.c: (task_tree_name_data_func),
+	(task_tree_work_data_func), (task_tree_start_show_popup): Use
+	accessors in even more places. Add a caching scheme and use it to
+	cache the WBS string instead of generating it lots and lots of
+	times.
+
+2004-06-16  Richard Hult  <richard@imendio.com>
+
+	* src/planner-gantt-row.c: Cache the frame gc and colors.
+
+	* src/planner-task-dialog.c (task_dialog_pred_cell_edited): Don't
+	create the predecessor twice.
+
+	* libplanner/mrp-resource.c: (mrp_resource_get_short_name),
+	(mrp_resource_set_short_name):
+	* libplanner/mrp-task-manager.c: (dump_children),
+	(mrp_task_manager_dump_task_list), (task_manager_calc_relation),
+	(task_manager_get_task_units_intervals),
+	(task_manager_calculate_task_finish),
+	(task_manager_do_forward_pass), (mrp_task_manager_recalc):
+	* libplanner/mrp-task.c: (mrp_task_add_predecessor): Add accessors
+	to speed up things, clean up coding style-wise.
+	
+	* src/planner-gantt-chart.c: Clean up a bit and use accessors.
+	
+	* src/planner-gantt-row.c (recalc_bounds): Check if things really
+	changed.
+	(gantt_row_notify_cb): Don't redraw if things didn't change.
+	(gantt_row_draw, gantt_row_assignment_added),
+	(gantt_row_assignment_removed),
+	(gantt_row_assignment_units_changed),
+	(planner_gantt_row_get_geometry), (planner_gantt_row_set_visible),
+	(gantt_row_event): Use accessors.
+
+	* src/planner-relation-arrow.c: Indent.
+	(planner_relation_arrow_new): Set the relation type before setting
+	up the geometry, fixes creating other relations than the default.
+
+	* src/planner-task-dialog.c: Comment out FF and SF for now. Get
+	the right relation type instead of relying on the index to match
+	the enum value. Use accessors.
+
+	* src/planner-gantt-print.c: (print_table_header),
+	(print_table_tasks), (print_time_header),
+	(planner_gantt_print_do),
+	(planner_gantt_print_data_new), (free_page),
+	(planner_gantt_print_data_free): Reindent, fix style issues, plug
+	leaks.
+
+2004-06-15  Richard Hult  <richard@imendio.com>
+
+	* dotnet/libplanner/Makefile.am: Patch from steevdave@steev.net to
+	fix building with recent mono.
+
+2004-06-14 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* Added src/planner-task-cmd.[ch]: shared undo commands for tasks
+	go to this file.
+	* Added src/planner-resource-cmd.[ch]: shared undo commands for resources
+	go to this file.	
+	* po/ChangeLog, po/POTFILES.in: new files has strings to be translated. Added.
+	* src/Makefile.am: new files need to be compiled and linked in planner.
+	* src/planner-gantt-row.c: use the new files for task undo commands 
+	planner-task-cmd.[ch]
+	* src/planner-resource-input-dialog.[ch]: undo for resources inserted implemented.
+	* src/planner-resource-view.c: move some resource undo code to new file 
+	planner-resource-cmd.[ch]
+	* src/planner-task-dialog.[ch]: move some task undo code to new file 
+	planner-task-cmd.[ch]
+	* src/planner-task-input-dialog.[ch]: undo for tasks inserted implemented.
+	* src/planner-task-tree.[ch]: use the new files for task undo commands 
+	planner-task-cmd.[ch]. Move some task undo code to these files.
+
+2004-06-13 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* src/planner-task-dialog.c: implemented undo for note
+	task dialog editor
+
+	* libplanner/mrp-task.c: init task note with a "" string like
+	we do for a resource.
+
+2004-06-12 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* src/planner-task-tree.[ch]: added new function to get the 
+	PlannerWindow for a PlannerTaskTree. This is need because we
+	are moving task undo commands to a central point so we have removed
+	from src/planner-task-tree.c the undo command that were used in
+	planner-gantt-row.
+
+	(planner_task_tree_get_window)
+
+	I need to check with richard the change and maybe, find a better way to 
+	do it. The CVS doesn't work so we need a quick fix ;-)
+
+2004-06-12 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* src/planner-task-tree.c: moved undo code to planner-task-dialog
+	in last commit but failed to commit this file.
+
+2004-06-10 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* src/planner-task-dialog.[ch]: implemented undo for predecessor
+	task dialog editor (add/remove predecessor, edit a predecessor)
+	
+2004-06-08  Richard Hult  <richard@imendio.com>
+
+	* libplanner/mrp-object.c: (mrp_object_get_project):
+	* libplanner/mrp-object.h:
+	* libplanner/mrp-project.h: Small hack to avoid a lot of
+	g_object_get.
+	
+	* src/planner-gantt-model.c: (gantt_model_get_value): Use
+	work_start instead of start for display and use the getters
+	instead of g_object_get in the get_value function.
+
+2004-06-07 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* src/planner-task-dialog.c: implemented undo for resource
+	assignment to task (assign resource, remove resource, change
+	units assigned). 
+
+	Use planned_cmd_new API in all the undo code.
+
+	Changes in undo functions in order to be more understable.
+	
+2004-06-06 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* src/planner-task-dialog.c: implemented undo milestone and 
+	fixed duration in task dialog.
+	
+2004-06-04 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* src/planner-task-dialog.c: implemented undo for all the fields
+	in the first page of the task dialog editor notebook, except 
+	milestone and fixed duration.
+
+	* src/planner-resource-view.c: fixed memory leaks using GValues.
+
+	* src/planner-task-tree.c: fixed memory leaks using GValues.
+	
+
+2004-06-03  Setul Patel  <setulkumarpatel@yahoo.com>
+
+	* data/ui/main-window.ui: Fix bug #143662.
+	
+2004-06-02  Richard Hult  <richard@imendio.com>
+
+	* Commit patch from Lincoln Phipps to fix bug #140694.
+	
+2004-05-20  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Fix aclocal flags. Bump version to 0.11.90.	
+
+	* autogen.sh: Revert change from Tomasz.
+
+2004-05-18 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* src/planner-task-tree.c: implemented custom properties editing undo
+	and reset costraints undo.
+
+2004-05-14  Xavier Ordoquy  <xordoquy@wanadoo.fr>
+
+	* src/planner-python-plugin.c:
+	Changed the python interpreter management.
+
+2004-05-12  Tomasz Kłoczko <kloczek@pld.org.pl>
+
+	* autogen.sh: allow use autogen.sh not only in automake 1.7.x enviroment.
+	* data/ui/Makefile.am: fix for include in dist tar ball timetable
+	  and python UI files.
+	* dotnet/samples/Makefile.am, dotnet/Makefile.am: include in dist
+	  tar ball example files.
+	* src/Makefile.am: include in dist tar ball missing header files.
+
+2004-05-10  Richard Hult  <richard@imendio.com>
+
+	* src/planner-ttable-view.c (ttable_view_update_zoom_sensitivity) 
+	(activate, ttable_view_zoom_out_cb, ttable_view_zoom_in_cb) 
+	(ttable_view_zoom_to_fit_cb): Fix bug #141116, patch from Lincoln.
+
+	* data/ui/time-table-view.ui: Fix the weird edit menu.
+	* src/planner-ttable-model.c: Start cleaning up coding style.
+
+2004-05-10  Richard Hult  <richard@imendio.com>
+
+	* data/ui/Makefile.am: Dist all ui files unconditionally.
+
+	* data/glade/project-properties.glade:
+	* src/planner-phase-dialog.c: (phase_dialog_remove_phase),
+	(phase_dialog_new_dialog_run), (phase_cmd_insert_do),
+	(phase_cmd_insert_undo), (phase_cmd_insert_free),
+	(phase_cmd_insert), (phase_cmd_remove_do), (phase_cmd_remove_undo),
+
+	(phase_cmd_remove_free), (phase_cmd_remove): Commit patch from
+	Lincoln Phipps with modifications. Fixes bug #141177 and bug
+	#141184.
+
+2004-05-09 Alvaro del Castillo  <acs@barrapunto.com>
+
+	* src/planner-gantt-row.c: Task link undo with new GError system.
+
+	* src/planner-task-tree.c: 
+	Clean "g_free (cmd)" and "g_free (cmd_base->label)" that it's done
+	in the command manager.
+	TaskCmdTaskMove is renamed to TaskCmdMove.
+	Clean Task Move system so we use the new GError system.
+	Undo system for link task.
+
+	* src/planner-task-tree.[ch]:
+	Export link undo method so planner-gantt-row.c can use it.
+	
+2004-05-03  Richard Hult  <richard@imendio.com>
+
+	* configure.in:
+	* libplanner/mrp-sql.c: (sql_get_last_error), (get_int), (get_id),
+	(get_string), (get_boolean), (get_float), (mrp_sql_load_project),
+	(mrp_sql_save_project):
+	* src/Makefile.am:
+	* src/planner-python-plugin.c: (python_plugin_execute): Fix build.
+
+	* data/ui/python-plugin.ui: Fix typo.
+
+2004-05-03 Alvaro del Castillo  <acs@barrapunto.com>
+
+        * src/planner-resource-dialog.c: implemented undo for resource cost
+        in the resource editor dialog.
+
+        * src/planner-resource-dialog.c:
+        (resource_dialog_close_clicked_cb)
+        (resource_dialog_resource_removed_cb)
+        Disconnect signal for resource removed so we don't try to destroy
+        a widget that doesn't exist
+
+2004-05-03  Richard Hult  <richard@imendio.com>
+
+	* libplanner/mrp-project.c: (imrp_project_add_calendar_day),
+	(mrp_project_get_calendar_day_by_id):
+	* libplanner/mrp-project.h:
+	* src/planner-default-week-dialog.c:
+	(default_week_dialog_response_cb), (is_day_builtin),
+	(default_week_cmd_edit_do), (default_week_cmd_edit_undo),
+	(default_week_cmd_edit_free), (default_week_cmd_edit): Add undo
+	support for editing the default week.
+
+2004-05-02  Richard Hult  <richard@imendio.com>
+
+	* src/planner-calendar-dialog.c: (cal_dialog_response_cb),
+	(planner_calendar_dialog_new),
+	(cal_dialog_update_calendar_widgets):
+	* src/planner-cmd-manager.c: (cmd_manager_insert),
+	(planner_cmd_manager_insert_and_do), (transaction_cmd_do),
+	(planner_cmd_manager_end_transaction), (planner_cmd_new_size):
+	* src/planner-cmd-manager.h:
+	* src/planner-day-type-dialog.c: (day_type_cmd_add_do),
+	(day_type_cmd_remove_do):
+	* src/planner-default-week-dialog.c:
+	(default_week_dialog_response_cb),
+	(planner_default_week_dialog_new), (default_week_cmd_edit_do),
+	(default_week_cmd_edit_undo), (default_week_cmd_edit_free),
+	(default_week_cmd_edit):
+	* src/planner-group-dialog.c: (group_cmd_insert_do),
+	(group_cmd_remove_do), (group_cmd_default_do),
+	(group_cmd_edit_property_do):
+	* src/planner-project-properties.c: (property_cmd_edit_do):
+	* src/planner-resource-dialog.c: (resource_cmd_calendar_do),
+	(resource_cmd_calendar_free), (resource_cmd_note_do),
+	(resource_cmd_edit_property_do):
+	* src/planner-resource-view.c: (resource_cmd_insert_do),
+	(resource_cmd_remove_do), (resource_cmd_edit_property_do),
+	(resource_cmd_edit_custom_property_do):
+	* src/planner-task-tree.c: (task_cmd_insert_do),
+	(task_cmd_insert_undo), (task_cmd_insert),
+	(task_cmd_edit_property_do), (task_cmd_remove_do),
+	(task_cmd_remove), (task_cmd_constraint_do), (task_cmd_constraint),
+	(task_cmd_task_move_do): Change the command manager interface
+	slightly to be able to handle commands that fail, and add some
+	convenience API. Update everything to the new interface.
+
+	* src/planner-resource-dialog.c (resource_cmd_calendar_free):
+	Check the right calendar before unreffing it.
+
+2004-05-02  Richard Hult  <richard@imendio.com>
+
+	* libplanner/Makefile.am:
+	* libplanner/mrp-object.c: (mrp_object_set_id):
+	* src/Makefile.am: Add back the warning flags and fix a warning.
+
 2004-05-01  Richard Hult  <richard@imendio.com>
 
 	* src/planner-cmd-manager.c (cmd_manager_free_func): Add commented

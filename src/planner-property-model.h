@@ -30,11 +30,18 @@ enum {
 	COL_LABEL,
 	COL_TYPE,
 	COL_VALUE,
-	COL_PROPERTY,
+	COL_PROPERTY
 };
 
-GtkTreeModel *planner_property_model_new (MrpProject *project,
-				     GType       owner_type);
+typedef struct {
+	GType		 owner_type;
+	GtkListStore 	*store;
+} MrpPropertyStore;
+
+GtkTreeModel *planner_property_model_new (MrpProject       *project,
+					  GType             owner_type,
+					  MrpPropertyStore *shop);
+
 
 #endif /* __PLANNER_PROPERTY_MODEL_H__ */
 

@@ -52,6 +52,7 @@
 #include "planner-resource-input-dialog.h"
 #include "planner-table-print-sheet.h"
 #include "planner-property-dialog.h"
+#include "planner-resource-cmd.h"
 
 struct _PlannerViewPriv {
 	GtkItemFactory         *popup_factory;
@@ -166,6 +167,10 @@ static void    resource_view_property_removed        (MrpProject           *proj
 						      MrpProperty          *property,
 						      PlannerView          *view);
 
+static void    resource_view_property_changed        (MrpProject           *project, 
+						      MrpProperty          *property,
+						      PlannerView          *view);
+
 static void    resource_view_name_data_func          (GtkTreeViewColumn    *tree_column,
 						      GtkCellRenderer      *cell,
 						      GtkTreeModel         *tree_model,
@@ -216,12 +221,15 @@ void           print_init                            (PlannerView          *view
 void           print                                 (PlannerView          *view);
 gint           print_get_n_pages                     (PlannerView          *view);
 void           print_cleanup                         (PlannerView          *view);
-
 static void
 resource_view_resource_notify_cb                     (MrpResource          *resource,
 						      GParamSpec           *pspec,
 						      PlannerView          *view);
-
+static void
+resource_view_resource_prop_changed_cb               (MrpResource          *resource,
+						      MrpProperty          *propert,
+						      GValue               *value,
+						      PlannerView          *view);
 static void
 resource_view_resource_added_cb                      (MrpProject           *project, 
 						      MrpResource          *resource,
@@ -450,6 +458,11 @@ get_widget (PlannerView *view)
 			  view);
 	
 	g_signal_connect (project, 
+			  "property_changed",
+			  G_CALLBACK (resource_view_property_changed),
+			  view);
+
+	g_signal_connect (project, 
 			  "resource_added",
 			  G_CALLBACK (resource_view_resource_added_cb), 
 			  view);
@@ -606,14 +619,33 @@ resource_view_find_resource (PlannerView *view, MrpResource *resource)
 static void
 resource_view_resource_notify_cb (MrpResource *resource,
 				  GParamSpec  *pspec,
-				  PlannerView      *view)
+				  PlannerView *view)
 {
 	GtkTreeModel     *model;
  	FindResourceData *data;
 
-	g_return_if_fail (MRP_IS_RESOURCE (resource));
-	g_return_if_fail (PLANNER_IS_VIEW (view));
+	model = gtk_tree_view_get_model (view->priv->tree_view);
+
+	data = resource_view_find_resource (view, resource);
 	
+	if (data) {
+		gtk_tree_model_row_changed (GTK_TREE_MODEL (model), 
+					    data->found_path, 
+					    data->found_iter);
+
+		resource_view_free_find_resource_data (data);
+	}
+}
+
+static void
+resource_view_resource_prop_changed_cb (MrpResource *resource,
+					MrpProperty *propert,
+					GValue      *value,
+					PlannerView *view)
+{
+	GtkTreeModel     *model;
+ 	FindResourceData *data;
+
 	model = gtk_tree_view_get_model (view->priv->tree_view);
 
 	data = resource_view_find_resource (view, resource);
@@ -630,7 +662,7 @@ resource_view_resource_notify_cb (MrpResource *resource,
 static void
 resource_view_resource_added_cb (MrpProject  *project, 
 				 MrpResource *resource,
-				 PlannerView      *view)
+				 PlannerView *view)
 {
 	GtkTreeModel *model;
 	GtkTreeIter   iter;
@@ -649,12 +681,15 @@ resource_view_resource_added_cb (MrpProject  *project,
 	g_signal_connect (resource, "notify",
 			  G_CALLBACK (resource_view_resource_notify_cb),
 			  view);
+	g_signal_connect (resource, "prop_changed",
+			  G_CALLBACK (resource_view_resource_prop_changed_cb),
+			  view);
 }
 
 static void
 resource_view_resource_removed_cb (MrpProject  *project, 
 				   MrpResource *resource,
-				   PlannerView      *view)
+				   PlannerView *view)
 {
 	GtkTreeModel     *model;
 	FindResourceData *data;
@@ -665,6 +700,9 @@ resource_view_resource_removed_cb (MrpProject  *project,
 
 	g_signal_handlers_disconnect_by_func (resource, 
 					      resource_view_resource_notify_cb,
+					      view);
+	g_signal_handlers_disconnect_by_func (resource, 
+					      resource_view_resource_prop_changed_cb,
 					      view);
 
 	model = gtk_tree_view_get_model (view->priv->tree_view);
@@ -752,62 +790,6 @@ resource_view_popup_edit_resource_cb     (gpointer   callback_data,
 }
 
 static void
-resource_cmd_insert_do (PlannerCmd *cmd_base)
-{
-	ResourceCmdInsert *cmd;
-
-	cmd = (ResourceCmdInsert*) cmd_base;
-
-	mrp_project_add_resource (cmd->project, cmd->resource);
-}
-
-static void
-resource_cmd_insert_undo (PlannerCmd *cmd_base)
-{
-	ResourceCmdInsert *cmd;
-	
-	cmd = (ResourceCmdInsert*) cmd_base;
-
-	mrp_project_remove_resource (cmd->project,
-				     cmd->resource);
-}
-
-static void
-resource_cmd_insert_free (PlannerCmd  *cmd_base)
-{
-	ResourceCmdInsert *cmd;
-	cmd = (ResourceCmdInsert*) cmd_base;
-
-	g_object_unref (cmd->resource);
-}
-
-
-static PlannerCmd *
-resource_cmd_insert (PlannerView *view)
-{
-	PlannerCmd          *cmd_base;
-	ResourceCmdInsert   *cmd;
-
-	cmd = g_new0 (ResourceCmdInsert, 1);
-
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Insert resource"));
-	cmd_base->do_func = resource_cmd_insert_do;
-	cmd_base->undo_func = resource_cmd_insert_undo;
-	cmd_base->free_func = resource_cmd_insert_free;
-
-	cmd->resource = g_object_new (MRP_TYPE_RESOURCE, NULL);
-
-	cmd->project = planner_window_get_project (view->main_window);
-
-	planner_cmd_manager_insert_and_do (planner_window_get_cmd_manager (view->main_window),
-					   cmd_base);
-
-	return cmd_base;
-}
-
-static void
 resource_view_insert_resource_cb (BonoboUIComponent *component, 
 				  gpointer           data, 
 				  const char        *cname)
@@ -822,7 +804,7 @@ resource_view_insert_resource_cb (BonoboUIComponent *component,
 	view = PLANNER_VIEW (data);
 	priv = view->priv;
 
-	cmd = (ResourceCmdInsert*) resource_cmd_insert (view);
+	cmd = (ResourceCmdInsert*) planner_resource_cmd_insert (view->main_window, NULL);
 
 	if (!GTK_WIDGET_HAS_FOCUS (priv->tree_view)) {
 		gtk_widget_grab_focus (GTK_WIDGET (priv->tree_view));
@@ -864,7 +846,7 @@ resource_view_insert_resources_cb (BonoboUIComponent *component,
 		return;
 	}
 
-	priv->resource_input_dialog = planner_resource_input_dialog_new (project);
+	priv->resource_input_dialog = planner_resource_input_dialog_new (view->main_window);
 
 	gtk_window_set_transient_for (GTK_WINDOW (priv->resource_input_dialog),
 				      GTK_WINDOW (view->main_window));
@@ -875,7 +857,7 @@ resource_view_insert_resources_cb (BonoboUIComponent *component,
 				   (gpointer *) &priv->resource_input_dialog);
 }
 
-static void
+static gboolean
 resource_cmd_remove_do (PlannerCmd *cmd_base)
 {
 	ResourceCmdRemove *cmd;
@@ -890,8 +872,9 @@ resource_cmd_remove_do (PlannerCmd *cmd_base)
 						  g_object_ref (l->data));
 	}
 
-
 	mrp_project_remove_resource (cmd->project, cmd->resource);
+
+	return TRUE;
 }
 
 static void
@@ -940,14 +923,13 @@ resource_cmd_remove (PlannerView *view,
 	PlannerCmd          *cmd_base;
 	ResourceCmdRemove   *cmd;
 
-	cmd = g_new0 (ResourceCmdRemove, 1);
+	cmd_base = planner_cmd_new (ResourceCmdRemove,
+				    _("Remove resource"),
+				    resource_cmd_remove_do,
+				    resource_cmd_remove_undo,
+				    resource_cmd_remove_free);
 
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Remove resource"));
-	cmd_base->do_func = resource_cmd_remove_do;
-	cmd_base->undo_func = resource_cmd_remove_undo;
-	cmd_base->free_func = resource_cmd_remove_free;
+	cmd = (ResourceCmdRemove *) cmd_base;
 
 	cmd->project = planner_window_get_project (view->main_window);
 	cmd->resource = g_object_ref (resource);
@@ -1043,9 +1025,10 @@ resource_view_edit_custom_props_cb (BonoboUIComponent *component,
 	
 	project = planner_window_get_project (view->main_window);
 	
-	dialog = planner_property_dialog_new (project,
-					 MRP_TYPE_RESOURCE,
-					 _("Edit custom resource properties"));
+	dialog = planner_property_dialog_new (view->main_window,
+						project,
+					      MRP_TYPE_RESOURCE,
+					      _("Edit custom resource properties"));
 	
 	gtk_window_set_default_size (GTK_WINDOW (dialog), 500, 300);
 	gtk_widget_show (dialog);
@@ -1289,7 +1272,7 @@ resource_view_setup_tree_view (PlannerView *view)
 	}
 }
 
-static void
+static gboolean
 resource_cmd_edit_property_do (PlannerCmd *cmd_base)
 {
 	ResourceCmdEditProperty *cmd;
@@ -1299,6 +1282,8 @@ resource_cmd_edit_property_do (PlannerCmd *cmd_base)
 	g_object_set_property (G_OBJECT (cmd->resource),
 			       cmd->property,
 			       cmd->value);
+
+	return TRUE;
 }
 
 static void
@@ -1322,12 +1307,12 @@ resource_cmd_edit_property_free (PlannerCmd *cmd_base)
 
 	g_value_unset (cmd->value);
 	g_value_unset (cmd->old_value);
+	g_free (cmd->value);
+	g_free (cmd->old_value);
 
 	g_object_unref (cmd->resource);
 	g_free (cmd->property);
 
-	g_free (cmd_base->label);
-	g_free (cmd);
 }
 
 static PlannerCmd *
@@ -1339,14 +1324,13 @@ resource_cmd_edit_property (PlannerView  *view,
 	PlannerCmd              *cmd_base;
 	ResourceCmdEditProperty *cmd;
 
-	cmd = g_new0 (ResourceCmdEditProperty, 1);
+	cmd_base = planner_cmd_new (ResourceCmdEditProperty,
+				    _("Edit resource property"),
+				    resource_cmd_edit_property_do,
+				    resource_cmd_edit_property_undo,
+				    resource_cmd_edit_property_free);
 
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Edit resource property"));
-	cmd_base->do_func = resource_cmd_edit_property_do;
-	cmd_base->undo_func = resource_cmd_edit_property_undo;
-	cmd_base->free_func = resource_cmd_edit_property_free;
+	cmd = (ResourceCmdEditProperty *) cmd_base;
 
 	cmd->property = g_strdup (property);
 	cmd->resource = g_object_ref (resource);
@@ -1372,7 +1356,7 @@ resource_cmd_edit_property (PlannerView  *view,
 	return cmd_base;
 }
 
-static void
+static gboolean
 resource_cmd_edit_custom_property_do (PlannerCmd *cmd_base)
 {
 	ResourceCmdEditCustomProperty *cmd;
@@ -1381,6 +1365,8 @@ resource_cmd_edit_custom_property_do (PlannerCmd *cmd_base)
 	mrp_object_set_property (MRP_OBJECT (cmd->resource),
 				 cmd->property,
 				 cmd->value);
+
+	return TRUE;
 }
 
 static void
@@ -1422,14 +1408,13 @@ resource_cmd_edit_custom_property (PlannerView  *view,
 	PlannerCmd                    *cmd_base;
 	ResourceCmdEditCustomProperty *cmd;
 
-	cmd = g_new0 (ResourceCmdEditCustomProperty, 1);
+	cmd_base = planner_cmd_new (ResourceCmdEditCustomProperty,
+				    _("Edit resource custom property"),
+				    resource_cmd_edit_custom_property_do,
+				    resource_cmd_edit_custom_property_undo,
+				    resource_cmd_edit_custom_property_free);
 
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup (_("Edit resource custom property"));
-	cmd_base->do_func = resource_cmd_edit_custom_property_do;
-	cmd_base->undo_func = resource_cmd_edit_custom_property_undo;
-	cmd_base->free_func = resource_cmd_edit_custom_property_free;
+	cmd = (ResourceCmdEditCustomProperty *) cmd_base;
 
 	cmd->property = property;
 	cmd->resource = g_object_ref (resource);
@@ -2009,6 +1994,23 @@ resource_view_property_removed (MrpProject  *project,
 		g_hash_table_remove (priv->property_to_column, property);
 		
 		gtk_tree_view_remove_column (GTK_TREE_VIEW (priv->tree_view), col);
+	}
+}
+
+static void
+resource_view_property_changed (MrpProject  *project, 
+			      MrpProperty *property,
+			      PlannerView *view)
+{
+	PlannerViewPriv   *priv;
+	GtkTreeViewColumn *col;
+
+	priv = view->priv;
+	
+	col = g_hash_table_lookup (priv->property_to_column, property);
+	if (col) {
+		gtk_tree_view_column_set_title (col, 
+					mrp_property_get_label (property));
 	}
 }
 

@@ -447,7 +447,7 @@ day_type_dialog_new_dialog_run (DialogData *data)
 
 /* Commands */
 
-static void
+static gboolean
 day_type_cmd_add_do (PlannerCmd *cmd_base)
 {
 	DayTypeCmdAdd *cmd;
@@ -455,6 +455,8 @@ day_type_cmd_add_do (PlannerCmd *cmd_base)
 	cmd = (DayTypeCmdAdd *) cmd_base;
 
 	cmd->day = mrp_day_add (cmd->project, cmd->name, "");
+
+	return TRUE;
 }
 
 static void
@@ -484,15 +486,17 @@ day_type_cmd_add (DialogData  *data,
 {
 	PlannerCmd    *cmd_base;
 	DayTypeCmdAdd *cmd;
+	gchar         *undo_label;;
 
-	cmd = g_new0 (DayTypeCmdAdd, 1);
+	undo_label = g_strdup_printf (_("Add day type \"%s\""), name);
+	cmd_base = planner_cmd_new (DayTypeCmdAdd,
+				    undo_label,
+				    day_type_cmd_add_do,
+				    day_type_cmd_add_undo,
+				    day_type_cmd_add_free);
+	g_free (undo_label);
 
-	cmd_base = (PlannerCmd*) cmd;
-
-	cmd_base->label = g_strdup_printf (_("Add day type \"%s\""), name);
-	cmd_base->do_func = day_type_cmd_add_do;
-	cmd_base->undo_func = day_type_cmd_add_undo;
-	cmd_base->free_func = day_type_cmd_add_free;
+	cmd = (DayTypeCmdAdd *) cmd_base;
 
 	cmd->project = data->project;
 
@@ -504,7 +508,7 @@ day_type_cmd_add (DialogData  *data,
 	return cmd_base;
 }
 
-static void
+static gboolean
 day_type_cmd_remove_do (PlannerCmd *cmd_base)
 {
 	DayTypeCmdRemove *cmd;
@@ -513,6 +517,8 @@ day_type_cmd_remove_do (PlannerCmd *cmd_base)
 
 	mrp_day_remove (cmd->project, cmd->day);
 	cmd->day = NULL;
+
+	return TRUE;
 }
 
 static void
@@ -541,15 +547,19 @@ day_type_cmd_remove (DialogData *data,
 {
 	PlannerCmd       *cmd_base;
 	DayTypeCmdRemove *cmd;
+	gchar            *undo_label;;
 
-	cmd = g_new0 (DayTypeCmdRemove, 1);
+	undo_label = g_strdup_printf (_("Remove day type \"%s\""), mrp_day_get_name (day));
 
-	cmd_base = (PlannerCmd*) cmd;
+	cmd_base = planner_cmd_new (DayTypeCmdRemove,
+				    undo_label,
+				    day_type_cmd_remove_do,
+				    day_type_cmd_remove_undo,
+				    day_type_cmd_remove_free);
 
-	cmd_base->label = g_strdup_printf (_("Remove day type \"%s\""), mrp_day_get_name (day));
-	cmd_base->do_func = day_type_cmd_remove_do;
-	cmd_base->undo_func = day_type_cmd_remove_undo;
-	cmd_base->free_func = day_type_cmd_remove_free;
+	g_free (undo_label);
+
+	cmd = (DayTypeCmdRemove *) cmd_base;
 
 	cmd->project = data->project;
 

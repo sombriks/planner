@@ -1,5 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
+ * Copyright (C) 2004 Imendio HB
  * Copyright (C) 2001-2003 CodeFactory AB
  * Copyright (C) 2001-2003 Richard Hult <richard@imendio.com>
  * Copyright (C) 2001-2002 Mikael Hallendal <micke@imendio.com>
@@ -392,6 +393,24 @@ foreach_copy_days (gpointer     key,
 	MrpDay *day = value;
 	
 	g_hash_table_insert (copy->priv->days, key, mrp_day_ref (day));
+}
+
+/**
+ * mrp_calendar_add:
+ * @calendar: a #MrpCalendar to add
+ * @parent: a #MrpCalendar to inherit from 
+ * 
+ * Add @calendar to the project 
+ * 
+ * Return value:
+ **/
+void
+mrp_calendar_add (MrpCalendar *calendar, MrpCalendar *parent)
+{
+	calendar_add_child (parent, calendar);
+
+	imrp_project_signal_calendar_tree_changed (calendar->priv->project);
+	imrp_project_set_needs_saving (calendar->priv->project, TRUE);
 }
 
 /**

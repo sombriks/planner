@@ -65,7 +65,6 @@
 #include "planner-cmd-manager.h"
 
 #define d(x)
-#define GCONF_PATH "/apps/planner"
 
 struct _PlannerWindowPriv {
 	PlannerApplication  *application;
@@ -193,9 +192,16 @@ static GtkWidget *window_create_dialog_button            (const gchar           
 							  const gchar                  *text);
 static gchar *    window_recent_tooltip_func             (EggRecentItem                *item,
 							  gpointer                      user_data);
+static void       window_save_state                      (PlannerWindow *window);
+static void       window_restore_state                   (PlannerWindow *window);
 
-
-
+#define GCONF_PATH                  "/apps/planner"
+#define GCONF_MAIN_WINDOW_DIR       "/apps/planner/ui"
+#define GCONF_MAIN_WINDOW_MAXIMIZED "/apps/planner/ui/main_window_maximized"
+#define GCONF_MAIN_WINDOW_WIDTH     "/apps/planner/ui/main_window_width"
+#define GCONF_MAIN_WINDOW_HEIGHT    "/apps/planner/ui/main_window_height"
+#define GCONF_MAIN_WINDOW_POS_X     "/apps/planner/ui/main_window_position_x"
+#define GCONF_MAIN_WINDOW_POS_Y     "/apps/planner/ui/main_window_position_y"
 
 #define VIEW_PATH "/menu/View/Views placeholder"
 #define VIEW_GROUP "view group"
@@ -415,8 +421,6 @@ window_populate (PlannerWindow *window)
 	PlannerView           *view;
 	gint              view_num;
 
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (window));
-	
 	priv = window->priv;
 
 	bonobo_ui_component_freeze (priv->ui_component, NULL);
@@ -562,9 +566,7 @@ window_new_cb (BonoboUIComponent *component,
 {
 	PlannerWindow     *window;
 	PlannerWindowPriv *priv;
-	GtkWidget        *new_window;
-	
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
+	GtkWidget         *new_window;
 	
 	window = PLANNER_WINDOW (data);
 	priv   = window->priv;
@@ -589,12 +591,12 @@ static gchar *
 get_last_dir (PlannerWindow *window)
 {
 	PlannerWindowPriv *priv;
-	GConfClient      *gconf_client;
-	gchar            *last_dir;
+	GConfClient       *gconf_client;
+	gchar             *last_dir;
 	
 	priv = window->priv;
 	
-	gconf_client = planner_application_get_gconf_client (priv->application);
+	gconf_client = planner_application_get_gconf_client ();
 	
 	last_dir = gconf_client_get_string (gconf_client,
 					    GCONF_PATH "/general/last_dir",
@@ -622,19 +624,17 @@ window_open_cb (BonoboUIComponent *component,
 {
 	PlannerWindow     *window;
 	PlannerWindowPriv *priv;
-	GtkWidget        *file_sel;
-	gint              response;
-	const gchar      *filename = NULL;
-	gchar            *last_dir;
-	GtkWidget        *new_window;
-	GConfClient      *gconf_client;
-
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
+	GtkWidget         *file_sel;
+	gint               response;
+	const gchar       *filename = NULL;
+	gchar             *last_dir;
+	GtkWidget         *new_window;
+	GConfClient       *gconf_client;
 
 	window = PLANNER_WINDOW (data);
 	priv = window->priv;
 
-	gconf_client = planner_application_get_gconf_client (priv->application);
+	gconf_client = planner_application_get_gconf_client ();
 	
 	file_sel = gtk_file_selection_new (_("Open a file"));
 
@@ -692,8 +692,6 @@ window_save_as_cb (BonoboUIComponent *component,
 {
 	PlannerWindow *window;
 
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW(data));
-	
 	window = PLANNER_WINDOW (data);
 
         window_do_save_as (window);
@@ -705,8 +703,6 @@ window_save_cb (BonoboUIComponent *component,
 		const char        *cname)
 {
 	PlannerWindow     *window;
-
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
 
 	window = PLANNER_WINDOW (data);
 
@@ -726,8 +722,6 @@ window_print_preview_cb (BonoboUIComponent *component,
 	PlannerView           *view;
 	PlannerPrintJob       *job;
 	gint              n_pages;
-
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
 
 	window = PLANNER_WINDOW (data);
 	priv = window->priv;
@@ -780,8 +774,6 @@ window_print_cb (BonoboUIComponent *component,
 	PlannerPrintJob   *job;
 	gint               n_pages;
 	
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
-
 	window = PLANNER_WINDOW (data);
 	priv = window->priv;
 
@@ -858,7 +850,6 @@ window_properties_cb (BonoboUIComponent *component,
 		      gpointer           data, 
 		      const char        *cname)
 {
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
 }
 
 static void
@@ -866,8 +857,6 @@ window_close_cb (BonoboUIComponent *component,
 		 gpointer           data,
 		 const char        *cname)
 {
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
-
 	planner_window_close (PLANNER_WINDOW (data));
 }
 
@@ -878,8 +867,6 @@ window_exit_cb (BonoboUIComponent *component,
 {
 	PlannerWindow     *window;
 	PlannerWindowPriv *priv;
-	
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
 	
 	window = PLANNER_WINDOW (data);
 	priv   = window->priv;
@@ -894,8 +881,6 @@ window_redo_cb (BonoboUIComponent *component,
 {
 	PlannerWindow     *window;
 	PlannerWindowPriv *priv;
-
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
 
 	window = PLANNER_WINDOW (data);
 
@@ -912,8 +897,6 @@ window_undo_cb (BonoboUIComponent *component,
 	PlannerWindow     *window;
 	PlannerWindowPriv *priv;
 
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
-
 	window = PLANNER_WINDOW (data);
 
 	priv = window->priv;
@@ -929,8 +912,6 @@ window_project_props_cb (BonoboUIComponent *component,
 	PlannerWindow     *window;
 	PlannerWindowPriv *priv;
 	
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
-
 	window = PLANNER_WINDOW (data);
 	priv = window->priv;
 	
@@ -953,8 +934,6 @@ window_manage_calendars_cb (BonoboUIComponent *component,
 {
 	PlannerWindow *window;
 	
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
-
 	window = PLANNER_WINDOW (data);
 
 	planner_window_show_calendar_dialog (window);
@@ -967,8 +946,6 @@ window_edit_day_types_cb (BonoboUIComponent *component,
 {
 	PlannerWindow *window;
 	
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
-
 	window = PLANNER_WINDOW (data);
 
 	planner_window_show_day_type_dialog (window);
@@ -982,8 +959,6 @@ window_edit_phases_cb (BonoboUIComponent *component,
 	PlannerWindow     *window;
 	PlannerWindowPriv *priv;
 	
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
-
 	window = PLANNER_WINDOW (data);
 	priv = window->priv;
 	
@@ -1004,8 +979,6 @@ window_preferences_cb (BonoboUIComponent *component,
 		       gpointer           data,
 		       const char        *cname)
 {
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
-
 }
 
 static void
@@ -1039,8 +1012,6 @@ window_help_cb (BonoboUIComponent *component,
 	GError    *error = NULL;
 	GtkWidget *dialog;
 	
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (data));
-
 	if (!gnome_help_display ("planner.xml", NULL, &error)) {
 		dialog = gtk_message_dialog_new (GTK_WINDOW (data),
 						 GTK_DIALOG_MODAL |
@@ -1099,10 +1070,6 @@ window_about_cb (BonoboUIComponent *component,
 			       _("The Planner Homepage"));
 	gtk_box_pack_start (GTK_BOX (hbox), href, TRUE, FALSE, 0);
 
-	/*href= gnome_href_new ("http://planner.imendio.org/contribute/",
-	  _("Contribute to Planner"));
-	  gtk_box_pack_start (GTK_BOX (hbox), href, TRUE, FALSE, 0);
-	*/
 	gtk_widget_show_all (about);
 }
 
@@ -1110,10 +1077,7 @@ static gboolean
 window_delete_event_cb (PlannerWindow *window,
 			gpointer      user_data)
 {
-	g_return_val_if_fail (PLANNER_IS_MAIN_WINDOW (window), FALSE);
-
 	planner_window_close (window);
-
 	return TRUE;
 }
 
@@ -1175,9 +1139,6 @@ window_project_needs_saving_changed_cb (MrpProject   *project,
 	PlannerWindowPriv *priv;
 	gchar            *value;
 	
-	g_return_if_fail (MRP_IS_PROJECT (project));
-	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (window));
-
 	priv = window->priv;
 	
 	if (needs_saving) {
@@ -1320,8 +1281,6 @@ window_do_save (PlannerWindow *window, gboolean force)
 	GError           *error = NULL;
 	gint              response;
 	
-	g_return_val_if_fail (PLANNER_IS_MAIN_WINDOW (window), FALSE);
-
 	priv = window->priv;
 	
 	uri = mrp_project_get_uri (priv->project);
@@ -1378,7 +1337,7 @@ window_do_save_as (PlannerWindow *window)
 
 	priv = window->priv;
 
-	gconf_client = planner_application_get_gconf_client (priv->application);
+	gconf_client = planner_application_get_gconf_client ();
 
 	file_sel = gtk_file_selection_new (_("Save a file"));
 	gtk_window_set_modal (GTK_WINDOW (file_sel), TRUE);
@@ -1523,7 +1482,7 @@ planner_window_new (PlannerApplication *application)
 			  G_CALLBACK (window_project_notify_name_cb),
 			  window);
 	
-	gtk_window_set_default_size (GTK_WINDOW (window), 800, 600);
+	window_restore_state (window);
 
 	g_signal_connect (window, "delete_event", 
 			  G_CALLBACK (window_delete_event_cb),
@@ -1675,8 +1634,8 @@ static void
 window_update_title (PlannerWindow *window)
 {
  	PlannerWindowPriv *priv;
-	gchar            *name;
-	gchar            *title;
+	gchar             *name;
+	gchar             *title;
 
 	priv = window->priv;
 
@@ -1694,7 +1653,7 @@ void
 planner_window_close (PlannerWindow *window)
 {
 	PlannerWindowPriv *priv;
-        gboolean          close = TRUE;
+        gboolean           close = TRUE;
         
 	g_return_if_fail (PLANNER_IS_MAIN_WINDOW (window));
 
@@ -1705,6 +1664,8 @@ planner_window_close (PlannerWindow *window)
 	}
 
         if (close) {
+		window_save_state (window);
+
                 g_signal_emit (window, signals[CLOSED], 0, NULL);
                 
                 gtk_widget_destroy (GTK_WIDGET (window));
@@ -1768,3 +1729,98 @@ planner_window_get_cmd_manager (PlannerWindow *window)
 	return window->priv->cmd_manager;
 }
 
+static void
+window_save_state (PlannerWindow *window)
+{
+	GConfClient       *gconf_client;
+	PlannerWindowPriv *priv;
+	GdkWindowState     state;
+	gboolean           maximized;
+
+	priv = window->priv;
+
+	gconf_client = planner_application_get_gconf_client ();
+
+	state = gdk_window_get_state (GTK_WIDGET (window)->window);
+	if (state & GDK_WINDOW_STATE_MAXIMIZED) {
+		maximized = TRUE;
+	} else {
+		maximized = FALSE;
+	}
+
+	gconf_client_set_bool (gconf_client,
+			       GCONF_MAIN_WINDOW_MAXIMIZED,
+			       maximized, NULL);
+
+	/* If maximized don't save the size and position */
+	if (!maximized) {
+		int width, height;
+		int x, y;
+
+		gtk_window_get_size (GTK_WINDOW (window), &width, &height);
+		gconf_client_set_int (gconf_client,
+				      GCONF_MAIN_WINDOW_WIDTH,
+				      width, NULL);
+		gconf_client_set_int (gconf_client,
+				      GCONF_MAIN_WINDOW_HEIGHT,
+				      height, NULL);
+
+		gtk_window_get_position (GTK_WINDOW (window), &x, &y);
+		gconf_client_set_int (gconf_client,
+				      GCONF_MAIN_WINDOW_POS_X,
+				      x, NULL);
+		gconf_client_set_int (gconf_client,
+				      GCONF_MAIN_WINDOW_POS_Y,
+				      y, NULL);
+	}
+}
+
+static void
+window_restore_state (PlannerWindow *window)
+{
+	GConfClient *gconf_client;
+	PlannerWindowPriv *priv;
+	gboolean exists;
+	gboolean maximized;
+	int      width, height;
+	int      x, y;
+
+	priv = window->priv;
+	gconf_client = planner_application_get_gconf_client ();
+
+	exists = gconf_client_dir_exists (gconf_client,
+					  GCONF_MAIN_WINDOW_DIR,
+					  NULL);
+	
+	if (exists) {	
+		maximized = gconf_client_get_bool (gconf_client,
+						   GCONF_MAIN_WINDOW_MAXIMIZED,
+						   NULL);
+	
+		if (maximized) {
+			gtk_window_maximize (GTK_WINDOW (window));
+		} else {
+			width = gconf_client_get_int (gconf_client,
+						      GCONF_MAIN_WINDOW_WIDTH,
+						      NULL);
+		
+			height = gconf_client_get_int (gconf_client,
+						       GCONF_MAIN_WINDOW_HEIGHT,
+						       NULL);
+		
+			gtk_window_set_default_size (GTK_WINDOW (window), 
+						     width, height);
+
+			x = gconf_client_get_int (gconf_client,
+						  GCONF_MAIN_WINDOW_POS_X,
+						  NULL);
+			y = gconf_client_get_int (gconf_client,
+						  GCONF_MAIN_WINDOW_POS_Y,
+						  NULL);
+
+			gtk_window_move (GTK_WINDOW (window), x, y);
+		}
+	} else {
+		gtk_window_set_default_size (GTK_WINDOW (window), 800, 600);
+	}
+}
