@@ -1,5 +1,7 @@
 2004-07-19  Richard Hult  <richard@imendio.com>
 
+	* configure.in: Bump.
+
 	* data/glade/html-output.glade: Re-save with old glade so we don't
 	get runtime warnings when using older GTK+.
 
