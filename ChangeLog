@@ -1,3 +1,9 @@
+2004-07-24  Richard Hult  <richard@imendio.com>
+
+	* src/planner-task-dialog.c
+	(task_dialog_resource_units_cell_edited): Don't do anything unless
+	the value changes. Fixes bug #148306.
+
 2004-07-19  Richard Hult  <richard@imendio.com>
 
 	* configure.in: Bump.
