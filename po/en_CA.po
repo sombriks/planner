@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: planner\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-02 15:22-0400\n"
-"PO-Revision-Date: 2004-08-02 19:47-0700\n"
+"POT-Creation-Date: 2004-08-11 23:24-0400\n"
+"PO-Revision-Date: 2004-08-11 19:47-0700\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -1187,13 +1187,13 @@ msgstr "%s day"
 #.
 #: src/planner-format.c:197
 msgid "%b %e"
-msgstr "%b %e"
+msgstr "%e %b"
 
 #. i18n: project start, the date format is described in
 #. * libmrproject/docs/DateFormat.
 #: src/planner-gantt-background.c:579
 msgid "%Y %b %d"
-msgstr "%Y %b %d"
+msgstr "%Y %d %b"
 
 #: src/planner-gantt-background.c:581
 msgid "Project start"
@@ -1447,7 +1447,7 @@ msgstr "Edit property label"
 msgid "Open a file"
 msgstr "Open a file"
 
-#: src/planner-resource-cmd.c:74
+#: src/planner-resource-cmd.c:75
 msgid "Insert resource"
 msgstr "Insert resource"
 
@@ -1601,15 +1601,15 @@ msgstr "Open from Database"
 msgid "Save to Database"
 msgstr "Save to Database"
 
-#: src/planner-task-cmd.c:96
+#: src/planner-task-cmd.c:97
 msgid "Link task"
 msgstr "Link task"
 
-#: src/planner-task-cmd.c:172
+#: src/planner-task-cmd.c:173
 msgid "Unlink task"
 msgstr "Unlink task"
 
-#: src/planner-task-cmd.c:265
+#: src/planner-task-cmd.c:266
 msgid "Insert task"
 msgstr "Insert task"
 
@@ -1892,21 +1892,21 @@ msgstr "The Planner Homepage"
 
 #: src/planner-window.c:1200
 msgid "If you don't save, changes made the last minute will be discarded."
-msgstr "If you don't save, changes made the last minute will be discarded."
+msgstr "If you don't save, changes made within the last minute will be discarded."
 
 #: src/planner-window.c:1205
 #, c-format
 msgid "If you don't save, changes made the last %d minutes will be discarded."
-msgstr "If you don't save, changes made the last %d minutes will be discarded."
+msgstr "If you don't save, changes made within the last %d minutes will be discarded."
 
 #: src/planner-window.c:1210
 msgid "If you don't save, changes made the last hour will be discarded."
-msgstr "If you don't save, changes made the last hour will be discarded."
+msgstr "If you don't save, changes made within the last hour will be discarded."
 
 #: src/planner-window.c:1215
 #, c-format
 msgid "If you don't save, changes made the last %d hours will be discarded."
-msgstr "If you don't save, changes made the last %d hours will be discarded."
+msgstr "If you don't save, changes made within the last %d hours will be discarded."
 
 #: src/planner-window.c:1222
 #, c-format
