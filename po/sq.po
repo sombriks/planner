@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: planner.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-28 04:14+0200\n"
+"POT-Creation-Date: 2004-07-29 12:16+0200\n"
 "PO-Revision-Date: 2004-06-29 13:08+0200\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -173,9 +173,10 @@ msgstr ""
 msgid "_Name of the new calendar:"
 msgstr ""
 
+#. GRUT modified this item
 #: data/glade/calendar-dialog.glade.h:36
 msgid "_New..."
-msgstr ""
+msgstr "_I Ri..."
 
 #: data/glade/group-dialog.glade.h:1
 msgid "Group Editor"
@@ -598,7 +599,6 @@ msgstr "Informacione mbi këtë program"
 msgid "C_ut"
 msgstr "P_reje"
 
-#. GRUT modified this item
 #: data/ui/main-window.ui.h:3
 msgid "Clear"
 msgstr "Pastro"
@@ -639,7 +639,6 @@ msgstr ""
 msgid "Edit the project properties"
 msgstr ""
 
-#. GRUT modified this item
 #: data/ui/main-window.ui.h:13
 msgid "Exit the program"
 msgstr "Mbyll programin"
@@ -728,7 +727,6 @@ msgstr "_Informacione"
 msgid "_Actions"
 msgstr "_Veprimet"
 
-#. GRUT modified this item
 #: data/ui/main-window.ui.h:35
 msgid "_Close"
 msgstr "_Mbyll"
@@ -1718,7 +1716,6 @@ msgstr ""
 msgid "month"
 msgstr ""
 
-#. GRUT modified this item
 #. month unit variant accepted in input
 #: src/planner-task-tree.c:3308
 msgid "months"
