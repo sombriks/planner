@@ -773,7 +773,7 @@ window_print_cb (BonoboUIComponent *component,
 	PlannerView       *view;
 	PlannerPrintJob   *job;
 	gint               n_pages;
-	
+
 	window = PLANNER_WINDOW (data);
 	priv = window->priv;
 
@@ -836,9 +836,21 @@ window_print_cb (BonoboUIComponent *component,
 		gtk_widget_show (preview);
 	}
 	else if (response == GNOME_PRINT_DIALOG_RESPONSE_PRINT) {
+		gchar *tmp;
+
+		/* This seems to be needed for now to stop older versions of
+		 * gnome-print from outputting locale dependent floats. Remove
+		 * this when/if we depend on gnome 2.6.
+		 */
+		tmp = g_strdup (setlocale (LC_NUMERIC, NULL));
+		setlocale (LC_NUMERIC, "C");
+		
 		gnome_print_job_print (job->pj);
+		
+		setlocale (LC_NUMERIC, tmp);
+		g_free (tmp);
 	}
-	
+
 	g_list_free (views);
 
 	g_object_unref (job);

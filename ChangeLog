@@ -1,3 +1,11 @@
+2004-07-19  Richard Hult  <richard@imendio.com>
+
+	* data/glade/html-output.glade: Re-save with old glade so we don't
+	get runtime warnings when using older GTK+.
+
+	* src/planner-window.c (window_print_cb): Set numeric locale to C
+	temporarily as workaround for broken pdf output.
+
 2004-07-08  Richard Hult  <richard@imendio.com>
 
 	* Release 0.12.

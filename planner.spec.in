@@ -4,7 +4,7 @@
 Summary: 	A graphical project management tool.
 Name:           %name
 Version:        %ver
-Release:	imendio.1
+Release:	imendio.2
 License: 	GPL
 Group: 		Applications/Productivity
 Url:		http://planner.imendio.org/
@@ -110,7 +110,7 @@ fi
 %{_datadir}/doc/planner/sample-*.planner
 %{_includedir}/planner-1.0
 
-%exclude %{_libdir}/planner/file-modules/libmrp-xsl*
+#%exclude %{_libdir}/planner/file-modules/libmrp-sql*
 %exclude %{_libdir}/planner/storage-modules/libstorage-sql*
 %exclude %{_libdir}/planner/plugins/libsql-plugin*
 %exclude %{_datadir}/planner/glade/sql.glade
@@ -131,14 +131,21 @@ Database support for Planner, this plugin can be used to store projects in a Pos
 
 %files database
 %defattr(-,root,root)
-%{_libdir}/planner/file-modules/libmrp-xsl*
+#%{_libdir}/planner/file-modules/libmrp-sql*
 %{_libdir}/planner/storage-modules/libstorage-sql*
 %{_libdir}/planner/plugins/libsql-plugin*
 %{_datadir}/planner/glade/sql.glade
 %{_datadir}/planner/ui/sql-plugin.ui
+%{_datadir}/planner/sql/*
+%{_datadir}/doc/planner/README.sql
 
 
 %changelog
+* Thu Jul 09 2004 Richard Hult <richard@imendio.com>
+- Add sql datadir to database package, don't include xsl module.
+- Don't exclude xsl module for the main package.
+- Add docs to sql package.
+
 * Thu Jun 24 2004 Richard Hult <richard@imendio.com>
 - Fix up to actually work.
 
