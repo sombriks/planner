@@ -171,6 +171,11 @@ table_print_sheet_print_cell (PlannerTablePrintSheet *sheet,
 		      "text", &str, 
 		      "weight", &weight,
 		      NULL);
+
+
+	if (!str) {
+		return;
+	}
 	
 	if (weight == PANGO_WEIGHT_BOLD) {
 		planner_print_job_set_font_bold (sheet->job);
@@ -297,8 +302,8 @@ table_print_sheet_foreach_row (GtkTreeModel *model,
  			}
 			
 			column->width = MAX (column->width, 
-					     gnome_font_get_width_utf8 (sheet->font,
-									str) + extra);
+					     (str ? gnome_font_get_width_utf8 (sheet->font, str) : 0) + extra);
+			
 /* 		d(g_print ("New width: %f\n", column->width)); */
 			
 			g_free (str);

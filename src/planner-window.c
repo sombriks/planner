@@ -1078,7 +1078,7 @@ window_about_cb (BonoboUIComponent *component,
 	hbox = gtk_hbox_new (FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (about)->vbox), hbox, FALSE, FALSE, 0);
 	
-	href = gnome_href_new ("http://planner.imendio.org/",
+	href = gnome_href_new ("http://www.imendio.com/projects/planner/",
 			       _("The Planner Homepage"));
 	gtk_box_pack_start (GTK_BOX (hbox), href, TRUE, FALSE, 0);
 

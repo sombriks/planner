@@ -60,6 +60,48 @@ mvl_load (const gchar *file)
 	return view;
 }
 
+/* Note: this is a hackish solution to the fact that we don't get the views in a
+ * consistent order.
+ */
+static gint
+get_order (PlannerView *view)
+{
+	if (strcmp (planner_view_get_name (view), "gantt_view") == 0) {
+		return 1;
+	}
+	else if (strcmp (planner_view_get_name (view), "task_view") == 0) {
+		return 2;
+	}
+	else if (strcmp (planner_view_get_name (view), "resource_view") == 0) {
+		return 3;
+	}
+	else if (strcmp (planner_view_get_name (view), "resource_usage_view") == 0) {
+		return 4;
+	}
+	else {
+		return 5;
+	}
+}
+
+static gint
+sort_compare_func (gconstpointer a,
+		   gconstpointer b)
+{
+	gint order_a, order_b;
+
+	order_a = get_order ((PlannerView *) a);
+	order_b = get_order ((PlannerView *) b);
+
+	if (order_a < order_b) {
+		return -1;
+	}
+	else if (order_a > order_b) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
 static GList *
 mvl_load_dir (const gchar *path, PlannerWindow *window)
 {
@@ -91,7 +133,7 @@ mvl_load_dir (const gchar *path, PlannerWindow *window)
 
 	g_dir_close (dir);
 
-	return list;
+	return g_list_sort (list, sort_compare_func);
 }
 
 GList *
