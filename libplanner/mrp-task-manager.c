@@ -881,6 +881,24 @@ remove_predecessor_from_dependency_graph (MrpTaskManager *manager,
 }
 
 static void
+remove_parent_from_dependency_graph (MrpTaskManager *manager,
+				     MrpTask        *task,
+				     MrpTask        *parent)
+{
+	MrpTaskManagerPriv *priv;
+	MrpTaskGraphNode   *task_node;
+	MrpTaskGraphNode   *parent_node;
+
+	priv = manager->priv;
+	
+	task_node = imrp_task_get_graph_node (task);
+	parent_node = imrp_task_get_graph_node (parent);
+
+	task_node->next = g_list_remove (task_node->next, parent);
+	parent_node->prev = g_list_remove (parent_node->prev, task);
+}
+
+static void
 add_parent_to_dependency_graph (MrpTaskManager *manager,
 				MrpTask        *task,
 				MrpTask        *parent)
@@ -899,14 +917,41 @@ add_parent_to_dependency_graph (MrpTaskManager *manager,
 }
 
 static void
-add_task_to_dependency_graph (MrpTaskManager  *manager,
-			      MrpTask         *task)
+remove_task_from_dependency_graph (MrpTaskManager *manager,
+				   MrpTask        *task,
+				   MrpTask        *parent)
 {
 	MrpTaskManagerPriv *priv;
 	GList              *list, *l;
 	MrpRelation        *relation;
 	MrpTask            *predecessor;
-	MrpTask            *parent;
+
+	priv = manager->priv;
+	
+	/* Remove predecessors. */
+	list = imrp_task_peek_predecessors (task);
+	for (l = list; l; l = l->next) {
+		relation = l->data;
+		predecessor = mrp_relation_get_predecessor (relation);
+
+		remove_predecessor_from_dependency_graph (manager, task, predecessor);
+	}
+
+	/* Remove the parent. */
+	if (parent && parent != priv->root) {
+		remove_parent_from_dependency_graph (manager, task, parent);
+	}
+}
+
+static void
+add_task_to_dependency_graph (MrpTaskManager *manager,
+			      MrpTask        *task,
+			      MrpTask        *parent)
+{
+	MrpTaskManagerPriv *priv;
+	GList              *list, *l;
+	MrpRelation        *relation;
+	MrpTask            *predecessor;
 
 	priv = manager->priv;
 	
@@ -924,8 +969,6 @@ add_task_to_dependency_graph (MrpTaskManager  *manager,
 	}
 	
 	/* Add the parent. */
-	parent = mrp_task_get_parent (task);
-
 	if (parent && parent != priv->root) {
 		add_parent_to_dependency_graph (manager, task, parent);
 	}
@@ -988,7 +1031,7 @@ task_manager_build_dependency_graph (MrpTaskManager *manager)
 	 */
 	tasks = mrp_task_manager_get_all_tasks (manager);
 	for (l = tasks; l; l = l->next) {
-		add_task_to_dependency_graph (manager, l->data);
+		add_task_to_dependency_graph (manager, l->data, mrp_task_get_parent (l->data));
 	}
 
 	/* Do a topological sort. Get the tasks without dependencies to start
@@ -1615,8 +1658,6 @@ task_manager_do_forward_pass_helper (MrpTaskManager *manager,
 					g_signal_handlers_unblock_by_func (assignment,
 									   task_manager_assignment_units_notify_cb,
 									   manager);
-					
-					
 				}
 			}
 		}
@@ -1999,7 +2040,7 @@ mrp_task_manager_check_predecessor (MrpTaskManager  *manager,
 		g_set_error (error,
 			     MRP_ERROR,
 			     MRP_ERROR_TASK_RELATION_FAILED,
-			     _("Can not add a predecessor, because it would result in a loop."));
+			     _("Cannot add a predecessor, because it would result in a loop."));
 		return FALSE;
 	}
 
@@ -2012,13 +2053,44 @@ mrp_task_manager_check_move (MrpTaskManager  *manager,
 			     MrpTask         *parent,
 			     GError         **error)
 {
+	gboolean retval;
+	
 	g_return_val_if_fail (MRP_IS_TASK_MANAGER (manager), FALSE);
 	g_return_val_if_fail (MRP_IS_TASK (task), FALSE);
 	g_return_val_if_fail (MRP_IS_TASK (parent), FALSE);
 
-	/* FIXME: do this. */
+	/* FIXME: Check this. */
 
-	return TRUE;
+	/* Remove the task from the old parent and add it to its new parent. */
+	remove_task_from_dependency_graph (manager, task, mrp_task_get_parent (task));
+	add_task_to_dependency_graph (manager, task, parent);
+	
+	if (0) {
+		g_print ("--->\n");
+		dump_all_task_nodes (manager);
+		g_print ("<---\n");
+	}
+	
+	mrp_task_manager_traverse (manager,
+				   manager->priv->root,
+				   task_manager_unset_visited_func,
+				   NULL);
+	
+	retval = check_predecessor_traverse (manager, task, task, 1);
+
+	/* Put the task back again. */
+	remove_task_from_dependency_graph (manager, task, parent);
+	add_task_to_dependency_graph (manager, task, mrp_task_get_parent (task));
+
+	if (!retval) {
+		g_set_error (error,
+			     MRP_ERROR,
+			     MRP_ERROR_TASK_MOVE_FAILED,
+			     _("Cannot move the task, because it would result in a loop."));
+		return FALSE;
+	}
+
+	return retval;
 }
 
 static gint

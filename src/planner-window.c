@@ -1342,7 +1342,7 @@ window_do_save_as (PlannerWindow *window)
 	g_free (last_dir);
 	
 	response = gtk_dialog_run (GTK_DIALOG (file_chooser));
-	if (response == GTK_RESPONSE_OK) {
+	if (response == GTK_RESPONSE_ACCEPT) {
 		filename = gtk_file_chooser_get_filename (
 			GTK_FILE_CHOOSER (file_chooser));
 	}
