@@ -41,7 +41,7 @@
 #include "planner-ttable-row.h"
 #include "planner-scale-utils.h"
 
-/* Padding to the left and right of the contents of the gantt chart. */
+/* Padding to the left and right of the contents of the chart. */
 #define PADDING 100.0
 
 #define ZOOM_IN_LIMIT 12
@@ -318,7 +318,7 @@ ttable_chart_init (PlannerTtableChart * chart)
         gtk_box_set_homogeneous (GTK_BOX (chart), FALSE);
         gtk_box_set_spacing (GTK_BOX (chart), 0);
 
-        priv->header = g_object_new (PLANNER_TYPE_GANTT_HEADER,
+        priv->header = g_object_new (PLANNER_TYPE_CHART_HEADER,
                                      "scale", SCALE (priv->zoom),
                                      "zoom", priv->zoom, NULL);
 
@@ -341,7 +341,7 @@ ttable_chart_init (PlannerTtableChart * chart)
         priv->last_time = MRP_TIME_INVALID;
         priv->background =
                 gnome_canvas_item_new (gnome_canvas_root (priv->canvas),
-                                       PLANNER_TYPE_GANTT_BACKGROUND, "scale",
+                                       PLANNER_TYPE_CHART_BACKGROUND, "scale",
                                        SCALE (priv->zoom), "zoom", priv->zoom,
                                        NULL);
 }
@@ -1531,4 +1531,3 @@ planner_ttable_chart_setup_root_task (PlannerTtableChart *chart)
 			  (ttable_chart_root_finish_changed),
 			  chart);
 }
-

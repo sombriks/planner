@@ -34,7 +34,7 @@
 #include "planner-scale-utils.h"
 
 
-struct _PlannerGanttHeaderPriv {
+struct _PlannerChartHeaderPriv {
 	GdkWindow     *bin_window;
 	
 	GtkAdjustment *hadjustment;
@@ -66,65 +66,65 @@ enum {
 	PROP_ZOOM,
 };
 
-static void     gantt_header_class_init           (PlannerGanttHeaderClass *klass);
-static void     gantt_header_init                 (PlannerGanttHeader      *header);
-static void     gantt_header_finalize             (GObject            *object);
-static void     gantt_header_set_property         (GObject            *object,
+static void     chart_header_class_init           (PlannerChartHeaderClass *klass);
+static void     chart_header_init                 (PlannerChartHeader      *header);
+static void     chart_header_finalize             (GObject            *object);
+static void     chart_header_set_property         (GObject            *object,
 						   guint               prop_id,
 						   const GValue       *value,
 						   GParamSpec         *pspec);
-static void     gantt_header_get_property         (GObject            *object,
+static void     chart_header_get_property         (GObject            *object,
 						   guint               prop_id,
 						   GValue             *value,
 						   GParamSpec         *pspec);
-static void     gantt_header_destroy              (GtkObject          *object);
-static void     gantt_header_map                  (GtkWidget          *widget);
-static void     gantt_header_realize              (GtkWidget          *widget);
-static void     gantt_header_unrealize            (GtkWidget          *widget);
-static void     gantt_header_size_allocate        (GtkWidget          *widget,
+static void     chart_header_destroy              (GtkObject          *object);
+static void     chart_header_map                  (GtkWidget          *widget);
+static void     chart_header_realize              (GtkWidget          *widget);
+static void     chart_header_unrealize            (GtkWidget          *widget);
+static void     chart_header_size_allocate        (GtkWidget          *widget,
 						   GtkAllocation      *allocation);
-static gboolean gantt_header_expose_event         (GtkWidget          *widget,
+static gboolean chart_header_expose_event         (GtkWidget          *widget,
 						   GdkEventExpose     *event);
-static void     gantt_header_set_adjustments      (PlannerGanttHeader      *header,
+static void     chart_header_set_adjustments      (PlannerChartHeader      *header,
 						   GtkAdjustment      *hadj,
 						   GtkAdjustment      *vadj);
-static void     gantt_header_adjustment_changed   (GtkAdjustment      *adjustment,
-						   PlannerGanttHeader      *header);
+static void     chart_header_adjustment_changed   (GtkAdjustment      *adjustment,
+						   PlannerChartHeader      *header);
 
 
 static GtkWidgetClass *parent_class = NULL;
 
 
 GtkType
-planner_gantt_header_get_type (void)
+planner_chart_header_get_type (void)
 {
-	static GtkType planner_gantt_header_type = 0;
+	static GtkType planner_chart_header_type = 0;
 
-	if (!planner_gantt_header_type) {
-		static const GTypeInfo planner_gantt_header_info = {
-			sizeof (PlannerGanttHeaderClass),
+	if (!planner_chart_header_type) {
+		static const GTypeInfo planner_chart_header_info = {
+			sizeof (PlannerChartHeaderClass),
 			NULL,		/* base_init */
 			NULL,		/* base_finalize */
-			(GClassInitFunc) gantt_header_class_init,
+			(GClassInitFunc) chart_header_class_init,
 			NULL,		/* class_finalize */
 			NULL,		/* class_data */
-			sizeof (PlannerGanttHeader),
+			sizeof (PlannerChartHeader),
 			0,              /* n_preallocs */
-			(GInstanceInitFunc) gantt_header_init
+			(GInstanceInitFunc) chart_header_init
 		};
 
-		planner_gantt_header_type = g_type_register_static (
+		planner_chart_header_type = g_type_register_static (
 			GTK_TYPE_WIDGET,
-			"PlannerGanttHeader",
-			&planner_gantt_header_info,
+			"PlannerChartHeader",
+			&planner_chart_header_info,
 			0);
 	}
 	
-	return planner_gantt_header_type;
+	return planner_chart_header_type;
 }
 
 static void
-gantt_header_class_init (PlannerGanttHeaderClass *class)
+chart_header_class_init (PlannerChartHeaderClass *class)
 {
 	GObjectClass      *o_class;
 	GtkObjectClass    *object_class;
@@ -139,27 +139,27 @@ gantt_header_class_init (PlannerGanttHeaderClass *class)
 	container_class = (GtkContainerClass *) class;
 
 	/* GObject methods. */
-	o_class->set_property = gantt_header_set_property;
-	o_class->get_property = gantt_header_get_property;
-	o_class->finalize = gantt_header_finalize;
+	o_class->set_property = chart_header_set_property;
+	o_class->get_property = chart_header_get_property;
+	o_class->finalize = chart_header_finalize;
 
 	/* GtkObject methods. */
-	object_class->destroy = gantt_header_destroy;
+	object_class->destroy = chart_header_destroy;
 
 	/* GtkWidget methods. */
-	widget_class->map = gantt_header_map;;
-	widget_class->realize = gantt_header_realize;
-	widget_class->unrealize = gantt_header_unrealize;
-	widget_class->size_allocate = gantt_header_size_allocate;
-	widget_class->expose_event = gantt_header_expose_event;
+	widget_class->map = chart_header_map;;
+	widget_class->realize = chart_header_realize;
+	widget_class->unrealize = chart_header_unrealize;
+	widget_class->size_allocate = chart_header_size_allocate;
+	widget_class->expose_event = chart_header_expose_event;
 
-	class->set_scroll_adjustments = gantt_header_set_adjustments;
+	class->set_scroll_adjustments = chart_header_set_adjustments;
 		
 	widget_class->set_scroll_adjustments_signal =
 		g_signal_new ("set_scroll_adjustments",
 			      G_TYPE_FROM_CLASS (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (PlannerGanttHeaderClass, set_scroll_adjustments),
+			      G_STRUCT_OFFSET (PlannerChartHeaderClass, set_scroll_adjustments),
 			      NULL, NULL,
 			      planner_marshal_VOID__OBJECT_OBJECT,
 			      G_TYPE_NONE, 2,
@@ -213,16 +213,16 @@ gantt_header_class_init (PlannerGanttHeaderClass *class)
 }
 
 static void
-gantt_header_init (PlannerGanttHeader *header)
+chart_header_init (PlannerChartHeader *header)
 {
-	PlannerGanttHeaderPriv *priv;
+	PlannerChartHeaderPriv *priv;
 
 	gtk_widget_set_redraw_on_allocate (GTK_WIDGET (header), FALSE);
 
-	priv = g_new0 (PlannerGanttHeaderPriv, 1);
+	priv = g_new0 (PlannerChartHeaderPriv, 1);
 	header->priv = priv;
 
-	gantt_header_set_adjustments (header, NULL, NULL);
+	chart_header_set_adjustments (header, NULL, NULL);
 
 	priv->hscale = 1.0;
 	priv->x1 = 0;
@@ -238,9 +238,9 @@ gantt_header_init (PlannerGanttHeader *header)
 }
 
 static void
-gantt_header_set_zoom (PlannerGanttHeader *header, gdouble zoom)
+chart_header_set_zoom (PlannerChartHeader *header, gdouble zoom)
 {
-	PlannerGanttHeaderPriv *priv;
+	PlannerChartHeaderPriv *priv;
 	gint               level;
 
 	priv = header->priv;
@@ -255,13 +255,13 @@ gantt_header_set_zoom (PlannerGanttHeader *header, gdouble zoom)
 }
 
 static void
-gantt_header_set_property (GObject      *object,
+chart_header_set_property (GObject      *object,
 			   guint         prop_id,
 			   const GValue *value,
 			   GParamSpec   *pspec)
 {
-	PlannerGanttHeader     *header;
-	PlannerGanttHeaderPriv *priv;
+	PlannerChartHeader     *header;
+	PlannerChartHeaderPriv *priv;
 	gdouble            tmp;
 	gint               width;
 	gdouble            tmp_scale;
@@ -269,7 +269,7 @@ gantt_header_set_property (GObject      *object,
 	gboolean           change_height = FALSE;
 	gboolean           change_scale = FALSE;
 
-	header = PLANNER_GANTT_HEADER (object);
+	header = PLANNER_CHART_HEADER (object);
 	priv = header->priv;
 
 	switch (prop_id) {
@@ -299,7 +299,7 @@ gantt_header_set_property (GObject      *object,
 		}
 		break;
 	case PROP_ZOOM:
-		gantt_header_set_zoom (header, g_value_get_double (value));
+		chart_header_set_zoom (header, g_value_get_double (value));
 		break;
 	default:
 		break;
@@ -333,14 +333,14 @@ gantt_header_set_property (GObject      *object,
 }
 
 static void
-gantt_header_get_property (GObject    *object,
+chart_header_get_property (GObject    *object,
 			   guint       prop_id,
 			   GValue     *value,
 			   GParamSpec *pspec)
 {
-	PlannerGanttHeader *header;
+	PlannerChartHeader *header;
 
-	header = PLANNER_GANTT_HEADER (object);
+	header = PLANNER_CHART_HEADER (object);
 
 	switch (prop_id) {
 	default:
@@ -350,9 +350,9 @@ gantt_header_get_property (GObject    *object,
 }
 
 static void
-gantt_header_finalize (GObject *object)
+chart_header_finalize (GObject *object)
 {
-	PlannerGanttHeader *header = PLANNER_GANTT_HEADER (object);
+	PlannerChartHeader *header = PLANNER_CHART_HEADER (object);
 
 	g_free (header->priv);
 
@@ -362,9 +362,9 @@ gantt_header_finalize (GObject *object)
 }
 
 static void
-gantt_header_destroy (GtkObject *object)
+chart_header_destroy (GtkObject *object)
 {
-	/*PlannerGanttHeader *header = PLANNER_GANTT_HEADER (object);*/
+	/*PlannerChartHeader *header = PLANNER_CHART_HEADER (object);*/
 
 	/* FIXME: free stuff. */
 
@@ -374,13 +374,13 @@ gantt_header_destroy (GtkObject *object)
 }
 
 static void
-gantt_header_map (GtkWidget *widget)
+chart_header_map (GtkWidget *widget)
 {
-	PlannerGanttHeader *header;
+	PlannerChartHeader *header;
 
-	g_return_if_fail (PLANNER_IS_GANTT_HEADER (widget));
+	g_return_if_fail (PLANNER_IS_CHART_HEADER (widget));
 	
-	header = PLANNER_GANTT_HEADER (widget);
+	header = PLANNER_CHART_HEADER (widget);
 	
 	GTK_WIDGET_SET_FLAGS (widget, GTK_MAPPED);
 
@@ -390,16 +390,16 @@ gantt_header_map (GtkWidget *widget)
 }
 
 static void
-gantt_header_realize (GtkWidget *widget)
+chart_header_realize (GtkWidget *widget)
 {
-	PlannerGanttHeader *header;
+	PlannerChartHeader *header;
 	GdkWindowAttr  attributes;
 	GdkGCValues    values;
 	gint           attributes_mask;
   
-	g_return_if_fail (PLANNER_IS_GANTT_HEADER (widget));
+	g_return_if_fail (PLANNER_IS_CHART_HEADER (widget));
 	
-	header = PLANNER_GANTT_HEADER (widget);
+	header = PLANNER_CHART_HEADER (widget);
 	
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 
@@ -452,13 +452,13 @@ gantt_header_realize (GtkWidget *widget)
 }
 
 static void
-gantt_header_unrealize (GtkWidget *widget)
+chart_header_unrealize (GtkWidget *widget)
 {
-	PlannerGanttHeader *header;
+	PlannerChartHeader *header;
 
-	g_return_if_fail (PLANNER_IS_GANTT_HEADER (widget));
+	g_return_if_fail (PLANNER_IS_CHART_HEADER (widget));
 
-	header = PLANNER_GANTT_HEADER (widget);
+	header = PLANNER_CHART_HEADER (widget);
 
 	gdk_window_set_user_data (header->priv->bin_window, NULL);
 	gdk_window_destroy (header->priv->bin_window);
@@ -470,14 +470,14 @@ gantt_header_unrealize (GtkWidget *widget)
 }
 
 static void
-gantt_header_size_allocate (GtkWidget     *widget,
+chart_header_size_allocate (GtkWidget     *widget,
 			    GtkAllocation *allocation)
 {
-	PlannerGanttHeader *header;
+	PlannerChartHeader *header;
 
-	g_return_if_fail (PLANNER_IS_GANTT_HEADER (widget));
+	g_return_if_fail (PLANNER_IS_CHART_HEADER (widget));
 
-	header = PLANNER_GANTT_HEADER (widget);
+	header = PLANNER_CHART_HEADER (widget);
 
 	if (GTK_WIDGET_REALIZED (widget)) {
 		gdk_window_move_resize (widget->window,
@@ -492,11 +492,11 @@ gantt_header_size_allocate (GtkWidget     *widget,
 }
 
 static gboolean
-gantt_header_expose_event (GtkWidget      *widget,
+chart_header_expose_event (GtkWidget      *widget,
 			   GdkEventExpose *event)
 {
-	PlannerGanttHeader     *header;
-	PlannerGanttHeaderPriv *priv;
+	PlannerChartHeader     *header;
+	PlannerChartHeaderPriv *priv;
 	gint               width, height;
 	gdouble            hscale;
 	gint               x;
@@ -509,7 +509,7 @@ gantt_header_expose_event (GtkWidget      *widget,
 	GdkGC             *gc;
 	GdkRectangle       rect;
 	
-	header = PLANNER_GANTT_HEADER (widget);
+	header = PLANNER_CHART_HEADER (widget);
 	priv = header->priv;
 	hscale = priv->hscale;
 
@@ -639,7 +639,7 @@ gantt_header_expose_event (GtkWidget      *widget,
 
 /* Callbacks */
 static void
-gantt_header_set_adjustments (PlannerGanttHeader *header,
+chart_header_set_adjustments (PlannerChartHeader *header,
 			      GtkAdjustment *hadj,
 			      GtkAdjustment *vadj)
 {
@@ -661,7 +661,7 @@ gantt_header_set_adjustments (PlannerGanttHeader *header,
 
 		g_signal_connect (hadj,
 				  "value_changed",
-				  G_CALLBACK (gantt_header_adjustment_changed),
+				  G_CALLBACK (chart_header_adjustment_changed),
 				  header);
 		
 		gtk_widget_set_scroll_adjustments (GTK_WIDGET (header),
@@ -671,8 +671,8 @@ gantt_header_set_adjustments (PlannerGanttHeader *header,
 }
 
 static void
-gantt_header_adjustment_changed (GtkAdjustment *adjustment,
-				 PlannerGanttHeader *header)
+chart_header_adjustment_changed (GtkAdjustment *adjustment,
+				 PlannerChartHeader *header)
 {
 	if (GTK_WIDGET_REALIZED (header)) {
 		gdk_window_move (header->priv->bin_window,
@@ -682,9 +682,8 @@ gantt_header_adjustment_changed (GtkAdjustment *adjustment,
 }
 
 GtkWidget *
-planner_gantt_header_new (void)
+planner_chart_header_new (void)
 {
 
-	return g_object_new (PLANNER_TYPE_GANTT_HEADER, NULL);
+	return g_object_new (PLANNER_TYPE_CHART_HEADER, NULL);
 }
-

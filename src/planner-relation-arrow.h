@@ -51,16 +51,15 @@ struct _PlannerRelationArrowClass {
 
 GType            planner_relation_arrow_get_type (void) G_GNUC_CONST;
 
-PlannerRelationArrow *planner_relation_arrow_new      (PlannerGanttRow *successor,
-					     PlannerGanttRow *predecessor,
+PlannerRelationArrow *planner_relation_arrow_new      (PlannerChartRow *successor,
+					     PlannerChartRow *predecessor,
 					     MrpRelationType type);
 void
 planner_relation_arrow_set_successor             (PlannerRelationArrow *arrow,
-					     PlannerGanttRow      *successor);
+					     PlannerChartRow      *successor);
 void
 planner_relation_arrow_set_predecessor           (PlannerRelationArrow *arrow,
-					     PlannerGanttRow      *predecessor);
+					     PlannerChartRow      *predecessor);
 
 
 #endif /* __PLANNER_RELATION_ARROW_H__ */
-

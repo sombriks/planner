@@ -101,8 +101,8 @@ typedef enum {
 } PlannerArrowDir;
 	
 struct _PlannerRelationArrowPriv {
-	PlannerGanttRow      *successor;
-	PlannerGanttRow      *predecessor;
+	PlannerChartRow      *successor;
+	PlannerChartRow      *predecessor;
 	MrpRelationType  type;
 
 	gboolean         successor_visible;
@@ -286,13 +286,13 @@ relation_arrow_update_line_segments (PlannerRelationArrow *arrow)
 	priv = arrow->priv;
 	type = priv->type;
 
-	planner_gantt_row_get_geometry (priv->predecessor,
+	planner_chart_row_get_geometry (priv->predecessor,
 					&px1,
 					&py1,
 					&px2,
 					&py2);
 	
-	planner_gantt_row_get_geometry (priv->successor,
+	planner_chart_row_get_geometry (priv->successor,
 					&sx1,
 					&sy1,
 					&sx2,
@@ -453,7 +453,7 @@ relation_arrow_update_line_segments (PlannerRelationArrow *arrow)
 }
 
 static void
-relation_arrow_geometry_changed (PlannerGanttRow      *row,
+relation_arrow_geometry_changed (PlannerChartRow      *row,
 				 gdouble               x1,
 				 gdouble               y1,
 				 gdouble               x2,
@@ -464,7 +464,7 @@ relation_arrow_geometry_changed (PlannerGanttRow      *row,
 }
 
 static void
-relation_arrow_successor_visibility_changed (PlannerGanttRow      *row,
+relation_arrow_successor_visibility_changed (PlannerChartRow      *row,
 					     gboolean              visible,
 					     PlannerRelationArrow *arrow)
 {
@@ -478,7 +478,7 @@ relation_arrow_successor_visibility_changed (PlannerGanttRow      *row,
 }
 
 static void
-relation_arrow_predecessor_visibility_changed (PlannerGanttRow      *row,
+relation_arrow_predecessor_visibility_changed (PlannerChartRow      *row,
 					       gboolean              visible,
 					       PlannerRelationArrow *arrow)
 {
@@ -493,12 +493,12 @@ relation_arrow_predecessor_visibility_changed (PlannerGanttRow      *row,
 
 void
 planner_relation_arrow_set_predecessor (PlannerRelationArrow *arrow,
-					PlannerGanttRow      *predecessor)
+					PlannerChartRow      *predecessor)
 {
 	PlannerRelationArrowPriv *priv; 
 	
 	g_return_if_fail (PLANNER_IS_RELATION_ARROW (arrow));
-	g_return_if_fail (PLANNER_IS_GANTT_ROW (predecessor));
+	g_return_if_fail (PLANNER_IS_CHART_ROW (predecessor));
 
 	priv = arrow->priv;
 	
@@ -531,12 +531,12 @@ planner_relation_arrow_set_predecessor (PlannerRelationArrow *arrow,
 
 void
 planner_relation_arrow_set_successor (PlannerRelationArrow *arrow,
-				      PlannerGanttRow      *successor)
+				      PlannerChartRow      *successor)
 {
 	PlannerRelationArrowPriv *priv; 
 
 	g_return_if_fail (PLANNER_IS_RELATION_ARROW (arrow));
-	g_return_if_fail (PLANNER_IS_GANTT_ROW (successor));
+	g_return_if_fail (PLANNER_IS_CHART_ROW (successor));
 
 	priv = arrow->priv;
 
@@ -567,8 +567,8 @@ planner_relation_arrow_set_successor (PlannerRelationArrow *arrow,
 }
 
 PlannerRelationArrow *
-planner_relation_arrow_new (PlannerGanttRow *successor,
-			    PlannerGanttRow *predecessor,
+planner_relation_arrow_new (PlannerChartRow *successor,
+			    PlannerChartRow *predecessor,
 			    MrpRelationType  type)
 {
 	PlannerRelationArrow *arrow;
@@ -833,4 +833,3 @@ relation_arrow_point (GnomeCanvasItem  *item,
 
 	return 10.0;
 }
-

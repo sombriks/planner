@@ -20,28 +20,27 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __PLANNER_GANTT_PRINT_JOB_H__
-#define __PLANNER_GANTT_PRINT_JOB_H__
+#ifndef __PLANNER_CHART_PRINT_JOB_H__
+#define __PLANNER_CHART_PRINT_JOB_H__
 
 #include <gtk/gtktreeview.h>
 #include "planner-print-job.h"
 #include "planner-view.h"
 
-typedef struct _PlannerGanttPrintData PlannerGanttPrintData;
+typedef struct _PlannerChartPrintData PlannerChartPrintData;
 
 
-void                planner_gantt_print_do             (PlannerGanttPrintData *data);
+void                planner_chart_print_do             (PlannerChartPrintData *data);
 
-gint                planner_gantt_print_get_n_pages    (PlannerGanttPrintData *data);
+gint                planner_chart_print_get_n_pages    (PlannerChartPrintData *data);
 
-PlannerGanttPrintData *  planner_gantt_print_data_new       (PlannerView           *view,
+PlannerChartPrintData *  planner_chart_print_data_new       (PlannerView           *view,
 						   PlannerPrintJob       *job,
 						   GtkTreeView      *tree_view,
 						   gint              level,
 						   gboolean          show_critical);
 
-void                planner_gantt_print_data_free      (PlannerGanttPrintData *data);
+void                planner_chart_print_data_free      (PlannerChartPrintData *data);
 
 
-#endif /* __PLANNER_GANTT_PRINT_JOB_H__ */
-
+#endif /* __PLANNER_CHART_PRINT_JOB_H__ */

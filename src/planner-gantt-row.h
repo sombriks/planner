@@ -20,44 +20,44 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __PLANNER_GANTT_ROW_H__
-#define __PLANNER_GANTT_ROW_H__
+#ifndef __PLANNER_CHART_ROW_H__
+#define __PLANNER_CHART_ROW_H__
 
 #include <gtk/gtk.h>
 #include <libgnomecanvas/gnome-canvas.h>
 #include <libgnomecanvas/gnome-canvas-util.h>
 
-#define PLANNER_TYPE_GANTT_ROW            (planner_gantt_row_get_type ())
-#define PLANNER_GANTT_ROW(obj)            (GTK_CHECK_CAST ((obj), PLANNER_TYPE_GANTT_ROW, PlannerGanttRow))
-#define PLANNER_GANTT_ROW_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), PLANNER_TYPE_GANTT_ROW, PlannerGanttRowClass))
-#define PLANNER_IS_GANTT_ROW(obj)         (GTK_CHECK_TYPE ((obj), PLANNER_TYPE_GANTT_ROW))
-#define PLANNER_IS_GANTT_ROW_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), PLANNER_TYPE_GANTT_ROW))
-#define PLANNER_GANTT_ROW_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), PLANNER_TYPE_GANTT_ROW, PlannerGanttRowClass))
+#define PLANNER_TYPE_CHART_ROW            (planner_chart_row_get_type ())
+#define PLANNER_CHART_ROW(obj)            (GTK_CHECK_CAST ((obj), PLANNER_TYPE_CHART_ROW, PlannerChartRow))
+#define PLANNER_CHART_ROW_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), PLANNER_TYPE_CHART_ROW, PlannerChartRowClass))
+#define PLANNER_IS_CHART_ROW(obj)         (GTK_CHECK_TYPE ((obj), PLANNER_TYPE_CHART_ROW))
+#define PLANNER_IS_CHART_ROW_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), PLANNER_TYPE_CHART_ROW))
+#define PLANNER_CHART_ROW_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), PLANNER_TYPE_CHART_ROW, PlannerChartRowClass))
 
 
-typedef struct _PlannerGanttRow      PlannerGanttRow;
-typedef struct _PlannerGanttRowClass PlannerGanttRowClass;
-typedef struct _PlannerGanttRowPriv  PlannerGanttRowPriv;
+typedef struct _PlannerChartRow      PlannerChartRow;
+typedef struct _PlannerChartRowClass PlannerChartRowClass;
+typedef struct _PlannerChartRowPriv  PlannerChartRowPriv;
 
-struct _PlannerGanttRow {
+struct _PlannerChartRow {
 	GnomeCanvasItem  parent;
-	PlannerGanttRowPriv  *priv;	
+	PlannerChartRowPriv  *priv;	
 };
 
-struct _PlannerGanttRowClass {
+struct _PlannerChartRowClass {
 	GnomeCanvasItemClass parent_class;
 };
 
 
-GType planner_gantt_row_get_type     (void) G_GNUC_CONST;
-void  planner_gantt_row_get_geometry (PlannerGanttRow *row,
+GType planner_chart_row_get_type     (void) G_GNUC_CONST;
+void  planner_chart_row_get_geometry (PlannerChartRow *row,
 				 gdouble    *x1,
 				 gdouble    *y1,
 				 gdouble    *x2,
 				 gdouble    *y2);
-void  planner_gantt_row_set_visible  (PlannerGanttRow *row,
+void  planner_chart_row_set_visible  (PlannerChartRow *row,
 				 gboolean    is_visible);
 
-void planner_gantt_row_init_menu (PlannerGanttRow *row);
+void planner_chart_row_init_menu (PlannerChartRow *row);
 
-#endif /* __PLANNER_GANTT_ROW_H__ */
+#endif /* __PLANNER_CHART_ROW_H__ */

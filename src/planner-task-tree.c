@@ -99,7 +99,7 @@ static void        task_tree_init                      (PlannerTaskTree      *tr
 static void        task_tree_finalize                  (GObject              *object);
 static void        task_tree_setup_tree_view           (GtkTreeView          *tree,
 							MrpProject           *project,
-							PlannerGanttModel    *model);
+							PlannerChartModel    *model);
 static void        task_tree_add_column                (GtkTreeView          *tree,
 							gint                  column,
 							const gchar          *title);
@@ -147,10 +147,10 @@ static void        task_tree_row_inserted              (GtkTreeModel         *mo
 							GtkTreePath          *path,
 							GtkTreeIter          *iter,
 							GtkTreeView          *tree);
-static void        task_tree_task_added_cb             (PlannerGanttModel    *model,
+static void        task_tree_task_added_cb             (PlannerChartModel    *model,
 							MrpTask              *task,
 							PlannerTaskTree      *tree);
-static void        task_tree_task_removed_cb           (PlannerGanttModel    *model,
+static void        task_tree_task_removed_cb           (PlannerChartModel    *model,
 							MrpTask              *task,
 							PlannerTaskTree      *tree);
 static gint        task_tree_parse_time_string         (PlannerTaskTree      *tree,
@@ -235,7 +235,7 @@ task_cmd_edit_property (PlannerTaskTree *tree,
 	PlannerTaskTreePriv *priv = tree->priv;
 	PlannerCmd          *cmd_base;
 	TaskCmdEditProperty *cmd;
-	PlannerGanttModel   *model;
+	PlannerChartModel   *model;
 
 	cmd_base = planner_cmd_new (TaskCmdEditProperty,
 				    _("Edit task property"),
@@ -248,9 +248,9 @@ task_cmd_edit_property (PlannerTaskTree *tree,
 	cmd->tree = tree;
 	cmd->project = task_tree_get_project (tree);
 
-	model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
+	model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
 	
-	cmd->path = planner_gantt_model_get_path_from_task (model, task);
+	cmd->path = planner_chart_model_get_path_from_task (model, task);
 	
 	cmd->property = g_strdup (property);
 
@@ -288,11 +288,11 @@ typedef struct {
 static gboolean 
 is_task_in_project (MrpTask *task, PlannerTaskTree *tree)
 {
-	PlannerGanttModel *model; 
+	PlannerChartModel *model; 
 	GtkTreePath       *path;
 
-	model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
-	path = planner_gantt_model_get_path_from_task (model, task);
+	model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
+	path = planner_chart_model_get_path_from_task (model, task);
 
 	if (path != NULL) {
 		gtk_tree_path_free (path);
@@ -435,11 +435,11 @@ task_cmd_save_children (TaskCmdRemove *cmd)
 	while (child) {
 		TaskCmdRemove     *cmd_child;
 		GtkTreePath       *path;
-		PlannerGanttModel *model;
+		PlannerChartModel *model;
 		
-		model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (cmd->tree)));
+		model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (cmd->tree)));
 		
-		path = planner_gantt_model_get_path_from_task (model, child);
+		path = planner_chart_model_get_path_from_task (model, child);
 		
 		/* We don't insert this command in the undo manager */
 		cmd_child = g_new0 (TaskCmdRemove, 1);
@@ -472,7 +472,7 @@ task_cmd_save_children (TaskCmdRemove *cmd)
 static void
 task_cmd_restore_children (TaskCmdRemove *cmd)
 {
-	PlannerGanttModel *model;
+	PlannerChartModel *model;
 	gint               position, depth;
 	GtkTreePath       *path;
 	MrpTask           *parent;
@@ -484,7 +484,7 @@ task_cmd_restore_children (TaskCmdRemove *cmd)
 		cmd_child = l->data;
 
 		path = gtk_tree_path_copy (cmd_child->path);
-		model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model 
+		model = PLANNER_CHART_MODEL (gtk_tree_view_get_model 
 					     (GTK_TREE_VIEW (cmd_child->tree)));
 		
 		depth = gtk_tree_path_get_depth (path);
@@ -535,7 +535,7 @@ task_cmd_remove_do (PlannerCmd *cmd_base)
 static void
 task_cmd_remove_undo (PlannerCmd *cmd_base)
 {
-	PlannerGanttModel *model;
+	PlannerChartModel *model;
 	TaskCmdRemove     *cmd;
 	gint               position, depth;
 	GtkTreePath       *path;
@@ -545,7 +545,7 @@ task_cmd_remove_undo (PlannerCmd *cmd_base)
 	cmd = (TaskCmdRemove*) cmd_base;
 
 	path = gtk_tree_path_copy (cmd->path);
-	model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (cmd->tree)));
+	model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (cmd->tree)));
 
 	depth = gtk_tree_path_get_depth (path);
 	position = gtk_tree_path_get_indices (path)[depth - 1];
@@ -564,7 +564,7 @@ task_cmd_remove_undo (PlannerCmd *cmd_base)
 				 position,
 				 cmd->task);
 
-	child_parent = planner_gantt_model_get_indent_task_target (model, cmd->task);
+	child_parent = planner_chart_model_get_indent_task_target (model, cmd->task);
 
 	if (cmd->children != NULL) task_cmd_restore_children (cmd);
 
@@ -1200,7 +1200,7 @@ task_tree_row_inserted (GtkTreeModel *model,
 }
 
 static void
-task_tree_task_added_cb (PlannerGanttModel *model, MrpTask *task, PlannerTaskTree *tree)
+task_tree_task_added_cb (PlannerChartModel *model, MrpTask *task, PlannerTaskTree *tree)
 {
 	g_object_ref (task);
 
@@ -1213,7 +1213,7 @@ task_tree_task_added_cb (PlannerGanttModel *model, MrpTask *task, PlannerTaskTre
 }
 
 static void
-task_tree_task_removed_cb (PlannerGanttModel *model,
+task_tree_task_removed_cb (PlannerChartModel *model,
 			   MrpTask      *task,
 			   PlannerTaskTree   *tree)
 {
@@ -1314,7 +1314,7 @@ task_tree_tree_view_button_press_event (GtkTreeView     *tree_view,
 
 /* Note: we must make sure that this matches the treeview behavior. It's a bit
  * hackish but seems to be the only way to match the selection behavior of the
- * gantt chart with the treeview.
+ * chart with the treeview.
  */
 static gboolean
 task_tree_tree_view_key_release_event (GtkTreeView *tree_view,
@@ -2003,7 +2003,7 @@ task_tree_property_value_edited (GtkCellRendererText *cell,
 	path = gtk_tree_path_new_from_string (path_str);
 	gtk_tree_model_get_iter (model, &iter, path);
 
-	task = planner_gantt_model_get_task (PLANNER_GANTT_MODEL (model), &iter);
+	task = planner_chart_model_get_task (PLANNER_CHART_MODEL (model), &iter);
 
 	value = task_view_custom_property_set_value (property, new_text, cell);
 
@@ -2125,7 +2125,7 @@ task_tree_property_changed (MrpProject      *project,
 
 void
 planner_task_tree_set_model (PlannerTaskTree   *tree,
-			     PlannerGanttModel *model)
+			     PlannerChartModel *model)
 {
 	gtk_tree_view_set_model (GTK_TREE_VIEW (tree),
 				 GTK_TREE_MODEL (model));
@@ -2151,7 +2151,7 @@ planner_task_tree_set_model (PlannerTaskTree   *tree,
 static void
 task_tree_setup_tree_view (GtkTreeView       *tree,
 			   MrpProject        *project,
-			   PlannerGanttModel *model)
+			   PlannerChartModel *model)
 {
 	PlannerTaskTree  *task_tree;
 	GtkTreeSelection *selection;
@@ -2408,7 +2408,7 @@ task_tree_add_column (GtkTreeView *tree,
 
 GtkWidget *
 planner_task_tree_new (PlannerWindow     *main_window,
-		       PlannerGanttModel *model, 
+		       PlannerChartModel *model, 
 		       gboolean           custom_properties,
 		       gint               first_column,
 		       ...)
@@ -2456,7 +2456,7 @@ void
 planner_task_tree_insert_subtask (PlannerTaskTree *tree)
 {
 	GtkTreeView       *tree_view;
-	PlannerGanttModel *model;
+	PlannerChartModel *model;
 	GtkTreePath       *path;
 	MrpTask           *parent;
 	GList             *list;
@@ -2473,9 +2473,9 @@ planner_task_tree_insert_subtask (PlannerTaskTree *tree)
 
 	parent = list->data;
 
-	model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
+	model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
 
-	path = planner_gantt_model_get_path_from_task (model, parent);
+	path = planner_chart_model_get_path_from_task (model, parent);
 
 	if (gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path)) {
 		position = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), &iter);
@@ -2510,7 +2510,7 @@ planner_task_tree_insert_subtask (PlannerTaskTree *tree)
 
 	tree_view = GTK_TREE_VIEW (tree);
 	
-	model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (tree_view));
+	model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (tree_view));
 	
 	gtk_tree_view_set_cursor (tree_view,
 				  path,
@@ -2527,7 +2527,7 @@ planner_task_tree_insert_task (PlannerTaskTree *tree)
 {
 	PlannerTaskTreePriv *priv;
 	GtkTreeView         *tree_view;
-	PlannerGanttModel   *model;
+	PlannerChartModel   *model;
 	GtkTreePath         *path;
 	MrpTask             *parent;
 	GList               *list;
@@ -2552,9 +2552,9 @@ planner_task_tree_insert_task (PlannerTaskTree *tree)
 	}
 
 	if (parent) {
-		model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
+		model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
 
-		path = planner_gantt_model_get_path_from_task (model, parent);
+		path = planner_chart_model_get_path_from_task (model, parent);
 		gtk_tree_path_append_index (path, position);
 	} else {
 		path = gtk_tree_path_new ();
@@ -2608,20 +2608,20 @@ planner_task_tree_remove_task (PlannerTaskTree *tree)
 {
 	GList             *list, *l;
 	TaskCmdRemove     *cmd;
-	PlannerGanttModel *model;
+	PlannerChartModel *model;
 	
 	list = planner_task_tree_get_selected_tasks (tree);
 	if (list == NULL) {
 		return;
 	}
 
-	model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
+	model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
 
 	for (l = list; l; l = l->next) {
 		MrpTask     *task = l->data;
 		GtkTreePath *path;
 
-		path = planner_gantt_model_get_path_from_task (model, task);
+		path = planner_chart_model_get_path_from_task (model, task);
 
 		/* Children are removed with the parent. */
 		if (path != NULL) {
@@ -2843,7 +2843,7 @@ planner_task_tree_link_tasks (PlannerTaskTree *tree,
 void
 planner_task_tree_indent_task (PlannerTaskTree *tree)
 {
-	PlannerGanttModel *model;
+	PlannerChartModel *model;
 	MrpTask           *task;
 	MrpTask           *new_parent;
 	MrpTask           *first_task_parent;
@@ -2856,7 +2856,7 @@ planner_task_tree_indent_task (PlannerTaskTree *tree)
 
 	project = tree->priv->project;
 
-	model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
+	model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
 	
 	list = planner_task_tree_get_selected_tasks (tree);
 	if (list == NULL) {
@@ -2865,7 +2865,7 @@ planner_task_tree_indent_task (PlannerTaskTree *tree)
 	
 	task = list->data;
 	
-	new_parent = planner_gantt_model_get_indent_task_target (model, task);
+	new_parent = planner_chart_model_get_indent_task_target (model, task);
 	if (new_parent == NULL) {
 		g_list_free (list);
 		return;
@@ -2915,7 +2915,7 @@ planner_task_tree_indent_task (PlannerTaskTree *tree)
 		}
 	}
 
-	path = planner_gantt_model_get_path_from_task (PLANNER_GANTT_MODEL (model), 
+	path = planner_chart_model_get_path_from_task (PLANNER_CHART_MODEL (model), 
 						       indent_tasks->data);
 
 	task_tree_block_selection_changed (tree);
@@ -2931,7 +2931,7 @@ planner_task_tree_indent_task (PlannerTaskTree *tree)
 void
 planner_task_tree_unindent_task (PlannerTaskTree *tree)
 {
-	PlannerGanttModel *model;
+	PlannerChartModel *model;
 	MrpTask           *task;
 	MrpTask           *new_parent;
 	MrpTask           *first_task_parent;
@@ -2943,7 +2943,7 @@ planner_task_tree_unindent_task (PlannerTaskTree *tree)
 
 	project = tree->priv->project;
 
-	model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
+	model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
 	
 	list = planner_task_tree_get_selected_tasks (tree);
 	if (list == NULL) {
@@ -2989,7 +2989,7 @@ planner_task_tree_unindent_task (PlannerTaskTree *tree)
 				       NULL); */
 	}
 
-	path = planner_gantt_model_get_path_from_task (PLANNER_GANTT_MODEL (model), 
+	path = planner_chart_model_get_path_from_task (PLANNER_CHART_MODEL (model), 
 						       unindent_tasks->data);
 
 	task_tree_block_selection_changed (tree);
@@ -3006,7 +3006,7 @@ void
 planner_task_tree_move_task_up (PlannerTaskTree *tree)
 {
 	GtkTreeSelection  *selection;
-	PlannerGanttModel *model;
+	PlannerChartModel *model;
 	GtkTreePath	  *path;
 	MrpProject  	  *project;
 	MrpTask	    	  *task, *parent, *sibling;
@@ -3026,11 +3026,11 @@ planner_task_tree_move_task_up (PlannerTaskTree *tree)
 
 	task_tree_block_selection_changed (tree);
 	
-	model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
+	model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
 
 	path = planner_task_tree_get_anchor (tree);
 	if (path) {
-		anchor_task = planner_gantt_model_get_task_from_path (model, path);
+		anchor_task = planner_chart_model_get_task_from_path (model, path);
 	} else {
 		anchor_task = NULL;
 	}
@@ -3084,14 +3084,14 @@ planner_task_tree_move_task_up (PlannerTaskTree *tree)
 	for (l = list; l; l = l->next) {
 		task = l->data;
 
-		path = planner_gantt_model_get_path_from_task (model, task);
+		path = planner_chart_model_get_path_from_task (model, task);
 		gtk_tree_selection_select_path (selection, path);
 		gtk_tree_path_free (path);
 	}
 
 	/* Restore anchor to the path of the original anchor task. */
 	if (anchor_task) {
-		path = planner_gantt_model_get_path_from_task (model, anchor_task);
+		path = planner_chart_model_get_path_from_task (model, anchor_task);
 		planner_task_tree_set_anchor (tree, path);
 	}
 	
@@ -3104,7 +3104,7 @@ void
 planner_task_tree_move_task_down (PlannerTaskTree *tree)
 {
 	GtkTreeSelection  *selection;
-	PlannerGanttModel *model;
+	PlannerChartModel *model;
 	GtkTreePath	  *path;
 	MrpProject 	  *project;
 	MrpTask	   	  *task, *parent, *sibling;
@@ -3125,11 +3125,11 @@ planner_task_tree_move_task_down (PlannerTaskTree *tree)
 
 	task_tree_block_selection_changed (tree);
 
-	model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
+	model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
 
 	path = planner_task_tree_get_anchor (tree);
 	if (path) {
-		anchor_task = planner_gantt_model_get_task_from_path (model, path);
+		anchor_task = planner_chart_model_get_task_from_path (model, path);
 	} else {
 		anchor_task = NULL;
 	}
@@ -3195,14 +3195,14 @@ planner_task_tree_move_task_down (PlannerTaskTree *tree)
 	for (l = list; l; l = l->next) {
 		task = l->data;
 		
-		path = planner_gantt_model_get_path_from_task (model, task);
+		path = planner_chart_model_get_path_from_task (model, task);
 		gtk_tree_selection_select_path (selection, path);
 		gtk_tree_path_free (path);
 	}
 
 	/* Restore anchor to the path of the original anchor task. */
 	if (anchor_task) {
-		path = planner_gantt_model_get_path_from_task (model, anchor_task);
+		path = planner_chart_model_get_path_from_task (model, anchor_task);
 		planner_task_tree_set_anchor (tree, path);
 	}
 	
@@ -3490,11 +3490,11 @@ static MrpTask *
 task_tree_get_task_from_path (PlannerTaskTree *tree,
 			      GtkTreePath     *path)
 {
-	PlannerGanttModel   *model;
+	PlannerChartModel   *model;
 	MrpTask             *task;
 	
-	model = PLANNER_GANTT_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
-	task = planner_gantt_model_get_task_from_path (model, path);
+	model = PLANNER_CHART_MODEL (gtk_tree_view_get_model (GTK_TREE_VIEW (tree)));
+	task = planner_chart_model_get_task_from_path (model, path);
 
 	return task;
 }

@@ -40,7 +40,7 @@ enum {
 	PROP_ZOOM
 };
 
-struct _PlannerGanttBackgroundPriv {
+struct _PlannerChartBackgroundPriv {
 	GdkGC       *border_gc;
 	GdkGC       *fill_gc;
 	GdkGC       *timeline_gc;
@@ -60,39 +60,39 @@ struct _PlannerGanttBackgroundPriv {
 };
 
 
-static void     gantt_background_class_init       (PlannerGanttBackgroundClass *class);
-static void     gantt_background_init             (PlannerGanttBackground      *background);
-static void     gantt_background_finalize         (GObject                *object);
-static void     gantt_background_set_property     (GObject                *object,
+static void     chart_background_class_init       (PlannerChartBackgroundClass *class);
+static void     chart_background_init             (PlannerChartBackground      *background);
+static void     chart_background_finalize         (GObject                *object);
+static void     chart_background_set_property     (GObject                *object,
 						   guint                   param_id,
 						   const GValue           *value,
 						   GParamSpec             *pspec);
-static void     gantt_background_update           (GnomeCanvasItem        *item,
+static void     chart_background_update           (GnomeCanvasItem        *item,
 						   double                 *affine,
 						   ArtSVP                 *clip_path,
 						   gint                    flags);
-static double   gantt_background_point            (GnomeCanvasItem        *item,
+static double   chart_background_point            (GnomeCanvasItem        *item,
 						   double                  x,
 						   double                  y,
 						   gint                    cx,
 						   gint                    cy,
 						   GnomeCanvasItem       **actual_item);
-static void     gantt_background_realize          (GnomeCanvasItem        *item);
-static void     gantt_background_unrealize        (GnomeCanvasItem        *item);
-static void     gantt_background_draw             (GnomeCanvasItem        *item,
+static void     chart_background_realize          (GnomeCanvasItem        *item);
+static void     chart_background_unrealize        (GnomeCanvasItem        *item);
+static void     chart_background_draw             (GnomeCanvasItem        *item,
 						   GdkDrawable            *drawable,
 						   gint                    x,
 						   gint                    y,
 						   gint                    width,
 						   gint                    height);
-static gboolean gantt_background_update_timeline  (gpointer                data);
-static void     gantt_background_calendar_changed (MrpCalendar            *calendar,
-						   PlannerGanttBackground      *background);
+static gboolean chart_background_update_timeline  (gpointer                data);
+static void     chart_background_calendar_changed (MrpCalendar            *calendar,
+						   PlannerChartBackground      *background);
 static void
-gantt_background_project_calendar_notify_cb       (MrpProject             *project,
+chart_background_project_calendar_notify_cb       (MrpProject             *project,
 						   GParamSpec             *spec,
-						   PlannerGanttBackground      *background);
-static void        gantt_background_set_calendar  (PlannerGanttBackground      *background,
+						   PlannerChartBackground      *background);
+static void        chart_background_set_calendar  (PlannerChartBackground      *background,
 						   MrpCalendar            *calendar);
 
 
@@ -100,25 +100,25 @@ static GnomeCanvasItemClass *parent_class;
 
 
 GType
-planner_gantt_background_get_type (void)
+planner_chart_background_get_type (void)
 {
 	static GType type = 0;
 
 	if (!type) {
 		static const GTypeInfo info = {
-			sizeof (PlannerGanttBackgroundClass),
+			sizeof (PlannerChartBackgroundClass),
 			NULL,		/* base_init */
 			NULL,		/* base_finalize */
-			(GClassInitFunc) gantt_background_class_init,
+			(GClassInitFunc) chart_background_class_init,
 			NULL,		/* class_finalize */
 			NULL,		/* class_data */
-			sizeof (PlannerGanttBackground),
+			sizeof (PlannerChartBackground),
 			0,              /* n_preallocs */
-			(GInstanceInitFunc) gantt_background_init
+			(GInstanceInitFunc) chart_background_init
 		};
 
 		type = g_type_register_static (GNOME_TYPE_CANVAS_ITEM,
-					       "PlannerGanttBackground",
+					       "PlannerChartBackground",
 					       &info,
 					       0);
 	}
@@ -127,7 +127,7 @@ planner_gantt_background_get_type (void)
 }
 
 static void
-gantt_background_class_init (PlannerGanttBackgroundClass *class)
+chart_background_class_init (PlannerChartBackgroundClass *class)
 {
 	GObjectClass         *gobject_class;
 	GnomeCanvasItemClass *item_class;
@@ -137,15 +137,15 @@ gantt_background_class_init (PlannerGanttBackgroundClass *class)
 
 	parent_class = g_type_class_peek_parent (class);
 
-	gobject_class->set_property = gantt_background_set_property;
-	gobject_class->finalize = gantt_background_finalize;
+	gobject_class->set_property = chart_background_set_property;
+	gobject_class->finalize = chart_background_finalize;
 
-	item_class->update = gantt_background_update;
+	item_class->update = chart_background_update;
 	item_class->bounds = NULL;
-	item_class->point = gantt_background_point;
-	item_class->realize = gantt_background_realize;
-	item_class->unrealize = gantt_background_unrealize;
-	item_class->draw = gantt_background_draw;
+	item_class->point = chart_background_point;
+	item_class->realize = chart_background_realize;
+	item_class->unrealize = chart_background_unrealize;
+	item_class->draw = chart_background_draw;
 
         g_object_class_install_property (
                 gobject_class,
@@ -186,11 +186,11 @@ gantt_background_class_init (PlannerGanttBackgroundClass *class)
 }
 
 static void
-gantt_background_init (PlannerGanttBackground *background)
+chart_background_init (PlannerChartBackground *background)
 {
-	PlannerGanttBackgroundPriv *priv;
+	PlannerChartBackgroundPriv *priv;
 
-	priv = g_new0 (PlannerGanttBackgroundPriv, 1);
+	priv = g_new0 (PlannerChartBackgroundPriv, 1);
 	background->priv = priv;
 
 	priv->hscale = 1.0;
@@ -199,14 +199,14 @@ gantt_background_init (PlannerGanttBackground *background)
 }
 
 static void
-gantt_background_finalize (GObject *object)
+chart_background_finalize (GObject *object)
 {
-	PlannerGanttBackground     *background;
-	PlannerGanttBackgroundPriv *priv;
+	PlannerChartBackground     *background;
+	PlannerChartBackgroundPriv *priv;
 
-	g_return_if_fail (PLANNER_IS_GANTT_BACKGROUND (object));
+	g_return_if_fail (PLANNER_IS_CHART_BACKGROUND (object));
 
-	background = PLANNER_GANTT_BACKGROUND (object);
+	background = PLANNER_CHART_BACKGROUND (object);
 	priv = background->priv;
 	
 	if (priv->timeout_id) {
@@ -223,7 +223,7 @@ gantt_background_finalize (GObject *object)
 }
 
 static void
-gantt_background_get_bounds (PlannerGanttBackground *background,
+chart_background_get_bounds (PlannerChartBackground *background,
 			     gdouble           *px1,
 			     gdouble           *py1,
 			     gdouble           *px2,
@@ -242,7 +242,7 @@ gantt_background_get_bounds (PlannerGanttBackground *background,
 }
 
 static double
-gantt_background_point (GnomeCanvasItem  *item,
+chart_background_point (GnomeCanvasItem  *item,
 			double            x,
 			double            y,
 			gint              cx,
@@ -255,20 +255,20 @@ gantt_background_point (GnomeCanvasItem  *item,
 }
 
 static void
-gantt_background_set_property (GObject      *object,
+chart_background_set_property (GObject      *object,
 			       guint         param_id,
 			       const GValue *value,
 			       GParamSpec   *pspec)
 {
 	GnomeCanvasItem       *item;
-	PlannerGanttBackground     *background;
-	PlannerGanttBackgroundPriv *priv;
+	PlannerChartBackground     *background;
+	PlannerChartBackgroundPriv *priv;
 	MrpCalendar           *calendar;
 
-	g_return_if_fail (PLANNER_IS_GANTT_BACKGROUND (object));
+	g_return_if_fail (PLANNER_IS_CHART_BACKGROUND (object));
 
 	item = GNOME_CANVAS_ITEM (object);
-	background = PLANNER_GANTT_BACKGROUND (object);
+	background = PLANNER_CHART_BACKGROUND (object);
 	priv = background->priv;
 	
 	switch (param_id) {
@@ -276,7 +276,7 @@ gantt_background_set_property (GObject      *object,
 		if (priv->project) {
 			g_signal_handlers_disconnect_by_func (
 				priv->project,
-				gantt_background_project_calendar_notify_cb,
+				chart_background_project_calendar_notify_cb,
 				background);
 		}
 		
@@ -284,11 +284,11 @@ gantt_background_set_property (GObject      *object,
 
 		g_signal_connect (priv->project,
 				  "notify::calendar",
-				  G_CALLBACK (gantt_background_project_calendar_notify_cb),
+				  G_CALLBACK (chart_background_project_calendar_notify_cb),
 				  background);
 
 		calendar = mrp_project_get_calendar (priv->project);
-		gantt_background_set_calendar (background, calendar);
+		chart_background_set_calendar (background, calendar);
 		break;
 
 	case PROP_PROJECT_START:
@@ -312,34 +312,34 @@ gantt_background_set_property (GObject      *object,
 }
 
 static void
-gantt_background_update (GnomeCanvasItem *item,
+chart_background_update (GnomeCanvasItem *item,
 			 double          *affine,
 			 ArtSVP          *clip_path,
 			 int              flags)
 {
-	PlannerGanttBackground *background;
+	PlannerChartBackground *background;
 	double             x1, y1, x2, y2;
 
-	background = PLANNER_GANTT_BACKGROUND (item);
+	background = PLANNER_CHART_BACKGROUND (item);
 
 	GNOME_CANVAS_ITEM_CLASS (parent_class)->update (item,
 							affine,
 							clip_path,
 							flags);
 	
-	gantt_background_get_bounds (background, &x1, &y1, &x2, &y2);
+	chart_background_get_bounds (background, &x1, &y1, &x2, &y2);
 
 	gnome_canvas_update_bbox (item, x1, y1, x2, y2);
 }
 
 static void
-gantt_background_realize (GnomeCanvasItem *item)
+chart_background_realize (GnomeCanvasItem *item)
 {
-	PlannerGanttBackground     *background;
-	PlannerGanttBackgroundPriv *priv;
+	PlannerChartBackground     *background;
+	PlannerChartBackgroundPriv *priv;
 	GdkColor               color;
 
-	background = PLANNER_GANTT_BACKGROUND (item);
+	background = PLANNER_CHART_BACKGROUND (item);
 	priv = background->priv;
 
 	GNOME_CANVAS_ITEM_CLASS (parent_class)->realize (item);
@@ -381,16 +381,16 @@ gantt_background_realize (GnomeCanvasItem *item)
 	pango_layout_set_alignment (priv->layout, PANGO_ALIGN_RIGHT);
 
 	priv->timeout_id = g_timeout_add (1000 * 60,
-					  gantt_background_update_timeline,
+					  chart_background_update_timeline,
 					  background);
 }
 
 static void
-gantt_background_unrealize (GnomeCanvasItem *item)
+chart_background_unrealize (GnomeCanvasItem *item)
 {
-	PlannerGanttBackground *background;
+	PlannerChartBackground *background;
 
-	background = PLANNER_GANTT_BACKGROUND (item);
+	background = PLANNER_CHART_BACKGROUND (item);
 
 	gdk_gc_unref (background->priv->border_gc);
 	background->priv->border_gc = NULL;
@@ -408,12 +408,12 @@ gantt_background_unrealize (GnomeCanvasItem *item)
 }
 
 static gboolean 
-gantt_background_update_timeline (gpointer data)
+chart_background_update_timeline (gpointer data)
 {
-	PlannerGanttBackground     *background;
-	PlannerGanttBackgroundPriv *priv;;
+	PlannerChartBackground     *background;
+	PlannerChartBackgroundPriv *priv;;
 
-	background = PLANNER_GANTT_BACKGROUND (data);
+	background = PLANNER_CHART_BACKGROUND (data);
 	priv = background->priv;
 	
 	priv->timeline = mrp_time_current_time ();
@@ -424,15 +424,15 @@ gantt_background_update_timeline (gpointer data)
 }
 
 static void
-gantt_background_draw (GnomeCanvasItem *item,
+chart_background_draw (GnomeCanvasItem *item,
 		       GdkDrawable     *drawable,
 		       int              x,
 		       int              y,
 		       int              width,
 		       int              height)
 {
-	PlannerGanttBackground     *background;
-	PlannerGanttBackgroundPriv *priv;
+	PlannerChartBackground     *background;
+	PlannerChartBackgroundPriv *priv;
 	gint                   cx1, cx2;  /* Canvas pixel coordinates */
 	gint                   cy1, cy2;  
 	gdouble                wx1, wx2;  /* World coordinates */
@@ -446,7 +446,7 @@ gantt_background_draw (GnomeCanvasItem *item,
 	MrpInterval           *ival;
 	gint                   level;
 
-	background = PLANNER_GANTT_BACKGROUND (item);
+	background = PLANNER_CHART_BACKGROUND (item);
 	priv = background->priv;
 
 	if (!priv->project) {
@@ -613,29 +613,29 @@ gantt_background_draw (GnomeCanvasItem *item,
 }
 
 static void
-gantt_background_calendar_changed (MrpCalendar       *calendar,
-				   PlannerGanttBackground *background)
+chart_background_calendar_changed (MrpCalendar       *calendar,
+				   PlannerChartBackground *background)
 {
 	gnome_canvas_item_request_update (GNOME_CANVAS_ITEM (background));
 }
 
 static void
-gantt_background_project_calendar_notify_cb (MrpProject        *project,
+chart_background_project_calendar_notify_cb (MrpProject        *project,
 					     GParamSpec        *spec,
-					     PlannerGanttBackground *background)
+					     PlannerChartBackground *background)
 {
 	MrpCalendar *calendar;
 	
 	calendar = mrp_project_get_calendar (project);
 
-	gantt_background_set_calendar (background, calendar);
+	chart_background_set_calendar (background, calendar);
 }
 
 static void
-gantt_background_set_calendar (PlannerGanttBackground *background,
+chart_background_set_calendar (PlannerChartBackground *background,
 			       MrpCalendar       *calendar)
 {
-	PlannerGanttBackgroundPriv *priv;
+	PlannerChartBackgroundPriv *priv;
 
 	priv = background->priv;
 
@@ -646,14 +646,14 @@ gantt_background_set_calendar (PlannerGanttBackground *background,
 	if (priv->calendar) {
 		g_signal_handlers_disconnect_by_func (
 			priv->calendar,
-			gantt_background_calendar_changed,
+			chart_background_calendar_changed,
 			background);
 	}
 
 	if (calendar) {
 		g_signal_connect (calendar,
 				  "calendar_changed",
-				  G_CALLBACK (gantt_background_calendar_changed),
+				  G_CALLBACK (chart_background_calendar_changed),
 				  background);
 	}
 

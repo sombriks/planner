@@ -237,7 +237,7 @@ get_widget (PlannerView *view)
 	PlannerViewPriv   *priv;
 	MrpProject   *project;
 	GtkWidget    *sw;
-	PlannerGanttModel *model;
+	PlannerChartModel *model;
 
 	g_return_val_if_fail (PLANNER_IS_VIEW (view), NULL);
 
@@ -261,7 +261,7 @@ get_widget (PlannerView *view)
 
 		gtk_container_add (GTK_CONTAINER (priv->frame), sw);
 
-		model = planner_gantt_model_new (project);
+		model = planner_chart_model_new (project);
 
 		priv->tree = planner_task_tree_new (view->main_window,
 						    model,
@@ -315,10 +315,10 @@ task_view_project_loaded_cb (MrpProject *project,
 
  	priv = view->priv;
 
-	model = GTK_TREE_MODEL (planner_gantt_model_new (project));
+	model = GTK_TREE_MODEL (planner_chart_model_new (project));
 
 	planner_task_tree_set_model (PLANNER_TASK_TREE (priv->tree),
-				PLANNER_GANTT_MODEL (model));
+				PLANNER_CHART_MODEL (model));
 
 	g_object_unref (model);
 }
@@ -670,5 +670,3 @@ task_view_update_ui (PlannerView *view)
 
 	g_list_free (list);
 }
-
-	

@@ -20,36 +20,35 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __PLANNER_GANTT_BACKGROUND_H__
-#define __PLANNER_GANTT_BACKGROUND_H__
+#ifndef __PLANNER_CHART_BACKGROUND_H__
+#define __PLANNER_CHART_BACKGROUND_H__
 
 #include <gtk/gtk.h>
 #include <libgnomecanvas/gnome-canvas.h>
 #include <libgnomecanvas/gnome-canvas-util.h>
 
-#define PLANNER_TYPE_GANTT_BACKGROUND		(planner_gantt_background_get_type ())
-#define PLANNER_GANTT_BACKGROUND(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), PLANNER_TYPE_GANTT_BACKGROUND, PlannerGanttBackground))
-#define PLANNER_GANTT_BACKGROUND_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), PLANNER_TYPE_GANTT_BACKGROUND, PlannerGanttBackgroundClass))
-#define PLANNER_IS_GANTT_BACKGROUND(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), PLANNER_TYPE_GANTT_BACKGROUND))
-#define PLANNER_IS_GANTT_BACKGROUND_CLASS(klass)	(G_TYPE_CHECK_TYPE ((obj), PLANNER_TYPE_GANTT_BACKGROUND))
-#define PLANNER_GANTT_BACKGROUND_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS ((obj), PLANNER_TYPE_GANTT_BACKGROUND, PlannerGanttBackgroundClass))
+#define PLANNER_TYPE_CHART_BACKGROUND		(planner_chart_background_get_type ())
+#define PLANNER_CHART_BACKGROUND(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), PLANNER_TYPE_CHART_BACKGROUND, PlannerChartBackground))
+#define PLANNER_CHART_BACKGROUND_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), PLANNER_TYPE_CHART_BACKGROUND, PlannerChartBackgroundClass))
+#define PLANNER_IS_CHART_BACKGROUND(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), PLANNER_TYPE_CHART_BACKGROUND))
+#define PLANNER_IS_CHART_BACKGROUND_CLASS(klass)	(G_TYPE_CHECK_TYPE ((obj), PLANNER_TYPE_CHART_BACKGROUND))
+#define PLANNER_CHART_BACKGROUND_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS ((obj), PLANNER_TYPE_CHART_BACKGROUND, PlannerChartBackgroundClass))
 
-typedef struct _PlannerGanttBackground      PlannerGanttBackground;
-typedef struct _PlannerGanttBackgroundClass PlannerGanttBackgroundClass;
-typedef struct _PlannerGanttBackgroundPriv  PlannerGanttBackgroundPriv;
+typedef struct _PlannerChartBackground      PlannerChartBackground;
+typedef struct _PlannerChartBackgroundClass PlannerChartBackgroundClass;
+typedef struct _PlannerChartBackgroundPriv  PlannerChartBackgroundPriv;
 
-struct _PlannerGanttBackground {
+struct _PlannerChartBackground {
 	GnomeCanvasItem         parent;
-	PlannerGanttBackgroundPriv  *priv;	
+	PlannerChartBackgroundPriv  *priv;	
 };
 
-struct _PlannerGanttBackgroundClass {
+struct _PlannerChartBackgroundClass {
 	GnomeCanvasItemClass parent_class;
 };
 
 
-GType planner_gantt_background_get_type (void) G_GNUC_CONST;
+GType planner_chart_background_get_type (void) G_GNUC_CONST;
 
 
-#endif /* __PLANNER_GANTT_BACKGROUND_H__ */
-
+#endif /* __PLANNER_CHART_BACKGROUND_H__ */

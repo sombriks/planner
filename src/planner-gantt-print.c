@@ -43,14 +43,14 @@ typedef struct {
 	mrptime  first_time;
 	mrptime  last_time;
 
-	gdouble  gantt_x0;
-	gdouble  gantt_y0;
+	gdouble  chart_x0;
+	gdouble  chart_y0;
 
 	GList   *elements;
 	GList   *background_elements;
 } Page;
 
-struct _PlannerGanttPrintData {
+struct _PlannerChartPrintData {
 	MrpProject        *project;
 	PlannerView       *view;
 	PlannerPrintJob   *job;
@@ -168,7 +168,7 @@ typedef struct {
 
 
 static void
-print_table_header (PlannerGanttPrintData *data)
+print_table_header (PlannerChartPrintData *data)
 {
 	gdouble x, y;
 
@@ -202,7 +202,7 @@ print_table_header (PlannerGanttPrintData *data)
 }
 
 static void
-print_table_tasks (PlannerGanttPrintData *data,
+print_table_tasks (PlannerChartPrintData *data,
 		   gboolean               header,
 		   GList                 *tasks,
 		   gint                   first)
@@ -279,7 +279,7 @@ print_table_tasks (PlannerGanttPrintData *data,
 }
 
 static void
-print_time_header (PlannerGanttPrintData *data,
+print_time_header (PlannerChartPrintData *data,
 		   gdouble                x1,
 		   gdouble                x2,
 		   mrptime                start,
@@ -406,7 +406,7 @@ foreach_visible_task (GtkTreeModel *model,
 }
 
 static GList *
-gantt_print_get_visible_tasks (PlannerGanttPrintData *data)
+chart_print_get_visible_tasks (PlannerChartPrintData *data)
 {
 	ForeachVisibleData  fvd;
 	GtkTreeModel       *model;
@@ -424,7 +424,7 @@ gantt_print_get_visible_tasks (PlannerGanttPrintData *data)
 }
 
 static void
-gantt_print_free_print_tasks (GList *tasks)
+chart_print_free_print_tasks (GList *tasks)
 {
 	GList *l;
 
@@ -434,7 +434,7 @@ gantt_print_free_print_tasks (GList *tasks)
 }	
 
 static GList *
-gantt_print_get_relations (PlannerGanttPrintData *data)
+chart_print_get_relations (PlannerChartPrintData *data)
 {
 	GList   *tasks, *l;
 	GList   *predecessors, *p;
@@ -455,7 +455,7 @@ gantt_print_get_relations (PlannerGanttPrintData *data)
 }
 
 static void
-gantt_print_task (PlannerGanttPrintData *data, Element *element)
+chart_print_task (PlannerChartPrintData *data, Element *element)
 {
 	gnome_print_newpath (data->job->pc);
 	planner_print_job_moveto (data->job, element->x1, element->y1);
@@ -500,7 +500,7 @@ gantt_print_task (PlannerGanttPrintData *data, Element *element)
 }
 
 static gboolean
-gantt_print_get_allocated_resources_string (PlannerGanttPrintData  *data,
+chart_print_get_allocated_resources_string (PlannerChartPrintData  *data,
 					    MrpTask                *task,
 					    gchar                 **str,
 					    gdouble                *width)
@@ -582,7 +582,7 @@ gantt_print_get_allocated_resources_string (PlannerGanttPrintData  *data,
 }
 
 void
-planner_gantt_print_do (PlannerGanttPrintData *data)
+planner_chart_print_do (PlannerChartPrintData *data)
 {
 	GList      *relations;
 	GList      *l;
@@ -811,7 +811,7 @@ planner_gantt_print_do (PlannerGanttPrintData *data)
 			d(g_print ("\n"));
 
 			/* Handle the allocated resources. */
-			if (gantt_print_get_allocated_resources_string (data, ptask->task, &str, NULL)) {
+			if (chart_print_get_allocated_resources_string (data, ptask->task, &str, NULL)) {
 				task_coord = g_hash_table_lookup (data->task_finish_coords,
 								  ptask->task);
 
@@ -849,7 +849,7 @@ planner_gantt_print_do (PlannerGanttPrintData *data)
 	}
 
 	/* Second pass, go through all relations and add elements for them. */
-	relations = gantt_print_get_relations (data);
+	relations = chart_print_get_relations (data);
 	for (l = relations; l; l = l->next) {
 		MrpTask     *predecessor, *successor;
 		TaskCoord   *pre_coord, *suc_coord;
@@ -1147,7 +1147,7 @@ planner_gantt_print_do (PlannerGanttPrintData *data)
 				case TASK_RIGHT:
 				case TASK_WHOLE:
 				case TASK_MIDDLE:
-					gantt_print_task (data, element);
+					chart_print_task (data, element);
 					break;
 				case SUMMARY_LEFT:
 					planner_print_job_moveto (data->job,
@@ -1339,20 +1339,20 @@ planner_gantt_print_do (PlannerGanttPrintData *data)
 	}
 }
 
-PlannerGanttPrintData *
-planner_gantt_print_data_new (PlannerView     *view,
+PlannerChartPrintData *
+planner_chart_print_data_new (PlannerView     *view,
 			      PlannerPrintJob *job,
 			      GtkTreeView     *tree_view,
 			      gint             level,
 			      gboolean         show_critical)
 {
-	PlannerGanttPrintData *data;
+	PlannerChartPrintData *data;
 	GnomeFont             *font;
 	GList                 *tasks = NULL, *l;
 	gint                   num_tasks;
 	gdouble                max_name_width = 0.0;
 
-	data = g_new0 (PlannerGanttPrintData, 1);
+	data = g_new0 (PlannerChartPrintData, 1);
 
 	data->view = view;
 	data->job = job;
@@ -1364,7 +1364,7 @@ planner_gantt_print_data_new (PlannerView     *view,
 	data->level = level;
 	
 	/* Note: This looks hackish, but it's the same equation used for the
-	 * zoom level in the gantt chart, which actually is calculated to have a
+	 * zoom level in the chart, which actually is calculated to have a
 	 * "good feel" :). We scale it with the paper size here though...
 	 */
 	data->f = 1000 / pow (2, level - 19) / data->job->width;
@@ -1383,7 +1383,7 @@ planner_gantt_print_data_new (PlannerView     *view,
 	/* Start and finish of the project. */
 	data->start = mrp_project_get_project_start (data->project);
 	
-	tasks = gantt_print_get_visible_tasks (data);
+	tasks = chart_print_get_visible_tasks (data);
 	data->tasks = tasks;
 	num_tasks = g_list_length (tasks);
 
@@ -1412,7 +1412,7 @@ planner_gantt_print_data_new (PlannerView     *view,
 			max_name_width = name_width;
 		}
 
-		gantt_print_get_allocated_resources_string (data, task, NULL, &width);
+		chart_print_get_allocated_resources_string (data, task, NULL, &width);
 
 		data->finish = MAX (data->finish, finish);/* + width * data->f);*/
 	}
@@ -1485,7 +1485,7 @@ free_page (Page *page)
 }
 
 void
-planner_gantt_print_data_free (PlannerGanttPrintData *data)
+planner_chart_print_data_free (PlannerChartPrintData *data)
 {
 	gint i, num_pages;
 	
@@ -1494,7 +1494,7 @@ planner_gantt_print_data_free (PlannerGanttPrintData *data)
 	g_hash_table_destroy (data->task_start_coords);
 	g_hash_table_destroy (data->task_finish_coords);
 	
-	gantt_print_free_print_tasks (data->tasks);
+	chart_print_free_print_tasks (data->tasks);
 	data->tasks = NULL;
 
 	num_pages = data->cols_of_pages * data->rows_of_pages;
@@ -1510,7 +1510,7 @@ planner_gantt_print_data_free (PlannerGanttPrintData *data)
 }
 
 gint
-planner_gantt_print_get_n_pages (PlannerGanttPrintData *data)
+planner_chart_print_get_n_pages (PlannerChartPrintData *data)
 {
 	g_return_val_if_fail (data != NULL, 0);
 	

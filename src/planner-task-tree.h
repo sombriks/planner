@@ -54,12 +54,12 @@ struct _PlannerTaskTreeClass
 
 GType        planner_task_tree_get_type               (void) G_GNUC_CONST;
 GtkWidget *  planner_task_tree_new                    (PlannerWindow         *window,
-						       PlannerGanttModel     *model,
+						       PlannerChartModel     *model,
 						       gboolean               custom_properties,
 						       gint                   first_column,
 						       ...);
 void         planner_task_tree_set_model              (PlannerTaskTree       *tree,
-						       PlannerGanttModel     *model);
+						       PlannerChartModel     *model);
 void         planner_task_tree_insert_subtask         (PlannerTaskTree       *tree);
 void         planner_task_tree_insert_task            (PlannerTaskTree       *tree);
 void         planner_task_tree_remove_task            (PlannerTaskTree       *tree);
