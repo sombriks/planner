@@ -7,14 +7,14 @@
 # Zbigniew Chyla <chyla@alice.ci.pwr.wroc.pl>, 2002-2003.
 # Artur Flinta <aflinta@at.kernel.pl>, 2003.
 # Tomasz Kłoczko <kloczek@rudy.mif.pg.gda.pl>, 2004.
-# Piotr Drąg <piotrdrag@gmail.com>, 2010-2014.
-# Aviary.pl <gnomepl@aviary.pl>, 2010-2014.
+# Piotr Drąg <piotrdrag@gmail.com>, 2010-2015.
+# Aviary.pl <gnomepl@aviary.pl>, 2010-2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: planner\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-30 18:25+0100\n"
-"PO-Revision-Date: 2014-11-30 18:27+0100\n"
+"POT-Creation-Date: 2015-08-31 01:22+0200\n"
+"PO-Revision-Date: 2015-08-31 01:24+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -116,15 +116,15 @@ msgstr "Edytor kalendarza"
 
 #: ../data/glade/calendar-dialog.glade.h:16
 msgid "_New..."
-msgstr "_Nowy..."
+msgstr "_Nowy…"
 
 #: ../data/glade/calendar-dialog.glade.h:17
 msgid "Working time..."
-msgstr "Czas pracy..."
+msgstr "Czas pracy…"
 
 #: ../data/glade/calendar-dialog.glade.h:18
 msgid "Default week..."
-msgstr "Domyślny tydzień..."
+msgstr "Domyślny tydzień…"
 
 #: ../data/glade/calendar-dialog.glade.h:19
 msgid "Use working time from derived calendar"
@@ -277,7 +277,7 @@ msgstr "_Kalendarz:"
 
 #: ../data/glade/project-properties.glade.h:7
 msgid "Select..."
-msgstr "Wybierz..."
+msgstr "Wybierz…"
 
 #: ../data/glade/project-properties.glade.h:8
 msgid "_Phase:"
@@ -327,7 +327,7 @@ msgstr "_Krótka nazwa:"
 #: ../data/glade/resource-dialog.glade.h:8
 #: ../data/glade/resource-input-dialog.glade.h:8
 msgid "Optional - overrides resource name in Gantt view."
-msgstr "Opcjonalne - zastępuje nazwę zasobu w widoku Gantta."
+msgstr "Opcjonalne — zastępuje nazwę zasobu w widoku Gantta."
 
 #: ../data/glade/resource-dialog.glade.h:10
 msgid ""
@@ -335,11 +335,11 @@ msgid ""
 "calendar of the project, select 'None'. "
 msgstr ""
 "Proszę wybrać kalendarz dla tego zasobu. Aby skorzystać z domyślnego "
-"kalendarza projektu, należy wybrać opcję \"Brak\". "
+"kalendarza projektu, należy wybrać opcję „Brak”. "
 
 #: ../data/glade/resource-dialog.glade.h:11
 msgid "Edit Calendars..."
-msgstr "Modyfikuj kalendarze..."
+msgstr "Modyfikuj kalendarze…"
 
 #: ../data/glade/resource-dialog.glade.h:12
 msgid "Calendar"
@@ -430,7 +430,7 @@ msgstr "Anuluj"
 #: ../data/glade/task-date-widget.glade.h:9
 #: ../src/planner-cell-renderer-date.c:174
 msgid "Select"
-msgstr "Wybór"
+msgstr "Wybierz"
 
 #: ../data/glade/task-dialog.glade.h:2
 #: ../data/glade/task-input-dialog.glade.h:4
@@ -669,12 +669,12 @@ msgstr "Domyślny"
 #: ../libplanner/mrp-project.c:715
 #, c-format
 msgid "Invalid URI: '%s'"
-msgstr "Nieprawidłowy adres URI: \"%s\""
+msgstr "Nieprawidłowy adres URI: „%s”"
 
 #: ../libplanner/mrp-project.c:758
 #, c-format
 msgid "Couldn't find a suitable file module for loading '%s'"
-msgstr "Nie można odnaleźć odpowiedniego pliku modułu do wczytania \"%s\""
+msgstr "Nie można odnaleźć odpowiedniego pliku modułu do wczytania „%s”"
 
 #: ../libplanner/mrp-project.c:779 ../libplanner/mrp-project.c:1063
 #, c-format
@@ -691,7 +691,7 @@ msgstr "Nieprawidłowy adres URI."
 #, c-format
 msgid "Unable to find file writer identified by '%s'"
 msgstr ""
-"Nie można odnaleźć programu zapisującego pliki identyfikowane jako \"%s\""
+"Nie można odnaleźć programu zapisującego pliki identyfikowane jako „%s”"
 
 #: ../libplanner/mrp-project.c:1020
 #, c-format
@@ -748,7 +748,7 @@ msgstr "Nieprawidłowy unikod"
 #: ../libplanner/mrp-sql.c:2258
 #, c-format
 msgid "Connection to database '%s' failed.\n"
-msgstr "Połączenie z bazą danych \"%s\" się nie powiodło.\n"
+msgstr "Połączenie z bazą danych „%s” się nie powiodło.\n"
 
 #: ../libplanner/mrp-sql.c:2263
 #, c-format
@@ -756,7 +756,7 @@ msgid ""
 "Connection to database '%s' failed.\n"
 "%s"
 msgstr ""
-"Połączenie z bazą danych \"%s\" się nie powiodło.\n"
+"Połączenie z bazą danych „%s” się nie powiodło.\n"
 "%s"
 
 #: ../libplanner/mrp-sql.c:2272 ../libplanner/mrp-sql.c:3711
@@ -774,20 +774,20 @@ msgid ""
 "The project '%s' has been changed by the user '%s' since you opened it. Do "
 "you want to save anyway?"
 msgstr ""
-"Projekt \"%s\" został zmieniony przez użytkownika \"%s\" od czasu, gdy "
-"został otwarty. Zapisać go mimo to?"
+"Projekt „%s” został zmieniony przez użytkownika „%s” od czasu, gdy został "
+"otwarty. Zapisać go mimo to?"
 
 #: ../libplanner/mrp-sql.c:3704
 #, c-format
 msgid "Connection to database '%s' failed."
-msgstr "Połączenie z bazą danych \"%s\" się nie powiodło."
+msgstr "Połączenie z bazą danych „%s” się nie powiodło."
 
 #: ../libplanner/mrp-storage-sql.c:206
 #, c-format
 msgid "Invalid SQL URI (must start with 'sql://' and contain '#')."
 msgstr ""
-"Nieprawidłowy adres URI SQL (musi rozpoczynać się od \"sql://\" i zawierać "
-"znak \"#\")."
+"Nieprawidłowy adres URI SQL (musi rozpoczynać się od „sql://” i zawierać "
+"znak „#”)."
 
 #: ../libplanner/mrp-storage-sql.c:275
 #, c-format
@@ -824,7 +824,7 @@ msgid ""
 "constraint."
 msgstr ""
 "Relacja zakończenie po rozpoczęciu nie może być łączona z ograniczeniem "
-"\"Rozpoczęcie nie wcześniej niż\"."
+"„Rozpoczęcie nie wcześniej niż”."
 
 #: ../libplanner/mrp-task.c:1100
 msgid ""
@@ -832,7 +832,7 @@ msgid ""
 "constraint."
 msgstr ""
 "Relacja od zakończenie po zakończeniu nie może być łączona z ograniczeniem "
-"\"Rozpoczęcie nie wcześniej niż\"."
+"„Rozpoczęcie nie wcześniej niż”."
 
 #: ../libplanner/mrp-task.c:1124
 #, c-format
@@ -928,7 +928,7 @@ msgstr "Konkretnego dnia"
 #: ../src/planner-cmd-manager.c:227
 #, c-format
 msgid "Undo '%s'"
-msgstr "Cofnij \"%s\""
+msgstr "Cofnij „%s”"
 
 #: ../src/planner-cmd-manager.c:229
 msgid "Undo"
@@ -937,7 +937,7 @@ msgstr "Cofnij"
 #: ../src/planner-cmd-manager.c:239
 #, c-format
 msgid "Redo '%s'"
-msgstr "Ponów \"%s\""
+msgstr "Ponów „%s”"
 
 #: ../src/planner-cmd-manager.c:241
 msgid "Redo"
@@ -946,12 +946,12 @@ msgstr "Ponów"
 #: ../src/planner-day-type-dialog.c:499
 #, c-format
 msgid "Add day type \"%s\""
-msgstr "Dodaj rodzaj dnia \"%s\""
+msgstr "Dodaj rodzaj dnia „%s”"
 
 #: ../src/planner-day-type-dialog.c:560
 #, c-format
 msgid "Remove day type \"%s\""
-msgstr "Usuń rodzaj dnia \"%s\""
+msgstr "Usuń rodzaj dnia „%s”"
 
 #: ../src/planner-default-week-dialog.c:42
 msgid "Monday"
@@ -1045,27 +1045,27 @@ msgstr "Identyfikator używany przez serwer danych Evolution dla zasobów"
 #: ../src/planner-format.c:153
 #, c-format
 msgid "%dd %dh"
-msgstr "%dd %dg"
+msgstr "%d d %d g"
 
 #: ../src/planner-format.c:156
 #, c-format
 msgid "%dd"
-msgstr "%dd"
+msgstr "%d d"
 
 #: ../src/planner-format.c:161
 #, c-format
 msgid "%dh %dmin"
-msgstr "%dg %dmin"
+msgstr "%d g %d min"
 
 #: ../src/planner-format.c:164
 #, c-format
 msgid "%dh"
-msgstr "%dg"
+msgstr "%d g"
 
 #: ../src/planner-format.c:168
 #, c-format
 msgid "%dmin"
-msgstr "%dmin"
+msgstr "%d min"
 
 #. i18n: this string is the date nr and month name, displayed
 #. * e.g. in the date cells in the task tree. See
@@ -1193,7 +1193,7 @@ msgstr "Bez nazwy"
 #: ../src/planner-gantt-row.c:2411
 #, c-format
 msgid "Make task '%s' a predecessor of '%s'"
-msgstr "Uczyń zadanie \"%s\" poprzednikiem \"%s\""
+msgstr "Uczyń zadanie „%s” poprzednikiem „%s”"
 
 #: ../src/planner-gantt-row.c:3443 ../src/planner-task-dialog.c:455
 #: ../src/planner-task-tree.c:259 ../src/planner-task-tree.c:941
@@ -1210,7 +1210,7 @@ msgstr "Wstawia nowe zadanie"
 
 #: ../src/planner-gantt-view.c:141 ../src/planner-task-view.c:122
 msgid "In_sert Tasks..."
-msgstr "W_staw zadania..."
+msgstr "W_staw zadania…"
 
 #: ../src/planner-gantt-view.c:144 ../src/planner-task-view.c:125
 msgid "_Remove Task"
@@ -1222,7 +1222,7 @@ msgstr "Usuwa zaznaczone zadania"
 
 #: ../src/planner-gantt-view.c:147
 msgid "_Edit Task Properties..."
-msgstr "_Modyfikuj właściwości zadania..."
+msgstr "_Modyfikuj właściwości zadania…"
 
 #: ../src/planner-gantt-view.c:150 ../src/planner-resource-view.c:248
 #: ../src/planner-task-view.c:131
@@ -1438,7 +1438,7 @@ msgstr "Wyświetl wynik w przeglądarce"
 #: ../src/planner-xml-planner-plugin.c:124
 #, c-format
 msgid "File \"%s\" exists, do you want to overwrite it?"
-msgstr "Plik \"%s\" istnieje, zastąpić go?"
+msgstr "Plik „%s” istnieje, zastąpić go?"
 
 #: ../src/planner-main.c:44
 msgid "Create the initial window with the given geometry."
@@ -1454,7 +1454,7 @@ msgstr "PLIKI|URI"
 
 #: ../src/planner-main.c:68
 msgid "- Planner project management"
-msgstr "- zarządzanie projektami Planner"
+msgstr "— zarządzanie projektami Planner"
 
 #: ../src/planner-main.c:72
 #, c-format
@@ -1463,17 +1463,17 @@ msgid ""
 "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
 "%s\n"
-"Polecenia \"%s --help\" wyświetla pełną listę dostępnych opcji wiersza "
+"Polecenie „%s --help” wyświetla pełną listę dostępnych opcji wiersza "
 "poleceń.\n"
 
 #: ../src/planner-main.c:99
 #, c-format
 msgid "Invalid geometry string \"%s\"\n"
-msgstr "Nieprawidłowy ciąg wymiarów \"%s\"\n"
+msgstr "Nieprawidłowy ciąg wymiarów „%s”\n"
 
 #: ../src/planner-msp-plugin.c:49
 msgid "MS Project XML..."
-msgstr "Plik XML programu Microsoft Project..."
+msgstr "Plik XML programu Microsoft Project…"
 
 #: ../src/planner-msp-plugin.c:49
 msgid "Import an MS Project XML file"
@@ -1506,7 +1506,7 @@ msgstr "Usuń fazę"
 #: ../src/planner-plugin-loader.c:40
 #, c-format
 msgid "Could not open plugin file '%s'\n"
-msgstr "Nie można otworzyć pliku wtyczki \"%s\"\n"
+msgstr "Nie można otworzyć pliku wtyczki „%s”\n"
 
 #: ../src/planner-predecessor-model.c:191 ../src/planner-task-dialog.c:2211
 msgid "FS"
@@ -1578,7 +1578,7 @@ msgstr "Nazwa dowolnej właściwości musi rozpoczynać się literą."
 #: ../src/planner-property-dialog.c:393
 #, c-format
 msgid "Do you really want to remove the property '%s' from the project?"
-msgstr "Na pewno usunąć właściwość \"%s\" z projektu?"
+msgstr "Na pewno usunąć właściwość „%s” z projektu?"
 
 #: ../src/planner-project-properties.c:1557
 msgid "Could not create properties dialog."
@@ -1586,7 +1586,7 @@ msgstr "Nie można utworzyć okna właściwości."
 
 #: ../src/planner-project-properties.c:1591
 msgid "Date..."
-msgstr "Data..."
+msgstr "Data…"
 
 #: ../src/planner-project-properties.c:1935
 msgid "Add project property"
@@ -1683,7 +1683,7 @@ msgstr "Wstawia nowy zasób"
 
 #: ../src/planner-resource-view.c:236
 msgid "In_sert Resources..."
-msgstr "Ws_taw zasoby..."
+msgstr "Ws_taw zasoby…"
 
 #: ../src/planner-resource-view.c:239
 msgid "_Remove Resource"
@@ -1695,7 +1695,7 @@ msgstr "Usuwa zaznaczony zasób"
 
 #: ../src/planner-resource-view.c:242
 msgid "_Edit Resource Properties..."
-msgstr "_Modyfikuj właściwości zasobu..."
+msgstr "_Modyfikuj właściwości zasobu…"
 
 #: ../src/planner-resource-view.c:245
 msgid "Edit _Groups"
@@ -1707,7 +1707,7 @@ msgstr "Modyfikuje grupy zasobu"
 
 #: ../src/planner-resource-view.c:251
 msgid "Edit _Custom Properties..."
-msgstr "Modyfikuj _dowolne właściwości..."
+msgstr "Modyfikuj _dowolne właściwości…"
 
 #: ../src/planner-resource-view.c:269
 msgid "/_Insert resource"
@@ -1719,7 +1719,7 @@ msgstr "/_Usuń zasób"
 
 #: ../src/planner-resource-view.c:275 ../src/planner-usage-tree.c:102
 msgid "/_Edit resource..."
-msgstr "/_Modyfikuj zasób..."
+msgstr "/_Modyfikuj zasób…"
 
 #: ../src/planner-resource-view.c:463
 msgid "_Resources"
@@ -1793,7 +1793,7 @@ msgstr "%04d, P%d"
 
 #: ../src/planner-sql-plugin.c:93
 msgid "Open from Database..."
-msgstr "Otwórz z bazy danych..."
+msgstr "Otwórz z bazy danych…"
 
 #: ../src/planner-sql-plugin.c:94
 msgid "Open a project from a database"
@@ -1848,12 +1848,12 @@ msgstr "Baza danych %s nie została ustawiona dla programu Planner. Zrobić to?"
 #: ../src/planner-sql-plugin.c:689
 #, c-format
 msgid "Connection to database '%s@%s' failed."
-msgstr "Połączenie z bazą danych \"%s@%s\" się nie powiodło."
+msgstr "Połączenie z bazą danych „%s@%s” się nie powiodło."
 
 #: ../src/planner-sql-plugin.c:708
 #, c-format
 msgid "Test to tables in database '%s' failed."
-msgstr "Testowanie tablic w bazie danych \"%s\" się nie powiodło."
+msgstr "Testowanie tablic w bazie danych „%s” się nie powiodło."
 
 #: ../src/planner-sql-plugin.c:810
 msgid "ID"
@@ -1955,7 +1955,7 @@ msgstr "Nie można dodać nowego poprzednika. Nie wybrano zadania!"
 
 #: ../src/planner-task-dialog.c:2457
 msgid "Change..."
-msgstr "Zmień..."
+msgstr "Zmień…"
 
 #: ../src/planner-task-dialog.c:2631
 msgid "Assigned"
@@ -1991,11 +1991,11 @@ msgstr "/R_ozłącz zadanie"
 
 #: ../src/planner-task-popup.c:68
 msgid "/Assign _resources..."
-msgstr "/P_rzydziel zasoby..."
+msgstr "/P_rzydziel zasoby…"
 
 #: ../src/planner-task-popup.c:71 ../src/planner-usage-tree.c:105
 msgid "/_Edit task..."
-msgstr "/_Modyfikuj zadanie..."
+msgstr "/_Modyfikuj zadanie…"
 
 #: ../src/planner-task-tree.c:561
 msgid "Remove task"
@@ -2081,7 +2081,7 @@ msgstr "_Modyfikuj zadanie"
 
 #: ../src/planner-task-view.c:155
 msgid "_Edit Custom Properties..."
-msgstr "_Modyfikuj dowolne właściwości..."
+msgstr "_Modyfikuj dowolne właściwości…"
 
 #: ../src/planner-task-view.c:301
 msgid "Tasks"
@@ -2149,7 +2149,7 @@ msgstr "Modyfikacja kolumn użycia zasobów"
 #: ../src/planner-util-win32.c:45
 #, c-format
 msgid "Unable to open '%s'"
-msgstr "Nie można otworzyć \"%s\""
+msgstr "Nie można otworzyć „%s”"
 
 #: ../src/planner-util-win32.c:72
 msgid "Unable to open help file"
@@ -2169,7 +2169,7 @@ msgstr "Tworzy nowy projekt"
 
 #: ../src/planner-window.c:224
 msgid "_Open..."
-msgstr "_Otwórz..."
+msgstr "_Otwórz…"
 
 #: ../src/planner-window.c:224
 msgid "Open a project"
@@ -2197,7 +2197,7 @@ msgstr "Wy_eksportuj"
 
 #: ../src/planner-window.c:240
 msgid "Save _As..."
-msgstr "Z_apisz jako..."
+msgstr "Z_apisz jako…"
 
 #: ../src/planner-window.c:240
 msgid "Save the current project with a different name"
@@ -2205,7 +2205,7 @@ msgstr "Zapisuje bieżący projekt pod inną nazwą"
 
 #: ../src/planner-window.c:243
 msgid "Page Set_up..."
-msgstr "_Ustawienia strony..."
+msgstr "_Ustawienia strony…"
 
 #: ../src/planner-window.c:243
 msgid "Setup the page settings for your current printer"
@@ -2213,7 +2213,7 @@ msgstr "Ustawienia strony dla bieżącej drukarki"
 
 #: ../src/planner-window.c:246
 msgid "_Print..."
-msgstr "Wy_drukuj..."
+msgstr "Wy_drukuj…"
 
 #: ../src/planner-window.c:246
 msgid "Print the current project"
@@ -2318,7 +2318,7 @@ msgstr "Informacje o programie"
 #: ../src/planner-window.c:692
 #, c-format
 msgid "Switch to the view \"%s\""
-msgstr "Przełącz na widok \"%s\""
+msgstr "Przełącz na widok „%s”"
 
 #: ../src/planner-window.c:862
 msgid "Open a File"
@@ -2338,8 +2338,8 @@ msgstr ""
 "Zbigniew Chyla <chyla@alice.ci.pwr.wroc.pl>, 2002-2003\n"
 "Artur Flinta <aflinta@at.kernel.pl>, 2003\n"
 "Tomasz Kłoczko <kloczek@rudy.mif.pg.gda.pl>, 2004\n"
-"Piotr Drąg <piotrdrag@gmail.com>, 2010-2014\n"
-"Aviary.pl <gnomepl@aviary.pl>, 2010-2014"
+"Piotr Drąg <piotrdrag@gmail.com>, 2010-2015\n"
+"Aviary.pl <gnomepl@aviary.pl>, 2010-2015"
 
 #: ../src/planner-window.c:1185
 msgid "The Planner Homepage"
@@ -2390,7 +2390,7 @@ msgstr[2] ""
 #: ../src/planner-window.c:1363
 #, c-format
 msgid "Save changes to document '%s' before closing?"
-msgstr "Zapisać zmiany w dokumencie \"%s\" przed zamknięciem?"
+msgstr "Zapisać zmiany w dokumencie „%s” przed zamknięciem?"
 
 #: ../src/planner-window.c:1388
 msgid "C_lose without saving"
@@ -2423,7 +2423,7 @@ msgstr ""
 "Planner.\n"
 "\n"
 "Podczas wczytywania starych plików, wszystkie zadania muszą korzystać z "
-"ograniczenia \"Musi rozpoczynać się o\", ponieważ stara wersja nie w pełni "
+"ograniczenia „Musi rozpoczynać się o”, ponieważ stara wersja nie w pełni "
 "obsługiwała automatyczną zmianę terminów. Aby skorzystać z tej nowej "
 "funkcji, należy dodać relacje następstw pomiędzy zadaniami, które będą "
 "zależne od siebie nawzajem.\n"
@@ -2432,7 +2432,7 @@ msgstr ""
 "i przeniesienie go na zadanie, które będzie następnym w kolejności.\n"
 "\n"
 "Po wykonaniu tego działania, można usunąć wszystkie ograniczenia klikając "
-"pozycję menu \"Usuń wszystkie ograniczenia\" w menu \"Edycja\"."
+"pozycję menu „Usuń wszystkie ograniczenia” w menu „Edycja”."
 
 #. Hack.
 #: ../src/planner-window.c:1797
