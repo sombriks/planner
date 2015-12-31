@@ -4,26 +4,29 @@
 #
 # Gorkem Cetin <gorkem@bahcesehir.edu.tr>, 2003.
 # Muhammet Kara <muhammetk@gmail.com>, 2011, 2014.
+# Necdet Yücel <necdetyucel@gmail.com>, 2015.
+# İşbaran Akçayır <isbaran@gmail.com>, 2015.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: planner\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=planner&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-11-25 21:50+0000\n"
-"PO-Revision-Date: 2014-12-11 19:37+0200\n"
-"Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
+"POT-Creation-Date: 2015-09-19 23:50+0000\n"
+"PO-Revision-Date: 2015-01-12 14:46+0000\n"
+"Last-Translator: İşbaran Akçayır <isbaran@gmail.com>\n"
 "Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Gtranslator 2.91.6\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 2.5.1.1\n"
+"X-POOTLE-MTIME: 1421073967.000000\n"
 
 #: ../data/glade/add-predecessor.glade.h:1
 msgid "Add Predecessor"
-msgstr ""
+msgstr "Öncelik Ekle"
 
 #: ../data/glade/add-predecessor.glade.h:2
 #: ../data/glade/calendar-dialog.glade.h:36
@@ -42,7 +45,7 @@ msgstr "_İlişki türü:"
 
 #: ../data/glade/add-predecessor.glade.h:4
 msgid "_Lag:"
-msgstr ""
+msgstr "_Gecikme:"
 
 #: ../data/glade/calendar-dialog.glade.h:1
 msgid "Default Week"
@@ -57,6 +60,8 @@ msgid ""
 "Select a weekday and the day type to use for that day in the default week "
 "for this calendar.\n"
 msgstr ""
+"Bu takvimin varsayılan haftasında kullanılmak üzere haftanın bir gününü ve "
+"bu gün için kullanılacak gün tipini seçin.\n"
 
 #: ../data/glade/calendar-dialog.glade.h:5
 msgid "Week day:"
@@ -96,8 +101,7 @@ msgid "-"
 msgstr "-"
 
 #: ../data/glade/calendar-dialog.glade.h:14 ../data/glade/eds.glade.h:4
-#: ../data/glade/new-property.glade.h:5
-#: ../data/glade/resource-dialog.glade.h:6
+#: ../data/glade/new-property.glade.h:5 ../data/glade/resource-dialog.glade.h:6
 #: ../data/glade/resource-input-dialog.glade.h:5 ../data/glade/sql.glade.h:5
 #: ../data/glade/task-input-dialog.glade.h:5
 msgid "*"
@@ -121,7 +125,7 @@ msgstr "Öntanımlı hafta..."
 
 #: ../data/glade/calendar-dialog.glade.h:19
 msgid "Use working time from derived calendar"
-msgstr ""
+msgstr "Çalışma zamanını türetilmiş takvimden kullan"
 
 #: ../data/glade/calendar-dialog.glade.h:20
 msgid "Set day type to:"
@@ -165,7 +169,7 @@ msgstr "_Yeni takvimin adı:"
 
 #: ../data/glade/calendar-dialog.glade.h:30
 msgid "_Derive from a calendar"
-msgstr ""
+msgstr "Bir takvimden _türet"
 
 #: ../data/glade/calendar-dialog.glade.h:31
 msgid "C_opy an existing calendar"
@@ -239,8 +243,7 @@ msgstr "Özellik Ekle"
 msgid "_Description:"
 msgstr "_Açıklama:"
 
-#: ../data/glade/new-property.glade.h:4
-#: ../data/glade/resource-dialog.glade.h:2
+#: ../data/glade/new-property.glade.h:4 ../data/glade/resource-dialog.glade.h:2
 msgid "_Type:"
 msgstr "_Tür:"
 
@@ -277,8 +280,7 @@ msgid "_Phase:"
 msgstr "_Safha:"
 
 #: ../data/glade/project-properties.glade.h:9
-#: ../data/glade/resource-dialog.glade.h:9
-#: ../data/glade/task-dialog.glade.h:14
+#: ../data/glade/resource-dialog.glade.h:9 ../data/glade/task-dialog.glade.h:14
 msgid "General"
 msgstr "Genel"
 
@@ -327,6 +329,8 @@ msgid ""
 "Select the calendar to use for this resource. If you want to use the default "
 "calendar of the project, select 'None'. "
 msgstr ""
+"Bu kaynak için kullanılacak takvimi seçin. Projenin varsayılan takvimini "
+"kullanmak istiyorsanız, 'Hiçbiri'ni seçin. "
 
 #: ../data/glade/resource-dialog.glade.h:11
 msgid "Edit Calendars..."
@@ -391,10 +395,9 @@ msgstr "pencere"
 #. This is the verb "schedule"
 #. I18n: the verb "schedule" here.
 #: ../data/glade/task-date-widget.glade.h:3
-#: ../data/glade/task-dialog.glade.h:13
-#: ../src/planner-cell-renderer-date.c:139
+#: ../data/glade/task-dialog.glade.h:13 ../src/planner-cell-renderer-date.c:139
 msgid "Schedule:"
-msgstr ""
+msgstr "Zamanlama:"
 
 #: ../data/glade/task-date-widget.glade.h:4
 msgid ""
@@ -434,7 +437,7 @@ msgstr "_Süre:"
 
 #: ../data/glade/task-dialog.glade.h:4
 msgid "C_omplete:"
-msgstr ""
+msgstr "_Tamamlanan:"
 
 #: ../data/glade/task-dialog.glade.h:5
 msgid "_Priority:"
@@ -451,7 +454,7 @@ msgstr "  "
 
 #: ../data/glade/task-dialog.glade.h:10
 msgid "_Milestone"
-msgstr ""
+msgstr "_Dönüm noktası"
 
 #: ../data/glade/task-dialog.glade.h:11
 msgid "_Fixed duration"
@@ -463,7 +466,7 @@ msgstr "Kaynaklar"
 
 #: ../data/glade/task-dialog.glade.h:16
 msgid "Predecessors"
-msgstr ""
+msgstr "Öncelikler"
 
 #: ../data/glade/task-dialog.glade.h:17
 msgid "_Insert Time Stamp"
@@ -510,11 +513,9 @@ msgid "Highlight critical path in Gantt view"
 msgstr "Gantt görünümünde kritik yolu vurgula"
 
 #: ../data/planner.schemas.in.h:2
-#, fuzzy
-#| msgid "Highlight critical path in Gantt view"
 msgid ""
 "Whether to highlight the tasks along the critical path in the Gantt view."
-msgstr "Gantt görünümünde kritik yolu vurgula"
+msgstr "Gantt görünümünde kritik yoldaki görevler vurgulansın mı."
 
 #: ../data/planner.schemas.in.h:3
 msgid "Display nonstandard days in Gantt view"
@@ -522,18 +523,16 @@ msgstr "Gantt görünümünde standart dışı günleri görüntüle"
 
 #: ../data/planner.schemas.in.h:4
 msgid "Whether to display nonstandard days in the Gantt view."
-msgstr ""
+msgstr "Standart dışı günler Gantt görünümünde gösterilsin mi."
 
 #: ../data/planner.schemas.in.h:5
 msgid "Highlight critical path in Task view"
 msgstr "Görev görünümünde kritik yolu vurgula"
 
 #: ../data/planner.schemas.in.h:6
-#, fuzzy
-#| msgid "Highlight critical path in Task view"
 msgid ""
 "Whether to highlight the tasks along the critical path in the Task view."
-msgstr "Görev görünümünde kritik yolu vurgula"
+msgstr "Kritik yoldaki görevler Görevler görünümünde vurgulansın mı."
 
 #: ../data/planner.schemas.in.h:7
 msgid "Print the Gantt view"
@@ -566,7 +565,7 @@ msgstr "Etkin görünüm"
 
 #: ../data/planner.schemas.in.h:14
 msgid "Which view to display in the user interface."
-msgstr ""
+msgstr "Kullanıcı arayüzünde hangi görünümün gösterileceği."
 
 #: ../data/stylesheets/localizable.xml.h:1
 msgid "Company:"
@@ -577,16 +576,12 @@ msgid "Manager:"
 msgstr "Yönetici:"
 
 #: ../data/stylesheets/localizable.xml.h:3
-#, fuzzy
-#| msgid "_Start:"
 msgid "Start:"
-msgstr "_Başlangıç:"
+msgstr "Başlangıç:"
 
 #: ../data/stylesheets/localizable.xml.h:4
-#, fuzzy
-#| msgid "Finish"
 msgid "Finish:"
-msgstr "Bitiş"
+msgstr "Bitiş:"
 
 #: ../data/stylesheets/localizable.xml.h:5
 msgid "Report Date:"
@@ -610,7 +605,7 @@ msgstr "Bu dosyayı oluşturan:"
 
 #: ../data/stylesheets/localizable.xml.h:10
 msgid "Gantt Chart"
-msgstr ""
+msgstr "Gantt Çizelgesi"
 
 #: ../data/stylesheets/localizable.xml.h:11
 msgid "Phase:"
@@ -622,7 +617,7 @@ msgstr "Adsız Proje"
 
 #: ../libplanner/mrp-day.c:54
 msgid "Working"
-msgstr ""
+msgstr "Çalışılıyor"
 
 #: ../libplanner/mrp-day.c:55
 msgid "A default working day"
@@ -630,29 +625,29 @@ msgstr "Öntanımlı iş günü"
 
 #: ../libplanner/mrp-day.c:57
 msgid "Nonworking"
-msgstr ""
+msgstr "Çalışılmıyor"
 
 #: ../libplanner/mrp-day.c:58
 msgid "A default non working day"
-msgstr ""
+msgstr "Öntanımlı çalışılmayan gün"
 
 #: ../libplanner/mrp-day.c:60
 msgid "Use base"
-msgstr ""
+msgstr "Kullanım tabanı"
 
 #: ../libplanner/mrp-day.c:61
 msgid "Use day from base calendar"
-msgstr ""
+msgstr "Temel takvimdeki günü kullan"
 
 #: ../libplanner/mrp-file-module.c:125
 #, c-format
 msgid "This format does not support reading"
-msgstr ""
+msgstr "Bu biçim okumayı desteklemiyor"
 
 #: ../libplanner/mrp-parser.c:1060 ../libplanner/mrp-parser.c:1155
 #, c-format
 msgid "Could not create XML tree"
-msgstr ""
+msgstr "XML ağacı oluşturulamadı"
 
 #: ../libplanner/mrp-parser.c:1121
 #, c-format
@@ -664,20 +659,19 @@ msgid "Default"
 msgstr "Öntanımlı"
 
 #: ../libplanner/mrp-project.c:715
-#, fuzzy, c-format
-#| msgid "Invalid URI."
+#, c-format
 msgid "Invalid URI: '%s'"
-msgstr "Geçersiz adres."
+msgstr "Geçersiz URI: '%s'"
 
 #: ../libplanner/mrp-project.c:758
 #, c-format
 msgid "Couldn't find a suitable file module for loading '%s'"
-msgstr ""
+msgstr "'%s'i yüklemek için uygun dosya modülü bulunamadı"
 
 #: ../libplanner/mrp-project.c:779 ../libplanner/mrp-project.c:1063
 #, c-format
 msgid "No support for SQL storage built into this version of Planner."
-msgstr ""
+msgstr "Planner'ın bu sürümünde SQL depolama desteği derlenmemiş."
 
 #: ../libplanner/mrp-project.c:816
 #, c-format
@@ -687,12 +681,12 @@ msgstr "Geçersiz adres."
 #: ../libplanner/mrp-project.c:957
 #, c-format
 msgid "Unable to find file writer identified by '%s'"
-msgstr ""
+msgstr "'%s' tarafından tanımlanan dosya yazıcı bulunamadı"
 
 #: ../libplanner/mrp-project.c:1020
 #, c-format
 msgid "Couldn't find a suitable file module for loading project"
-msgstr ""
+msgstr "Projeyi yüklemek için uygun dosya modülü bulunamadı"
 
 #: ../libplanner/mrp-property.c:365
 msgid "Text"
@@ -762,7 +756,7 @@ msgstr "Veritabanı bağlantısı için bir sözlük oluşturulamadı.\n"
 #: ../libplanner/mrp-sql.c:2286
 #, c-format
 msgid "BEGIN command failed %s."
-msgstr ""
+msgstr "BAŞLA komutu başarısız %s."
 
 #: ../libplanner/mrp-sql.c:2455
 #, c-format
@@ -770,6 +764,8 @@ msgid ""
 "The project '%s' has been changed by the user '%s' since you opened it. Do "
 "you want to save anyway?"
 msgstr ""
+"Proje '%s' siz projeyiyi açtıktan sonra kullanıcı '%s' tarafından "
+"değiştirildi. Yine de kaydetmek istiyor musunuz?"
 
 #: ../libplanner/mrp-sql.c:3704
 #, c-format
@@ -795,27 +791,30 @@ msgstr "Geçersiz SQL URI Adresi (veritabanı adı belirtilmedi)."
 #, c-format
 msgid ""
 "Could not add a predecessor relation, because the tasks are already related."
-msgstr ""
+msgstr "Görevler zaten ilişkili olduğundan öncelik ilişkisi eklenemiyor."
 
 #: ../libplanner/mrp-task.c:1079
 msgid "Start to Finish relation type cannot be combined with other relations."
-msgstr ""
+msgstr "Başlangıçtan Bitişe ilişki tipi diğer ilişkilerle birleştirilemez."
 
 #: ../libplanner/mrp-task.c:1081
 msgid "Finish to Finish relation type cannot be combined with other relations."
-msgstr ""
+msgstr "Bitişten Bitişe ilişki tipi diğer ilişkilerler birleştirilemez."
 
 #: ../libplanner/mrp-task.c:1098
 msgid ""
 "Start to Finish relation type cannot be combined with Start No Earlier Than "
 "constraint."
 msgstr ""
+"Başlangıçtan Bitişe ilişki türü Daha Önce Başlama kısıtlamasıyla "
+"birleştirilemez."
 
 #: ../libplanner/mrp-task.c:1100
 msgid ""
 "Finish to Finish relation type cannot be combined with Start No Earlier Than "
 "constraint."
 msgstr ""
+"Bitişten Bitişe ilişki türü Daha Önce Başlama kısıtlamasıyla birleştirilemez."
 
 #: ../libplanner/mrp-task.c:1124
 #, c-format
@@ -823,16 +822,18 @@ msgid ""
 "Start to Finish relation cannot be set. Predecessor starts on project start "
 "date."
 msgstr ""
+"Başlangıçtan Bitişe ilişkisi ayarlanamıyor. Öncelik proje başlangıç "
+"tarihinde başlıyor."
 
 #: ../libplanner/mrp-task-manager.c:2603
 #, c-format
 msgid "Cannot add a predecessor, because it would result in a loop."
-msgstr ""
+msgstr "Bir döngü oluşturacağından öncelik eklenemiyor."
 
 #: ../libplanner/mrp-task-manager.c:2647
 #, c-format
 msgid "Cannot move the task, because it would result in a loop."
-msgstr ""
+msgstr "Bir döngü oluşturacağından görev taşınamıyor."
 
 #. Translators: Example output: October 9, 2006
 #: ../libplanner/mrp-xsl.c:93
@@ -962,7 +963,7 @@ msgstr "Pazar"
 
 #: ../src/planner-default-week-dialog.c:288
 msgid "No working time"
-msgstr ""
+msgstr "Çalışma zamanı yok"
 
 #: ../src/planner-default-week-dialog.c:299
 #: ../src/planner-default-week-dialog.c:303
@@ -1159,12 +1160,12 @@ msgstr "İsimsiz"
 #: ../src/planner-gantt-row.c:2350
 #, c-format
 msgid "Change work to %s"
-msgstr ""
+msgstr "İşi %s olarak değiştir"
 
 #: ../src/planner-gantt-row.c:2366
 #, c-format
 msgid "Change progress to %u%% complete"
-msgstr ""
+msgstr "İlerlemeyi %u%% bitti olarak değiştir"
 
 #: ../src/planner-gantt-row.c:2405 ../src/planner-gantt-row.c:2408
 msgid "No name"
@@ -1173,7 +1174,7 @@ msgstr "İsimsiz"
 #: ../src/planner-gantt-row.c:2411
 #, c-format
 msgid "Make task '%s' a predecessor of '%s'"
-msgstr ""
+msgstr "Görev '%s'i '%s'in önceliği yap"
 
 #: ../src/planner-gantt-row.c:3443 ../src/planner-task-dialog.c:455
 #: ../src/planner-task-tree.c:259 ../src/planner-task-tree.c:941
@@ -1347,7 +1348,7 @@ msgstr "Bitiş"
 
 #: ../src/planner-gantt-view.c:629 ../src/planner-task-view.c:372
 msgid "Slack"
-msgstr ""
+msgstr "Serbest"
 
 #: ../src/planner-gantt-view.c:631 ../src/planner-task-view.c:374
 msgid "Assigned to"
@@ -1422,15 +1423,15 @@ msgstr "\"%s\" dosyası zaten var; üzerine yazmak ister misiniz?"
 
 #: ../src/planner-main.c:44
 msgid "Create the initial window with the given geometry."
-msgstr ""
+msgstr "Verilen geometriye göre başlangıç penceresini oluştur."
 
 #: ../src/planner-main.c:44
 msgid "GEOMETRY"
-msgstr ""
+msgstr "GEOMETRİ"
 
 #: ../src/planner-main.c:45
 msgid "FILES|URIs"
-msgstr ""
+msgstr "DOSYALAR|URI'ler"
 
 #: ../src/planner-main.c:68
 msgid "- Planner project management"
@@ -1453,20 +1454,19 @@ msgstr "Geçersiz geometri dizgesi \"%s\"\n"
 
 #: ../src/planner-msp-plugin.c:49
 msgid "MS Project XML..."
-msgstr ""
+msgstr "MS Proje XML'i..."
 
 #: ../src/planner-msp-plugin.c:49
 msgid "Import an MS Project XML file"
-msgstr ""
+msgstr "Bir MS Proje XML dosyasını içe aktar"
 
 #: ../src/planner-msp-plugin.c:117
-#| msgid "Could not write XML file"
 msgid "Couldn't import file."
 msgstr "Dosya içe aktarılamadı."
 
 #: ../src/planner-msp-plugin.c:205
 msgid "Import a File"
-msgstr ""
+msgstr "Dosyayı içe Aktar"
 
 #: ../src/planner-msp-plugin.c:213
 msgid "XML Files"
@@ -1477,16 +1477,12 @@ msgid "All Files"
 msgstr "Tüm Dosyalar"
 
 #: ../src/planner-phase-dialog.c:540
-#, fuzzy
-#| msgid "Insert Task"
 msgid "Insert phase"
-msgstr "Görev Ekle"
+msgstr "Aşama ekle"
 
 #: ../src/planner-phase-dialog.c:639
-#, fuzzy
-#| msgid "_Remove Task"
 msgid "Remove phase"
-msgstr "Göre_vi Kaldır"
+msgstr "Aşamayı kaldır"
 
 #: ../src/planner-plugin-loader.c:40
 #, c-format
@@ -1511,15 +1507,15 @@ msgstr "SF"
 
 #: ../src/planner-print-dialog.c:247
 msgid "Select the views to print:"
-msgstr ""
+msgstr "Yazdırılacak görünümleri seçin:"
 
 #: ../src/planner-print-job.c:168
 msgid "Select views"
-msgstr ""
+msgstr "Görünümleri seçin"
 
 #: ../src/planner-project-properties.c:387
 msgid "Select a calendar to use for this project:"
-msgstr ""
+msgstr "Bu proje için kullanılacak bir takvim seçin:"
 
 #: ../src/planner-project-properties.c:487
 msgid "Edit Project Name"
@@ -1557,40 +1553,33 @@ msgstr "Değer"
 #: ../src/planner-project-properties.c:1391
 #: ../src/planner-property-dialog.c:323
 msgid "The name of the custom property needs to start with a letter."
-msgstr ""
+msgstr "Özel özelliğin isminin bir harfla başlaması gerekir."
 
 #: ../src/planner-project-properties.c:1462
 #: ../src/planner-property-dialog.c:393
 #, c-format
 msgid "Do you really want to remove the property '%s' from the project?"
-msgstr ""
+msgstr "'%s' özelliğini projeden gerçekten çıkarmak istiyor musunuz?"
 
 #: ../src/planner-project-properties.c:1557
 msgid "Could not create properties dialog."
-msgstr ""
+msgstr "Özellik iletişim penceresi oluşturulamadı."
 
 #: ../src/planner-project-properties.c:1591
-#| msgid "Date"
 msgid "Date..."
 msgstr "Tarih..."
 
 #: ../src/planner-project-properties.c:1935
-#, fuzzy
-#| msgid "Edit the project properties"
 msgid "Add project property"
-msgstr "Proje özelliklerini düzenle"
+msgstr "Proje özelliği ekle"
 
 #: ../src/planner-project-properties.c:2045
-#, fuzzy
-#| msgid "Edit the project properties"
 msgid "Remove project property"
-msgstr "Proje özelliklerini düzenle"
+msgstr "Proje özelliği çıkar"
 
 #: ../src/planner-project-properties.c:2138
-#, fuzzy
-#| msgid "Edit the project properties"
 msgid "Edit project property value"
-msgstr "Proje özelliklerini düzenle"
+msgstr "Proje özelliği değerini düzenle"
 
 #: ../src/planner-property-dialog.c:492
 msgid "Label"
@@ -1602,27 +1591,20 @@ msgid "Type"
 msgstr "Tür"
 
 #: ../src/planner-property-dialog.c:661
-#| msgid "Add Property"
 msgid "Add property"
 msgstr "Özellik ekle"
 
 #: ../src/planner-property-dialog.c:806
-#, fuzzy
-#| msgid "Property"
 msgid "Remove property"
-msgstr "Özellik"
+msgstr "Özelliği kaldır"
 
 #: ../src/planner-property-dialog.c:899
-#, fuzzy
-#| msgid "Edit Project Phase"
 msgid "Edit property label"
-msgstr "Proje Safhasını Düzenle"
+msgstr "Özellik etiketini düzenle"
 
 #: ../src/planner-resource-cmd.c:75
-#, fuzzy
-#| msgid "Insert Resource"
 msgid "Insert resource"
-msgstr "Kaynak Ekle"
+msgstr "Kaynak ekle"
 
 #. Put "no group" at the top.
 #: ../src/planner-resource-dialog.c:312
@@ -1637,39 +1619,31 @@ msgid "(No name)"
 msgstr "(İsimsiz)"
 
 #: ../src/planner-resource-dialog.c:495
-#, fuzzy
-#| msgid "Edit resource properties"
 msgid "Edit resource calendar"
-msgstr "Kaynak özelliklerini düzenle"
+msgstr "Kaynak takvimini düzenle"
 
 #: ../src/planner-resource-dialog.c:576
-#, fuzzy
-#| msgid "Edit resource properties"
 msgid "Edit resource note"
-msgstr "Kaynak özelliklerini düzenle"
+msgstr "Kaynak notunu düzenle"
 
 #: ../src/planner-resource-dialog.c:643
-#, fuzzy
-#| msgid "Edit resource properties"
 msgid "Edit resource cost"
-msgstr "Kaynak özelliklerini düzenle"
+msgstr "Kaynak maliyetini düzenle"
 
 #: ../src/planner-resource-dialog.c:711 ../src/planner-resource-dialog.c:752
 #: ../src/planner-resource-view.c:1442 ../src/planner-resource-view.c:1523
-#, fuzzy
-#| msgid "Edit resource properties"
 msgid "Edit resource property"
-msgstr "Kaynak özelliklerini düzenle"
+msgstr "Kaynak özelliğini düzenle"
 
 #. i18n: time stamp format for notes in task dialog, see strftime(3) for
 #. * a detailed description.
 #: ../src/planner-resource-dialog.c:1396 ../src/planner-task-dialog.c:1800
 msgid "%a %d %b %Y, %H:%M\n"
-msgstr ""
+msgstr "%a %d %b %Y, %H:%M\n"
 
 #: ../src/planner-resource-dialog.c:1512
 msgid "None (use project default)"
-msgstr ""
+msgstr "Hiçbiri (proje varsayılanını kullan)"
 
 #: ../src/planner-resource-dialog.c:1634 ../src/planner-resource-dialog.c:1636
 msgid "Edit resource properties"
@@ -1678,17 +1652,15 @@ msgstr "Kaynak özelliklerini düzenle"
 #: ../src/planner-resource-dialog.c:1837 ../src/planner-resource-view.c:793
 #: ../src/planner-resource-view.c:807 ../src/planner-resource-view.c:1761
 msgid "Material"
-msgstr ""
+msgstr "Malzeme"
 
 #: ../src/planner-resource-view.c:233
 msgid "_Insert Resource"
 msgstr "Kaynak _Ekle"
 
 #: ../src/planner-resource-view.c:234
-#, fuzzy
-#| msgid "Insert Resource"
 msgid "Insert a new resource"
-msgstr "Kaynak Ekle"
+msgstr "Yeni kaynak ekle"
 
 #: ../src/planner-resource-view.c:236
 msgid "In_sert Resources..."
@@ -1699,10 +1671,8 @@ msgid "_Remove Resource"
 msgstr "_Kaynağı Sil"
 
 #: ../src/planner-resource-view.c:240
-#, fuzzy
-#| msgid "_Remove Resource"
 msgid "Remove the selected resource"
-msgstr "_Kaynağı Sil"
+msgstr "Seçili kaynağı çıkar"
 
 #: ../src/planner-resource-view.c:242
 msgid "_Edit Resource Properties..."
@@ -1713,122 +1683,110 @@ msgid "Edit _Groups"
 msgstr "_Grupları Düzenle"
 
 #: ../src/planner-resource-view.c:246
-#, fuzzy
-#| msgid "Edit resource properties"
 msgid "Edit resource groups"
-msgstr "Kaynak özelliklerini düzenle"
+msgstr "Kaynak gruplarını düzenle"
 
 #: ../src/planner-resource-view.c:251
 msgid "Edit _Custom Properties..."
-msgstr ""
+msgstr "Özel Özellikleri _Düzenle..."
 
 #: ../src/planner-resource-view.c:269
 msgid "/_Insert resource"
-msgstr ""
+msgstr "/_Kaynak ekle"
 
 #: ../src/planner-resource-view.c:272
 msgid "/_Remove resource"
-msgstr ""
+msgstr "/Kaynak _çıkar"
 
 #: ../src/planner-resource-view.c:275 ../src/planner-usage-tree.c:102
 msgid "/_Edit resource..."
-msgstr ""
+msgstr "/Kaynağı _düzenle..."
 
 #: ../src/planner-resource-view.c:463
 msgid "_Resources"
 msgstr "_Kaynaklar"
 
 #: ../src/planner-resource-view.c:980
-#, fuzzy
-#| msgid "_Remove Resource"
 msgid "Remove resource"
-msgstr "_Kaynağı Sil"
+msgstr "Kaynağı çıkar"
 
 #: ../src/planner-resource-view.c:1049
-#, fuzzy
-#| msgid "Edit resource properties"
 msgid "Edit Resource Columns"
-msgstr "Kaynak özelliklerini düzenle"
+msgstr "Kaynak Sütunlarını Düzenle"
 
 #: ../src/planner-resource-view.c:1084
 msgid "Edit custom resource properties"
-msgstr ""
+msgstr "Özel kaynak özelliklerini düzenle"
 
 #: ../src/planner-resource-view.c:1226
-#, fuzzy
-#| msgid "No name"
 msgid "Short name"
-msgstr "İsimsiz"
+msgstr "Kısa ad"
 
 #: ../src/planner-resource-view.c:1282
 msgid "Group"
-msgstr ""
+msgstr "Grup"
 
 #. i18n: Short "Week", preferably 2 letters.
 #: ../src/planner-scale-utils.c:129
 #, c-format
 msgid "Wk %d"
-msgstr ""
+msgstr "Hft %d"
 
 #: ../src/planner-scale-utils.c:133
 #, c-format
 msgid "Week %d"
-msgstr ""
+msgstr "Hafta %d"
 
 #: ../src/planner-scale-utils.c:139
 #, c-format
 msgid "Week %d, %d"
-msgstr ""
+msgstr "Hafta %d, %d"
 
 #. i18n: Short "Quarter", preferably 1 letter.
 #: ../src/planner-scale-utils.c:170
 #, c-format
 msgid "Q%d"
-msgstr ""
+msgstr "Ç%d"
 
 #. i18n: Short "Quarter", preferably 2-3 letters.
 #: ../src/planner-scale-utils.c:174
 #, c-format
 msgid "Qtr %d"
-msgstr ""
+msgstr "Çyr %d"
 
 #. i18n: Year, short "Quarter", preferably 2-3 letters.
 #: ../src/planner-scale-utils.c:178
 #, c-format
 msgid "%d, Qtr %d"
-msgstr ""
+msgstr "%d, Çyr %d"
 
 #. i18n: Short "Half year", preferably 1 letter.
 #: ../src/planner-scale-utils.c:191
 #, c-format
 msgid "H%d"
-msgstr ""
+msgstr "D%d"
 
 #. i18n: Year, short "Half year", preferably 1 letter.
 #: ../src/planner-scale-utils.c:196
 #, c-format
 msgid "%04d, H%d"
-msgstr ""
+msgstr "%04d, D%d"
 
 #: ../src/planner-sql-plugin.c:93
 msgid "Open from Database..."
 msgstr "Veritabanından Aç..."
 
 #: ../src/planner-sql-plugin.c:94
-#, fuzzy
-#| msgid "Open from Database..."
 msgid "Open a project from a database"
-msgstr "Veritabanından Aç..."
+msgstr "Bir veri tabanından proje aç"
 
 #: ../src/planner-sql-plugin.c:96 ../src/planner-sql-plugin.c:1141
 msgid "Save to Database"
-msgstr ""
+msgstr "Veri tabanına kaydet"
 
 #: ../src/planner-sql-plugin.c:97
-#, fuzzy
-#| msgid "Save the current project with a different name"
 msgid "Save the current project to a database"
-msgstr "Güncel projeyi farklı bir isimde kaydet"
+msgstr "Mevcut projeyi veri tabanına kaydet"
 
 #: ../src/planner-sql-plugin.c:523
 #, c-format
@@ -1836,10 +1794,12 @@ msgid ""
 "Database %s needs to be upgraded from version %s to version %s.\n"
 "Please backup database before the upgrade."
 msgstr ""
+"Veri tabanı %s sürüm %s'den sürüm %s'e güncellenmelidir.\n"
+"Lütfen güncellemeden önce veri tabanı yedeğini alın."
 
 #: ../src/planner-sql-plugin.c:530
 msgid "Upgrade"
-msgstr ""
+msgstr "Yükselt"
 
 #: ../src/planner-sql-plugin.c:544
 #, c-format
@@ -1850,135 +1810,128 @@ msgid ""
 "Database error: \n"
 "%s"
 msgstr ""
+"Veri tabanı %s yükseltilemedi.\n"
+" Kullanılan yükseltme dosyası: %s.\n"
+"Veri tabanı hatası:\n"
+"%s"
 
 #: ../src/planner-sql-plugin.c:584
 #, c-format
 msgid "Can't create tables in database %s"
-msgstr ""
+msgstr "Veri tabanı %s'de tablo oluşturulamıyor"
 
 #: ../src/planner-sql-plugin.c:646
 #, c-format
 msgid "Database %s is not setup for Planner. Do you want to do that?"
-msgstr ""
+msgstr "Veri tabanı %s Planner için ayarlanmamış. Bunu yapmak istiyor musunuz?"
 
 #: ../src/planner-sql-plugin.c:689
 #, c-format
 msgid "Connection to database '%s@%s' failed."
-msgstr ""
+msgstr "Veri tabanı '%s@%s' bağlantısı başarısız."
 
 #: ../src/planner-sql-plugin.c:708
 #, c-format
 msgid "Test to tables in database '%s' failed."
-msgstr ""
+msgstr "Veri tabanı '%s' tablolarına yapılan test başarısız."
 
 #: ../src/planner-sql-plugin.c:810
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: ../src/planner-sql-plugin.c:818
 msgid "Project"
 msgstr "Proje"
 
 #: ../src/planner-sql-plugin.c:826
-#, fuzzy
-#| msgid "_Phase:"
 msgid "Phase"
-msgstr "_Safha:"
+msgstr "Aşama"
 
 #: ../src/planner-sql-plugin.c:834
 msgid "Revision"
-msgstr ""
+msgstr "Revizyon"
 
 #: ../src/planner-sql-plugin.c:1029
 msgid "Open from Database"
-msgstr ""
+msgstr "Veri tabanından aç"
 
 #: ../src/planner-task-cmd.c:96
-#, fuzzy
-#| msgid "/_Unlink task"
 msgid "Link task"
-msgstr "/Görev_in bağlantısını kopar"
+msgstr "Görevi bağlantıla"
 
 #: ../src/planner-task-cmd.c:172
-#, fuzzy
-#| msgid "/_Unlink task"
 msgid "Unlink task"
-msgstr "/Görev_in bağlantısını kopar"
+msgstr "Görev bağlantısını kaldır"
 
 #: ../src/planner-task-cmd.c:267
 msgid "Insert task"
 msgstr "Görev ekle"
 
 #: ../src/planner-task-dialog.c:529
-#| msgid "Edit Day Types"
 msgid "Edit task type"
 msgstr "Görev türünü düzenle"
 
 #: ../src/planner-task-dialog.c:596
-#, fuzzy
-#| msgid "_Fixed duration"
 msgid "Toggle fixed duration"
-msgstr "S_abit süre"
+msgstr "Sabit süreyi değiştir"
 
 #: ../src/planner-task-dialog.c:663
 msgid "Edit task scheduling"
-msgstr ""
+msgstr "Görev zamanlamasını düzenle"
 
 #: ../src/planner-task-dialog.c:743
 msgid "Assign resource to task"
-msgstr ""
+msgstr "Kaynağı göreve ata"
 
 #: ../src/planner-task-dialog.c:803
 msgid "Unassign resource from task"
-msgstr ""
+msgstr "Kaynağın görev atamasını kaldır"
 
 #: ../src/planner-task-dialog.c:862
 msgid "Change resource units in task"
-msgstr ""
+msgstr "Görevdeki kaynak birimlerini değiştir"
 
 #: ../src/planner-task-dialog.c:950
 msgid "Edit task predecessor"
-msgstr ""
+msgstr "Görev önceliğini düzenle"
 
 #: ../src/planner-task-dialog.c:1021
 msgid "Edit lag predecessor"
-msgstr ""
+msgstr "Gecikme önceliğini düzenle"
 
 #: ../src/planner-task-dialog.c:1086
-#, fuzzy
-#| msgid "/_Edit task..."
 msgid "Edit task note"
-msgstr "/Görevi _düzenle"
+msgstr "Görev notunu düzenle"
 
 #: ../src/planner-task-dialog.c:1489
 #, c-format
 msgid "No earlier than %s"
-msgstr ""
+msgstr "%s'den önce değil"
 
 #: ../src/planner-task-dialog.c:1493
 #, c-format
 msgid "On fixed date %s"
-msgstr ""
+msgstr "Belirli tarihte %s"
 
 #: ../src/planner-task-dialog.c:1909
 msgid "Finish to start (FS)"
-msgstr ""
+msgstr "Bitişten başlangıca (FS)"
 
 #: ../src/planner-task-dialog.c:1910
 msgid "Finish to finish (FF)"
-msgstr ""
+msgstr "Bitişten bitişe (FF)"
 
 #: ../src/planner-task-dialog.c:1911
 msgid "Start to start (SS)"
-msgstr ""
+msgstr "Başlangıçtan başlangıca (SS)"
 
 #: ../src/planner-task-dialog.c:1912
 msgid "Start to finish (SF)"
-msgstr ""
+msgstr "Başlangıçtan bitişe (SF)"
 
 #: ../src/planner-task-dialog.c:1972
 msgid "Can't add new predecessor. No task selected!"
-msgstr ""
+msgstr "Yeni öncelik eklenemiyor. Görev seçilmedi!"
 
 #: ../src/planner-task-dialog.c:2457
 msgid "Change..."
@@ -1986,29 +1939,27 @@ msgstr "Değiştir..."
 
 #: ../src/planner-task-dialog.c:2631
 msgid "Assigned"
-msgstr ""
+msgstr "Atandı"
 
 #: ../src/planner-task-dialog.c:2648
 msgid "Units"
-msgstr ""
+msgstr "Birim"
 
 #: ../src/planner-task-dialog.c:2738
 msgid "Lag"
-msgstr ""
+msgstr "Gecikme"
 
 #: ../src/planner-task-dialog.c:2881 ../src/planner-task-dialog.c:2883
 msgid "Edit task properties"
-msgstr ""
+msgstr "Görev özelliklerini düzenle"
 
 #: ../src/planner-task-popup.c:52
 msgid "/_Insert task"
 msgstr "/Görev ekl_e"
 
 #: ../src/planner-task-popup.c:55
-#, fuzzy
-#| msgid "/_Insert subtask"
 msgid "/Insert _subtask"
-msgstr "/Alt _görev ekle"
+msgstr "/Alt görev _ekle"
 
 #: ../src/planner-task-popup.c:58
 msgid "/_Remove task"
@@ -2019,38 +1970,32 @@ msgid "/_Unlink task"
 msgstr "/Görev_in bağlantısını kopar"
 
 #: ../src/planner-task-popup.c:68
-#, fuzzy
-#| msgid "In_sert Resources..."
 msgid "/Assign _resources..."
-msgstr "_Kaynak Ekle..."
+msgstr "/_Kaynek ekle..."
 
 #: ../src/planner-task-popup.c:71 ../src/planner-usage-tree.c:105
 msgid "/_Edit task..."
 msgstr "/Görevi _düzenle"
 
 #: ../src/planner-task-tree.c:561
-#, fuzzy
-#| msgid "/_Remove task"
 msgid "Remove task"
-msgstr "/Gö_revi sil"
+msgstr "Görev kaldır"
 
 #: ../src/planner-task-tree.c:638
 msgid "Apply constraint to task"
-msgstr ""
+msgstr "Kısıtlamayı göreve uygula"
 
 #: ../src/planner-task-tree.c:700
 msgid "Reset task constraint"
-msgstr ""
+msgstr "Görev kısıtlamasını sıfırla"
 
 #: ../src/planner-task-tree.c:1483 ../src/planner-task-tree.c:1637
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: ../src/planner-task-tree.c:2804
-#, fuzzy
-#| msgid "/_Remove task"
 msgid "Remove tasks"
-msgstr "/Gö_revi sil"
+msgstr "Görevleri kaldır"
 
 #: ../src/planner-task-tree.c:2866
 #, c-format
@@ -2058,87 +2003,65 @@ msgid ""
 "You are about to open an edit dialog each for %i tasks. Are you sure that "
 "you want to do that?"
 msgstr ""
+"%i görev için ayrı ayrı düzenleme penceresi açmak üzeresiniz. Bunu yapmak "
+"istediğinize emin misiniz?"
 
 #: ../src/planner-task-tree.c:2968
-#, fuzzy
-#| msgid "/_Unlink task"
 msgid "Unlink tasks"
-msgstr "/Görev_in bağlantısını kopar"
+msgstr "Görevlerin bağlantısını kaldır"
 
 #: ../src/planner-task-tree.c:3020
-#, fuzzy
-#| msgid "/_Unlink task"
 msgid "Link tasks"
-msgstr "/Görev_in bağlantısını kopar"
+msgstr "Görevleri bağla"
 
 #: ../src/planner-task-tree.c:3109
-#, fuzzy
-#| msgid "I_ndent Task"
 msgid "Indent tasks"
-msgstr "Görev _Girintile"
+msgstr "Görevleri girintile"
 
 #: ../src/planner-task-tree.c:3120
-#, fuzzy
-#| msgid "I_ndent Task"
 msgid "Indent task"
-msgstr "Görev _Girintile"
+msgstr "Görevi girintile"
 
 #: ../src/planner-task-tree.c:3212
-#, fuzzy
-#| msgid "I_ndent Task"
 msgid "Unindent tasks"
-msgstr "Görev _Girintile"
+msgstr "Görevlerin girintisini kaldır"
 
 #: ../src/planner-task-tree.c:3230
-#, fuzzy
-#| msgid "I_ndent Task"
 msgid "Unindent task"
-msgstr "Görev _Girintile"
+msgstr "Görev girintisini kaldı"
 
 #: ../src/planner-task-tree.c:3306
-#, fuzzy
-#| msgid "Move up"
 msgid "Move tasks up"
-msgstr "Yukarı taşı"
+msgstr "Görevleri yukarı taşı"
 
 #: ../src/planner-task-tree.c:3344
-#, fuzzy
-#| msgid "Move up"
 msgid "Move task up"
-msgstr "Yukarı taşı"
+msgstr "Görevi yukarı taşı"
 
 #: ../src/planner-task-tree.c:3432
-#, fuzzy
-#| msgid "Move down"
 msgid "Move tasks down"
-msgstr "Aşağı taşı"
+msgstr "Görevleri aşağı taşı"
 
 #. Moving task from 'position' to 'position + 1'
 #: ../src/planner-task-tree.c:3478
-#, fuzzy
-#| msgid "Move down"
 msgid "Move task down"
-msgstr "Aşağı taşı"
+msgstr "Görevi aşağı taşı"
 
 #: ../src/planner-task-tree.c:3534
 msgid "Reset task constraints"
-msgstr ""
+msgstr "Görev kısıtlamalarını kaldır"
 
 #: ../src/planner-task-tree.c:3566
-#, fuzzy
-#| msgid "Select all tasks"
 msgid "Reset all task constraints"
-msgstr "Tüm görevleri seç"
+msgstr "Tüm görev kısıtlamalarını kaldır"
 
 #: ../src/planner-task-view.c:128
-#, fuzzy
-#| msgid "/_Edit task..."
 msgid "_Edit Task"
-msgstr "/Görevi _düzenle"
+msgstr "Görevi _Düzenle"
 
 #: ../src/planner-task-view.c:155
 msgid "_Edit Custom Properties..."
-msgstr ""
+msgstr "Özel Özellikleri _Düzenle..."
 
 #: ../src/planner-task-view.c:301
 msgid "Tasks"
@@ -2150,7 +2073,7 @@ msgstr "_Görevler"
 
 #: ../src/planner-task-view.c:609
 msgid "Edit custom task properties"
-msgstr ""
+msgstr "Özel görev özelliklerini düzenle"
 
 #: ../src/planner-task-view.c:663
 msgid "Edit Task Columns"
@@ -2158,11 +2081,11 @@ msgstr "Görev Sütunlarını Düzenle"
 
 #: ../src/planner-usage-tree.c:108
 msgid "/_Expand all resources"
-msgstr ""
+msgstr "/Tüm kaynakları _genişlet"
 
 #: ../src/planner-usage-tree.c:111
 msgid "/_Collapse all resources"
-msgstr ""
+msgstr "/Tüm kaynakları _daralt"
 
 #: ../src/planner-usage-tree.c:379
 msgid ""
@@ -2173,48 +2096,44 @@ msgstr ""
 "İsim"
 
 #: ../src/planner-usage-tree.c:381
-#, fuzzy
-#| msgid "Tasks"
 msgid ""
 "\n"
 "Task"
-msgstr "Görevler"
+msgstr ""
+"\n"
+"Görev"
 
 #: ../src/planner-usage-view.c:114
-#, fuzzy
-#| msgid "Zoom To Fit"
 msgid "Zoom to fit"
-msgstr "Sayfaya Uydur"
+msgstr "Uydurmak için yaklaştır"
 
 #. i18n: Label used for the sidebar. Please try to make it short and use
 #. * a linebreak if necessary/possible.
 #.
 #: ../src/planner-usage-view.c:261
-#, fuzzy
-#| msgid "Resources"
 msgid ""
 "Resource\n"
 "Usage"
-msgstr "Kaynaklar"
+msgstr ""
+"Kaynak\n"
+"Kullanımı"
 
 #: ../src/planner-usage-view.c:267
-#, fuzzy
-#| msgid "Resources"
 msgid "Resource _Usage"
-msgstr "Kaynaklar"
+msgstr "Kaynak _Kullanımı"
 
 #: ../src/planner-usage-view.c:380
 msgid "Edit Resource Usage Columns"
-msgstr ""
+msgstr "Kaynak Kullanımı Sütunlarını Düzenle"
 
 #: ../src/planner-util-win32.c:45
 #, c-format
 msgid "Unable to open '%s'"
-msgstr ""
+msgstr "'%s' açılamıyor"
 
 #: ../src/planner-util-win32.c:72
 msgid "Unable to open help file"
-msgstr ""
+msgstr "Yardım dosyası açılamıyor"
 
 #: ../src/planner-window.c:216
 msgid "_File"
@@ -2237,10 +2156,8 @@ msgid "Open a project"
 msgstr "Bir proje aç"
 
 #: ../src/planner-window.c:227
-#, fuzzy
-#| msgid "Open a project"
 msgid "Open _Recent"
-msgstr "Bir proje aç"
+msgstr "Son _Kullanılan Aç"
 
 #: ../src/planner-window.c:230
 msgid "_Import"
@@ -2268,11 +2185,11 @@ msgstr "Güncel projeyi farklı bir isimde kaydet"
 
 #: ../src/planner-window.c:243
 msgid "Page Set_up..."
-msgstr ""
+msgstr "Sayfa A_yarları..."
 
 #: ../src/planner-window.c:243
 msgid "Setup the page settings for your current printer"
-msgstr ""
+msgstr "Sayfa ayarlarını mevcut yazıcınıza göre ayarlayın"
 
 #: ../src/planner-window.c:246
 msgid "_Print..."
@@ -2280,17 +2197,15 @@ msgstr "_Yazdır..."
 
 #: ../src/planner-window.c:246
 msgid "Print the current project"
-msgstr ""
+msgstr "Mevcut projeyi yazdır"
 
 #: ../src/planner-window.c:249
-#, fuzzy
-#| msgid "_Print Preview"
 msgid "Print Pre_view"
-msgstr "Ya_zıcı Önizleme"
+msgstr "Öni_zlemeyi Yazdır"
 
 #: ../src/planner-window.c:249
 msgid "Print preview of the current project"
-msgstr ""
+msgstr "Mevcut projenin ön izlemesini yazdır"
 
 #: ../src/planner-window.c:252
 msgid "_Close"
@@ -2386,7 +2301,6 @@ msgid "Switch to the view \"%s\""
 msgstr "\"%s\" görünümüne geç"
 
 #: ../src/planner-window.c:862
-#| msgid "Open a file"
 msgid "Open a File"
 msgstr "Dosya Aç"
 
@@ -2410,30 +2324,30 @@ msgstr "Planner Web Sayfası"
 
 #: ../src/planner-window.c:1334
 msgid "If you don't save, changes made the last minute will be discarded."
-msgstr ""
+msgstr "Kaydetmezseniz son dakikada yapılan değişiklikler çıkarılacaktır."
 
 #: ../src/planner-window.c:1340
 #, c-format
 msgid "If you don't save, changes made the last %d minute will be discarded."
 msgid_plural ""
 "If you don't save, changes made the last %d minutes will be discarded."
-msgstr[0] ""
+msgstr[0] "Kaydetmezseniz, son %d dakikada yapılan değişiklikler çıkarılacak."
 
 #: ../src/planner-window.c:1348
 msgid "If you don't save, changes made the last hour will be discarded."
-msgstr ""
+msgstr "Kaydetmezseniz, son saatte yapılan değişiklikler çıkarılacak."
 
 #: ../src/planner-window.c:1353
 #, c-format
 msgid "If you don't save, changes made the last %d hour will be discarded."
 msgid_plural ""
 "If you don't save, changes made the last %d hours will be discarded."
-msgstr[0] ""
+msgstr[0] "Kaydetmezseniz, son %d saatte yapılan değişiklikler çıkarılacak."
 
 #: ../src/planner-window.c:1363
 #, c-format
 msgid "Save changes to document '%s' before closing?"
-msgstr ""
+msgstr "Kapatmadan önce '%s' belgesi kaydedilsin mi?"
 
 #: ../src/planner-window.c:1388
 msgid "C_lose without saving"
@@ -2444,10 +2358,8 @@ msgid "_Cancel"
 msgstr "İ_ptal"
 
 #: ../src/planner-window.c:1494
-#, fuzzy
-#| msgid "Save a file"
 msgid "Save a File"
-msgstr "Bir dosya kaydet"
+msgstr "Dosya Kaydet"
 
 #: ../src/planner-window.c:1762
 msgid ""
@@ -2464,77 +2376,83 @@ msgid ""
 "After doing this, you can remove all constraints by selecting the menu item "
 "'Remove all constraints' in the 'Edit' menu."
 msgstr ""
+"Planner'ın eski bir sürümü tarafından kaydedilmiş bir dosya açtınız.\n"
+"\n"
+"Eski dosyaları yüklerken, eski sürüm otomatik yeniden zamanlamayı tam "
+"desteklemediğinden tüm görevler 'Tarihinde Başlamalı' kısıtlamasını "
+"kullanacaktır. Bu yeni özellikten faydalanmak için, birbiriyle ilişkili "
+"görevler arasında öncelik ilişkileri eklemelisiniz. \n"
+"\n"
+"Bir önceliğe tıklayıp varisine sürükleyerek öncelik ilişkisi "
+"ekleyebilirsiniz.\n"
+"\n"
+"Bunu yaptıktan sonra, 'Düzenle' menüsündeki 'Tüm kısıtlamaları kaldır' menü "
+"öğesini seçerek tüm kısıtlamaları kaldırabilirsiniz."
 
 #. Hack.
 #: ../src/planner-window.c:1797
 msgid "Unnamed database project"
-msgstr ""
+msgstr "İsimsiz veri tabanı projesi"
 
 #: ../src/planner-working-time-dialog.c:145
-#, fuzzy
-#| msgid "Edit Working Time"
 msgid "Edit working time"
-msgstr "Çalışma Saatlerini Düzenle"
+msgstr "Çalışma zamanını düzenle"
 
 #: ../src/planner-xml-planner-plugin.c:54
 msgid "Planner 0.11 Format"
-msgstr ""
+msgstr "Planner 0.11 Biçimi"
 
 #: ../src/planner-xml-planner-plugin.c:55
 msgid "Export project to a file suitable for Planner 0.11"
-msgstr ""
+msgstr "Projeyi Planner 0.11 için uygun bir dosyaya aktar"
 
 #: ../src/planner-xml-planner-plugin.c:90
-#, fuzzy
-#| msgid "Export to HTML"
 msgid "Export"
-msgstr "HTML olarak kaydet"
+msgstr "Dışa aktar"
 
 #: ../eds-backend/e-cal-backend-planner.c:288
 msgid "EDS UID"
-msgstr ""
+msgstr "EDS UID"
 
 #: ../eds-backend/e-cal-backend-planner.c:289
 msgid "Identifier used by Evolution Data Server for tasks"
 msgstr ""
+"Evolution Veri Sunucusu tarafından görevler için kullanılan tanımlayıcı"
 
 #: ../eds-backend/e-cal-backend-planner.c:298
 msgid "EDS Categories"
-msgstr ""
+msgstr "EDS Kategorileri"
 
 #: ../eds-backend/e-cal-backend-planner.c:299
 msgid "Categories for a task used by Evolution Data Server"
-msgstr ""
+msgstr "Evolution Veri Sunucusu tarafından kullanılan görev için kategoriler"
 
 #: ../eds-backend/e-cal-backend-planner.c:308
 msgid "EDS Classification"
-msgstr ""
+msgstr "EDS Sınıflandırma"
 
 #: ../eds-backend/e-cal-backend-planner.c:309
 msgid "Task access classification used by Evolution Data Server"
 msgstr ""
+"Evolution Veri Sunucusu tarafından kullanılan görev erişim sınıflandırması"
 
 #: ../eds-backend/e-cal-backend-planner.c:318
 msgid "EDS URL"
-msgstr ""
+msgstr "EDS URL'si"
 
 #: ../eds-backend/e-cal-backend-planner.c:319
 msgid "URL for a Task used by Evolution Data Server"
-msgstr ""
+msgstr "Evolution Veri Sunucusu tarafından kullanılan Görev için URL"
 
 #: ../eds-backend/e-cal-backend-planner.c:828
-#, fuzzy
-#| msgid "Invalid URI."
 msgid "Invalid server URI"
-msgstr "Geçersiz adres."
+msgstr "Geçersiz sunucu URI'si"
 
 #. book_target = (EABConfigTargetSource *) data->target;
 #. source = book_target->source;
 #: ../eds-backend/planner-source/planner-source.c:125
-#, fuzzy
-#| msgid "Select a Calendar"
 msgid "Select planner file"
-msgstr "Bir Takvim Seçin"
+msgstr "Planner dosyası seçin"
 
 #: ../eds-backend/planner-source/planner-source.c:157
 #, c-format
@@ -2542,6 +2460,8 @@ msgid ""
 "The filename extension of this file isn't the planner usual file extension "
 "(%s) Do you want to continue?"
 msgstr ""
+"Bu dosyanın dosya uzantısı alışıldık planner dosya uzantısı değil (%s) Devam "
+"etmek istiyor musunuz?"
 
 #~ msgid "Local file:"
 #~ msgstr "Yerel dosya:"
