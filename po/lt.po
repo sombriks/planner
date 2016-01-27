@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: planner HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=planner&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-09-07 22:06+0000\n"
-"PO-Revision-Date: 2015-09-09 17:21+0300\n"
+"POT-Creation-Date: 2016-01-08 14:16+0000\n"
+"PO-Revision-Date: 2016-01-09 01:02+0200\n"
 "Last-Translator: Aurimas Černius <aurisc4@gmail.com>\n"
 "Language-Team: Lietuvių <gnome-lt@lists.akl.lt>\n"
 "Language: lt\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n"
 "%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Gtranslator 2.91.7\n"
+"X-Generator: Poedit 1.8.6\n"
 
 #: ../data/glade/add-predecessor.glade.h:1
 msgid "Add Predecessor"
@@ -98,8 +98,7 @@ msgid "-"
 msgstr "-"
 
 #: ../data/glade/calendar-dialog.glade.h:14 ../data/glade/eds.glade.h:4
-#: ../data/glade/new-property.glade.h:5
-#: ../data/glade/resource-dialog.glade.h:6
+#: ../data/glade/new-property.glade.h:5 ../data/glade/resource-dialog.glade.h:6
 #: ../data/glade/resource-input-dialog.glade.h:5 ../data/glade/sql.glade.h:5
 #: ../data/glade/task-input-dialog.glade.h:5
 msgid "*"
@@ -241,8 +240,7 @@ msgstr "Pridėti savybę"
 msgid "_Description:"
 msgstr "_Aprašymas:"
 
-#: ../data/glade/new-property.glade.h:4
-#: ../data/glade/resource-dialog.glade.h:2
+#: ../data/glade/new-property.glade.h:4 ../data/glade/resource-dialog.glade.h:2
 msgid "_Type:"
 msgstr "_Tipas:"
 
@@ -279,8 +277,7 @@ msgid "_Phase:"
 msgstr "_Fazė:"
 
 #: ../data/glade/project-properties.glade.h:9
-#: ../data/glade/resource-dialog.glade.h:9
-#: ../data/glade/task-dialog.glade.h:14
+#: ../data/glade/resource-dialog.glade.h:9 ../data/glade/task-dialog.glade.h:14
 msgid "General"
 msgstr "Bendros"
 
@@ -396,8 +393,7 @@ msgstr "langas"
 #. This is the verb "schedule"
 #. I18n: the verb "schedule" here.
 #: ../data/glade/task-date-widget.glade.h:3
-#: ../data/glade/task-dialog.glade.h:13
-#: ../src/planner-cell-renderer-date.c:139
+#: ../data/glade/task-dialog.glade.h:13 ../src/planner-cell-renderer-date.c:139
 msgid "Schedule:"
 msgstr "Tvarkaraštis:"
 
@@ -515,8 +511,6 @@ msgid "Highlight critical path in Gantt view"
 msgstr "Išskiria kritinį kelią Ganto diagramos peržiūroje"
 
 #: ../data/planner.schemas.in.h:2
-#| msgid ""
-#| "Whether to highlight the tasks along the cricital path in the Gantt view."
 msgid ""
 "Whether to highlight the tasks along the critical path in the Gantt view."
 msgstr "Ar Ganto diagramos peržiūroje yra išskiriamos kritinio kelio užduotys."
@@ -534,8 +528,6 @@ msgid "Highlight critical path in Task view"
 msgstr "Išskiria kritinį kelią užduoties peržiūroje"
 
 #: ../data/planner.schemas.in.h:6
-#| msgid ""
-#| "Whether to highlight the tasks along the cricital path in the Task view."
 msgid ""
 "Whether to highlight the tasks along the critical path in the Task view."
 msgstr "Ar užduočių peržiūroje yra išskiriamos kritinio kelio užduotys."
@@ -1455,7 +1447,7 @@ msgid ""
 "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
 "%s\n"
-"Paleiskite „%s --help“ visam komandų eilutės parinkčių sąrašui.\n"
+"Paleiskite „%s --help“ visam komandų eilutės parametrų sąrašui.\n"
 
 #: ../src/planner-main.c:99
 #, c-format
@@ -2321,7 +2313,7 @@ msgstr "Planner Bylos"
 
 #: ../src/planner-window.c:1180
 msgid "A Project Management application for the GNOME desktop"
-msgstr "GNOME darbo aplinkos projektų valdymo programa"
+msgstr "GNOME darbalaukio projektų valdymo programa"
 
 #: ../src/planner-window.c:1183
 msgid "translator-credits"
